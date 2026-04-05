@@ -1,0 +1,157 @@
+{
+  "id": "ssc-cgl-2025",
+  "title": "SSC Combined Graduate Level Examination 2025",
+  "advertisementNumber": "HQ-C11018/1/2025-C-1",
+  "organization": "Staff Selection Commission",
+  "department": null,
+  "type": "Central Government",
+  "postNames": [
+    "Assistant Section Officer",
+    "Inspector of Income Tax",
+    "Inspector (Central Excise)",
+    "Inspector (Preventive Officer)",
+    "Inspector (Examiner)",
+    "Assistant Enforcement Officer",
+    "Sub Inspector (CBI)",
+    "Inspector Posts",
+    "Inspector (Central Bureau of Narcotics)",
+    "Section Head",
+    "Executive Assistant",
+    "Research Assistant",
+    "Divisional Accountant",
+    "Sub Inspector (NIA)",
+    "Junior Intelligence Officer",
+    "Office Superintendent",
+    "Auditor",
+    "Accountant",
+    "Junior Accountant",
+    "Postal Assistant",
+    "Sorting Assistant",
+    "Senior Secretariat Assistant",
+    "Upper Division Clerk",
+    "Senior Administrative Assistant",
+    "Tax Assistant"
+  ],
+  "posts": [
+    {
+      "name": "Various Posts (Inspector, Auditor, Assistant, etc.)",
+      "totalVacancy": 14500,
+      "minQualificationLevel": 4,
+      "prerequisite": [],
+      "qualification": [
+        {
+          "name": "Graduate",
+          "level": 4,
+          "branches": ["any"],
+          "extraConditions": ["degree from recognized university"]
+        }
+      ]
+    },
+    {
+      "name": "Junior Statistical Officer (JSO)",
+      "totalVacancy": 82,
+      "minQualificationLevel": 4,
+      "prerequisite": [],
+      "qualification": [
+        {
+          "name": "Graduate",
+          "level": 4,
+          "branches": ["Statistics"],
+          "extraConditions": ["Statistics as compulsory subject"]
+        }
+      ]
+    }
+  ],
+  "totalVacancy": 14582,
+  "categoryWiseVacancyTotal": {
+    "general": null,
+    "ews": null,
+    "obc": null,
+    "sc": null,
+    "st": null,
+    "pwd": null
+  },
+  "qualification": [
+    {
+      "name": "Graduate",
+      "level": 4,
+      "branches": ["any"],
+      "extraConditions": ["degree from recognized university"]
+    },
+    {
+      "name": "Graduate",
+      "level": 4,
+      "branches": ["Statistics"],
+      "extraConditions": ["Statistics as compulsory subject"]
+    }
+  ],
+  "ageLimit": {
+    "min": 18,
+    "max": 32,
+    "asOnDate": "2025-08-01",
+    "relaxation": {
+      "obc": 3,
+      "sc": 5,
+      "st": 5,
+      "pwd": 10,
+      "exServiceman": 3,
+      "female": null
+    }
+  },
+  "categoryEligibility": ["General", "OBC", "SC", "ST", "EWS", "PWD", "ExServiceman"],
+  "pwdEligible": true,
+  "femaleOnly": false,
+  "exServicemanQuota": true,
+  "location": ["All India"],
+  "salary": {
+    "payLevel": null,
+    "min": 25500,
+    "max": 142400,
+    "currency": "INR"
+  },
+  "applicationFee": {
+    "general": 100,
+    "obc": 100,
+    "sc": 0,
+    "st": 0,
+    "pwd": 0,
+    "female": 0,
+    "exServiceman": 0,
+    "ews": 100,
+    "paymentMode": ["UPI", "Net Banking", "Debit Card", "Credit Card"]
+  },
+  "importantDates": {
+    "notificationRelease": "2025-06-09",
+    "startDate": "2025-06-09",
+    "lastDate": "2025-07-04",
+    "feePaymentLastDate": "2025-07-05",
+    "correctionWindowLastDate": "2025-07-11",
+    "admitCardDate": null,
+    "examDate": "2025-08-13",
+    "resultDate": null,
+    "interviewDate": null,
+    "documentVerificationDate": null
+  },
+  "applicationProcess": [
+    "Visit the official SSC website",
+    "Complete One Time Registration (OTR)",
+    "Fill the online application form",
+    "Upload required documents",
+    "Pay the application fee",
+    "Submit and download application form"
+  ],
+  "selectionProcess": [
+    "Tier-I Computer Based Examination",
+    "Tier-II Computer Based Examination",
+    "Document Verification"
+  ],
+  "description": "Staff Selection Commission has released the Combined Graduate Level Examination 2025 notification to recruit approximately 14582 vacancies across various Group B and C posts in central government departments. Candidates must have a bachelor's degree from a recognized university. Selection will be conducted through Tier-I and Tier-II examinations followed by document verification.",
+  "shortInfo": "SSC CGL 2025 notification released for 14582 vacancies across Group B and C posts with graduation eligibility.",
+  "officialWebsite": "https://ssc.gov.in",
+  "applyLink": "https://ssc.gov.in",
+  "notificationPdfLink": null,
+  "source": "SSC CGL Notification PDF",
+  "tags": ["ssc", "graduate", "central", "all-india"],
+  "createdAt": "2026-04-05T00:00:00Z",
+  "updatedAt": "2026-04-05T00:00:00Z"
+}
