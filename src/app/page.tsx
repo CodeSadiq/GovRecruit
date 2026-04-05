@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { JOBS as STATIC_JOBS, NOTIFICATIONS } from '@/lib/data';
 import JobDetailModal from '@/components/JobDetailModal';
 import Link from 'next/link';
+import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 
 // ─── SVG ICONS (PROFESSIONAL SYSTEM) ──────────────────────────────────
 
@@ -23,9 +24,16 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [dbJobs, setDbJobs] = useState<any[]>([]);
+  const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Lead user profile
+    const savedProfile = localStorage.getItem('govrecruit_profile');
+    if (savedProfile) {
+      try { setUserProfile(JSON.parse(savedProfile)); } catch(e) { console.error(e); }
+    }
+
     async function fetchJobs() {
       try {
         const res = await fetch('/api/jobs');
@@ -44,7 +52,15 @@ export default function Home() {
     return matchesSearch && matchesType;
   });
 
-  const recommendedJobs = dbJobs.filter(j => j.isRecommended || j.totalVacancy > 5000);
+  // ── RECRUITMENT MATCHING LOGIC ──
+  const recommendedJobs = React.useMemo(() => {
+    if (!userProfile) {
+      // Fallback: top general jobs
+      return dbJobs.filter(j => j.totalVacancy > 2000).sort((a,b) => (b.totalVacancy || 0) - (a.totalVacancy || 0)).slice(0, 10);
+    }
+    const matched = getEligibleJobs(userProfile, dbJobs);
+    return matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchScore: m.matchScore }));
+  }, [userProfile, dbJobs]);
 
   const renderSalary = (s: any) => {
     if (typeof s === 'string') return s;
@@ -96,9 +112,11 @@ export default function Home() {
             <IconBell />
             <span className="absolute -top-1 -right-1 bg-red text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-navy text-[8px]">3</span>
           </button>
-          <Link href="/profile" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/5 px-4 py-2 rounded-xl transition-all text-white">
+          <Link href="/profile" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/5 px-4 py-2 rounded-xl transition-all text-white min-w-[140px] justify-center">
             <span className="opacity-50"><IconUser /></span>
-            <span className="text-[12px] font-black uppercase tracking-widest">Login / Profile</span>
+            <span className="text-[12px] font-black uppercase tracking-widest truncate max-w-[120px]">
+              {userProfile ? (userProfile as any).fullName || 'Profile Index' : 'Login / Profile'}
+            </span>
           </Link>
         </div>
       </nav>
@@ -109,26 +127,25 @@ export default function Home() {
         {activeTab === 'for-you' && (
           <>
             {/* HERO CLEAN */}
-            <div
-              className="relative p-6 md:px-20 md:py-12 min-h-[280px] flex items-center overflow-hidden bg-cover bg-center md:bg-right border-b-4 border-navy-dark"
+            <div className="w-full bg-[#0D244D] relative min-h-[240px] flex items-center overflow-hidden bg-cover bg-center md:bg-right border-b-4 border-navy-dark"
               style={{ backgroundImage: 'url(/herobg.png)' }}
             >
-              <div className="relative z-10 w-full max-w-[1440px] mx-auto">
-                <div className="max-w-[800px] text-center md:text-left space-y-8">
-                  <h1 className="text-4xl md:text-6xl font-black text-[#0D244D] uppercase leading-[0.9]">
+              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 py-16">
+                <div className="max-w-[800px] text-center md:text-left space-y-6">
+                  <h1 className="text-2xl md:text-5xl font-black text-[#0D244D] uppercase leading-[0.9]">
                     Recruitment for You.
                   </h1>
                   <div className="max-w-[500px]">
-                    <p className="text-[14px] md:text-[16px] text-[#344163]/80 font-bold uppercase leading-relaxed">
+                    <p className="text-[12px] md:text-[14px] text-[#344163]/80 font-bold uppercase leading-relaxed">
                       Verified government openings matched to your qualification.
                     </p>
                   </div>
-                  <div className="flex items-center bg-white rounded-full px-8 py-5 gap-4 shadow-2xl border border-gray-100 group max-w-[500px]">
-                    <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-110 shadow-none"><IconSearch /></span>
+                  <div className="flex items-center bg-white rounded-full px-6 py-3 gap-3 shadow-2xl border border-gray-100 group max-w-[450px]">
+                    <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-90 shadow-none"><IconSearch /></span>
                     <input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="border-none outline-none text-[16px] text-navy flex-1 bg-transparent placeholder:text-gray-300 font-bold uppercase"
+                      className="border-none outline-none text-[15px] text-navy flex-1 bg-transparent placeholder:text-gray-300 font-bold uppercase"
                       placeholder="Search baseline..."
                     />
                   </div>
@@ -152,7 +169,7 @@ export default function Home() {
                   </header>
 
                   <div className="space-y-6">
-                    {recommendedJobs.map((job, idx) => (
+                    {recommendedJobs.map((job: any, idx) => (
                       <Link
                         href={`/jobs/${job.id || job._id}`}
                         key={idx}
@@ -160,6 +177,12 @@ export default function Home() {
                       >
                         <div className="flex-1">
                           <h3 className="text-2xl font-black text-[#0D244D] leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
+                          {job.matchedPosts && (
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              <span className="text-[9px] font-black uppercase tracking-widest bg-navy text-white px-3 py-1 rounded-full shadow-lg shadow-navy/20">Matched for {job.matchedPosts.length} {job.matchedPosts.length === 1 ? 'post' : 'posts'}</span>
+                              <span className="text-[9px] font-bold uppercase tracking-widest text-navy/40 mt-1">including {job.matchedPosts[0].name}</span>
+                            </div>
+                          )}
                         </div>
                         <div className="md:text-right md:border-l border-gray-100 md:pl-10 flex-shrink-0">
                           <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Last Date</div>

@@ -1239,7 +1239,11 @@ export default function QualificationForm() {
             </button>
             <button
               className="btn btn-primary"
-              onClick={() => alert("Profile saved! ✅\n\n" + jsonOutput)}
+              onClick={() => {
+                localStorage.setItem('govrecruit_profile', JSON.stringify(outputProfile));
+                alert("Profile saved! ✅\n\nYour dashboard will now be personalized.");
+                window.location.href = '/';
+              }}
             >
               Save Profile ✓
             </button>

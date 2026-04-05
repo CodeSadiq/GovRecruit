@@ -475,7 +475,7 @@ export default function ProfilePage() {
   const [dob, setDob] = useState('');
   const [selectedQual, setSelectedQual] = useState<any>(null);
   const [selectedBranch, setSelectedBranch] = useState<any>(null);
-  const [isLoginView, setIsLoginView] = useState(false);
+  const [isLoginView, setIsLoginView] = useState(true);
   const [completed, setCompleted] = useState(false);
 
   const handleQualChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -490,13 +490,26 @@ export default function ProfilePage() {
   };
 
   const handleComplete = () => {
-    localStorage.setItem('userProfile', JSON.stringify({
+    const profile = {
       fullName,
       dob,
       qualification: selectedQual.name,
-      branch: selectedBranch?.label || 'General'
-    }));
+      level: selectedQual.level,
+      branch: selectedBranch?.value || 'any'
+    };
+    localStorage.setItem('govrecruit_profile', JSON.stringify(profile));
     setCompleted(true);
+  };
+
+  const [loginId, setLoginId] = useState('');
+  const handleLogin = () => {
+    const saved = localStorage.getItem('govrecruit_profile');
+    if (saved) {
+      alert("Authentication Successful. Redirecting...");
+      window.location.href = '/';
+    } else {
+      alert("No baseline registry found for this ID. Please register first.");
+    }
   };
 
   return (
@@ -544,7 +557,13 @@ export default function ProfilePage() {
                         <label className="text-[11px] font-black uppercase tracking-[0.2em] text-navy">User ID / Registry ID</label>
                       </div>
                       <div className="md:col-span-8">
-                        <input type="text" placeholder="Enter Registration ID" className="w-full h-[58px] px-5 bg-white border-2 border-gray-300 text-sm font-bold focus:border-navy focus:bg-gray-50 outline-none" />
+                        <input 
+                          type="text" 
+                          value={loginId}
+                          onChange={(e) => setLoginId(e.target.value)}
+                          placeholder="Enter Registration ID" 
+                          className="w-full h-[58px] px-5 bg-white border-2 border-gray-300 text-sm font-bold focus:border-navy focus:bg-gray-50 outline-none" 
+                        />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
@@ -556,11 +575,29 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   </div>
-                  <button className="w-full py-5 bg-navy text-white font-black text-xs uppercase tracking-widest border-b-4 border-navy-dark hover:bg-gray-800 transition-all">Authenticate & Enter Portal</button>
+                  <button 
+                    onClick={handleLogin}
+                    className="w-full py-5 bg-navy text-white font-black text-xs uppercase tracking-widest border-b-4 border-navy-dark hover:bg-gray-800 transition-all">
+                      Authenticate & Enter Portal
+                  </button>
+
+                  <div className="pt-8 border-t border-gray-100 text-center">
+                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">No Baseline Registry found?</p>
+                    <button 
+                      onClick={() => setIsLoginView(false)}
+                      className="text-navy font-black uppercase text-[12px] hover:underline decoration-2 underline-offset-4"
+                    >
+                      Create Recruitment Baseline →
+                    </button>
+                  </div>
                 </div>
               ) : (
                 /* REGISTRATION / BASELINE FORM */
                 <div className="space-y-16 animate-in fade-in duration-500">
+                  <div className="flex justify-between items-center bg-gray-50 p-4 border border-gray-200">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Already Registered?</span>
+                    <button onClick={() => setIsLoginView(true)} className="text-[10px] font-black uppercase tracking-widest text-navy border-b border-navy/20 hover:border-navy transition-all">Login Protocol →</button>
+                  </div>
 
                   {/* SECTION 01: PERSONAL DETAILS */}
                   <section className="space-y-10">
