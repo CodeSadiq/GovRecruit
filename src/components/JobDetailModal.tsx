@@ -46,7 +46,9 @@ export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
               <div className="text-[11px] text-text-s uppercase font-bold tracking-wider">Location</div>
             </div>
             <div className="bg-surface border border-border rounded-sm p-3 text-center">
-              <div className={`text-base font-bold mb-0.5 ${job.urgency === 'urgent' ? 'text-red' : job.urgency === 'soon' ? 'text-amber' : 'text-green'}`}>{job.lastDate}</div>
+               <div className={`text-base font-bold mb-0.5 ${(job.urgency === 'urgent' || !job.lastDate) ? 'text-red' : job.urgency === 'soon' ? 'text-amber' : 'text-green'}`}>
+                 {job.lastDate || (job as any).importantDates?.lastDate || (job as any).notificationType || "Pending/NA"}
+               </div>
               <div className="text-[11px] text-text-s uppercase font-bold tracking-wider">Last Date</div>
             </div>
           </div>

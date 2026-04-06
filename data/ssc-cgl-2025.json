@@ -1,26 +1,26 @@
 {
   "id": "ssc-cgl-2025",
-  "title": "SSC Combined Graduate Level Examination 2025",
+  "title": "SSC Combined Graduate Level CGL Examination 2025",
   "advertisementNumber": "HQ-C11018/1/2025-C-1",
-  "organization": "Staff Selection Commission",
-  "department": null,
+  "organization": "Staff Selection Commission (SSC)",
+  "department": "Ministry of Personnel, Public Grievances and Pensions",
   "type": "Central Government",
   "postNames": [
     "Assistant Section Officer",
+    "Assistant",
     "Inspector of Income Tax",
     "Inspector (Central Excise)",
     "Inspector (Preventive Officer)",
     "Inspector (Examiner)",
     "Assistant Enforcement Officer",
-    "Sub Inspector (CBI)",
+    "Sub Inspector",
     "Inspector Posts",
-    "Inspector (Central Bureau of Narcotics)",
     "Section Head",
     "Executive Assistant",
     "Research Assistant",
     "Divisional Accountant",
-    "Sub Inspector (NIA)",
-    "Junior Intelligence Officer",
+    "Junior Statistical Officer",
+    "Statistical Investigator Grade II",
     "Office Superintendent",
     "Auditor",
     "Accountant",
@@ -34,32 +34,30 @@
   ],
   "posts": [
     {
-      "name": "Various Posts (Inspector, Auditor, Assistant, etc.)",
-      "totalVacancy": 14500,
+      "name": "Combined Graduate Level Posts",
+      "totalVacancy": 14582,
       "minQualificationLevel": 4,
       "prerequisite": [],
       "qualification": [
         {
           "name": "Graduate",
           "level": 4,
-          "branches": ["any"],
-          "extraConditions": ["degree from recognized university"]
+          "branches": [
+            "any"
+          ],
+          "extraConditions": [
+            "degree from recognized university"
+          ]
         }
-      ]
-    },
-    {
-      "name": "Junior Statistical Officer (JSO)",
-      "totalVacancy": 82,
-      "minQualificationLevel": 4,
-      "prerequisite": [],
-      "qualification": [
-        {
-          "name": "Graduate",
-          "level": 4,
-          "branches": ["Statistics"],
-          "extraConditions": ["Statistics as compulsory subject"]
-        }
-      ]
+      ],
+      "categoryWiseVacancy": {
+        "general": null,
+        "ews": null,
+        "obc": null,
+        "sc": null,
+        "st": null,
+        "pwd": null
+      }
     }
   ],
   "totalVacancy": 14582,
@@ -75,14 +73,12 @@
     {
       "name": "Graduate",
       "level": 4,
-      "branches": ["any"],
-      "extraConditions": ["degree from recognized university"]
-    },
-    {
-      "name": "Graduate",
-      "level": 4,
-      "branches": ["Statistics"],
-      "extraConditions": ["Statistics as compulsory subject"]
+      "branches": [
+        "any"
+      ],
+      "extraConditions": [
+        "degree from recognized university"
+      ]
     }
   ],
   "ageLimit": {
@@ -98,11 +94,21 @@
       "female": null
     }
   },
-  "categoryEligibility": ["General", "OBC", "SC", "ST", "EWS", "PWD", "ExServiceman"],
+  "categoryEligibility": [
+    "General",
+    "OBC",
+    "SC",
+    "ST",
+    "EWS",
+    "PWD",
+    "ExServiceman"
+  ],
   "pwdEligible": true,
   "femaleOnly": false,
   "exServicemanQuota": true,
-  "location": ["All India"],
+  "location": [
+    "All India"
+  ],
   "salary": {
     "payLevel": null,
     "min": 25500,
@@ -118,7 +124,11 @@
     "female": 0,
     "exServiceman": 0,
     "ews": 100,
-    "paymentMode": ["UPI", "Net Banking", "Debit Card", "Credit Card"]
+    "paymentMode": [
+      "BHIM UPI",
+      "Net Banking",
+      "Debit Card"
+    ]
   },
   "importantDates": {
     "notificationRelease": "2025-06-09",
@@ -134,24 +144,40 @@
   },
   "applicationProcess": [
     "Visit the official SSC website",
-    "Complete One Time Registration (OTR)",
+    "Complete One-Time Registration (OTR)",
     "Fill the online application form",
-    "Upload required documents",
-    "Pay the application fee",
-    "Submit and download application form"
+    "Upload required documents and signature",
+    "Pay the application fee online",
+    "Submit the application and take a printout"
   ],
   "selectionProcess": [
-    "Tier-I Computer Based Examination",
-    "Tier-II Computer Based Examination",
+    "Tier-I Computer Based Exam",
+    "Tier-II Computer Based Exam",
     "Document Verification"
   ],
-  "description": "Staff Selection Commission has released the Combined Graduate Level Examination 2025 notification to recruit approximately 14582 vacancies across various Group B and C posts in central government departments. Candidates must have a bachelor's degree from a recognized university. Selection will be conducted through Tier-I and Tier-II examinations followed by document verification.",
-  "shortInfo": "SSC CGL 2025 notification released for 14582 vacancies across Group B and C posts with graduation eligibility.",
+  "description": "Staff Selection Commission (SSC) is conducting the Combined Graduate Level Examination 2025 to fill approximately 14582 vacancies in various Group B and Group C posts across central government ministries and departments. Candidates with a bachelor's degree in any discipline are eligible to apply. The selection process includes Tier-I and Tier-II computer-based examinations followed by document verification.",
+  "shortInfo": null,
   "officialWebsite": "https://ssc.gov.in",
   "applyLink": "https://ssc.gov.in",
   "notificationPdfLink": null,
-  "source": "SSC CGL Notification PDF",
-  "tags": ["ssc", "graduate", "central", "all-india"],
-  "createdAt": "2026-04-05T00:00:00Z",
-  "updatedAt": "2026-04-05T00:00:00Z"
+  "source": "",
+  "tags": [
+    "ssc",
+    "central",
+    "graduate",
+    "all-india"
+  ],
+  "createdAt": "2026-04-06T00:00:00Z",
+  "updatedAt": "2026-04-06T00:00:00Z",
+  "displayStatus": {
+    "notificationType": "Full Notification",
+    "startDate": "09 June 2025",
+    "lastDate": "04 July 2025",
+    "examDate": "13 August 2025",
+    "admitCardDate": "Will Be Released Before Exam",
+    "applicationFee": "General/OBC/EWS: ₹100 | SC/ST/PWD: Nil",
+    "salaryRange": "₹25,500 – ₹1,42,400 per month",
+    "ageLimit": "Age 18–32 Years (as on 01 August 2025)",
+    "applyStatus": "Applications Closed"
+  }
 }

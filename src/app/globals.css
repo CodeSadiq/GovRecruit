@@ -851,3 +851,56 @@ td.date-ok {
     display: none;
   }
 }
+
+/* -- CATEGORY BREAKDOWN -- */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.cat-pill {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--jp-rule);
+  padding: 10px 14px;
+  border-radius: 4px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.cat-label {
+  font-family: var(--jp-mono);
+  font-size: 10px;
+  color: var(--jp-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.cat-val {
+  font-family: var(--jp-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--jp-ink);
+}
+
+.post-cat-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.post-cat-tag {
+  font-size: 10px;
+  font-family: var(--jp-mono);
+  background: var(--jp-paper-alt);
+  border: 1px solid var(--jp-rule-light);
+  padding: 1px 4px;
+  color: var(--jp-ink-muted);
+}
+

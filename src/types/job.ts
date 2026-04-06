@@ -64,6 +64,18 @@ export interface ImportantDates {
   documentVerificationDate: string | null;
 }
 
+export interface DisplayStatus {
+  notificationType: string;
+  startDate: string;
+  lastDate: string;
+  examDate: string;
+  admitCardDate: string;
+  applicationFee: string;
+  salaryRange: string;
+  ageLimit: string;
+  applyStatus: string;
+}
+
 export interface Salary {
   payLevel: number | null;
   min: number | null;
@@ -103,4 +115,6 @@ export interface JobPost {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+  notificationType?: string;
+  displayStatus?: DisplayStatus;
 }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/Navbar';
 
 // ─── FULL DATA TREE ───────────────────
 const QUAL_TREE = [
@@ -164,15 +165,8 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
       
-      {/* MINIMAL NAVBAR */}
-      <nav className="bg-white/50 backdrop-blur-md h-[60px] flex items-center px-6 md:px-12 sticky top-0 z-[100] border-b border-gray-100">
-        <Link href="/" className="flex items-center gap-3 no-underline mr-auto">
-          <strong className="text-navy text-lg font-bold tracking-tight">GovRecruit</strong>
-        </Link>
-        <div className="flex items-center gap-6">
-            <Link href="/" className="text-xs font-semibold text-navy/60 hover:text-navy transition-all">Back to Dashboard</Link>
-        </div>
-      </nav>
+      {/* GLOBAL NAVBAR */}
+      <Navbar />
 
       <main className="flex-1 overflow-y-auto px-6 md:px-12 py-10">
         <div className="max-w-[1000px] mx-auto space-y-12 animate-in fade-in duration-700">

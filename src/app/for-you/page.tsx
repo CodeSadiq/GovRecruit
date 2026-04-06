@@ -11,13 +11,17 @@ const IconStar = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="non
 
 export default function ForYouPage() {
   const [jobs, setJobs] = useState<any[]>([]);
+  const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const savedProfile = localStorage.getItem('govrecruit_profile');
     let profile: CandidateProfile | null = null;
     if (savedProfile) {
-      try { profile = JSON.parse(savedProfile); } catch(e) { console.error(e); }
+      try { 
+        profile = JSON.parse(savedProfile); 
+        setUserProfile(profile);
+      } catch (e) { console.error(e); }
     }
 
     async function fetchJobs() {
@@ -84,7 +88,7 @@ export default function ForYouPage() {
                 <div className="mt-8 pt-8 border-t border-gray-50 flex items-center justify-between">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Last Date</span>
-                    <span className="text-base font-black text-red-500 uppercase">{job.lastDate || job.importantDates?.lastDate}</span>
+                    <span className="text-base font-black text-red-500 uppercase">{job.lastDate || job.importantDates?.lastDate || job.notificationType || "Pending/NA"}</span>
                   </div>
                   <div className="bg-[#1a3a8f] text-white px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest group-hover:bg-[#122870] transition-colors">
                     View Details
@@ -96,16 +100,19 @@ export default function ForYouPage() {
         ) : (
           <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center">
             <div className="w-20 h-20 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mb-8">
-               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
-            <h3 className="text-xl font-black text-navy uppercase mb-3 tracking-widest">No Matches Found in Baseline</h3>
-            <p className="text-sm font-bold text-gray-400 max-w-[400px] uppercase tracking-widest leading-relaxed">
-              We couldn't find any recruitments matching your current profile credentials. 
-              Please verify your qualifications in the baseline registry.
+            <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
+              No recruitments currently match your specific qualification level and branch.
             </p>
-            <Link href="/profile" className="mt-10 px-10 py-4 bg-[#1a3a8f] text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-[#122870] transition-all shadow-xl rounded-xl">
-               Update Baseline →
-            </Link>
+            {!userProfile?.level && (
+              <Link 
+                href="/profile" 
+                className="mt-8 px-10 py-3 bg-[#1a3a8f] text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#122870] transition-all shadow-xl rounded-xl no-underline"
+              >
+                Setup Profile →
+              </Link>
+            )}
           </div>
         )}
       </main>

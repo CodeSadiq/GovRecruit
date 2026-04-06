@@ -248,8 +248,8 @@ export default function AdminPage() {
                                    <td className="p-4 font-black text-navy">{p.name}</td>
                                    <td className="p-4 font-bold text-gray-500">{p.totalVacancy || "—"}</td>
                                    <td className="p-4">
-                                      {p.qualification?.map((q: any) => (
-                                        <div key={q.name} className="flex flex-col mb-2 last:mb-0">
+                                      {p.qualification?.map((q: any, qidx: number) => (
+                                        <div key={qidx} className="flex flex-col mb-2 last:mb-0">
                                            <span className="font-black text-navy uppercase tracking-tight">{q.name}</span>
                                            <span className="text-[10px] text-gray-400 font-bold uppercase">{q.branches?.join(", ") || "Any Branch"}</span>
                                         </div>

@@ -19,6 +19,8 @@ const IconGoogle = () => (
 
 const IconArrowLeft = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 
+import Navbar from '@/components/Navbar';
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -78,7 +80,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 md:p-12 font-sans overflow-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans overflow-hidden">
+      
+      {/* GLOBAL NAVBAR */}
+      <Navbar />
+
+      <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative overflow-hidden">
       
       {/* BACKGROUND DECOR */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-[0.02] flex items-center justify-center">
@@ -87,26 +94,14 @@ export default function LoginPage() {
 
       <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
         
-        {/* BACK NAV */}
-        <div className="mb-8">
-           <Link href="/" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors group">
-              <span className="group-hover:-translate-x-1 transition-transform"><IconArrowLeft /></span>
-              Return to Portal
-           </Link>
-        </div>
 
-        {/* HEADER */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-navy text-white rounded-2xl mb-6 shadow-xl shadow-navy/20">
-            <IconShield />
-          </div>
-          <h2 className="text-3xl font-black text-navy uppercase tracking-tight leading-none mb-2">Welcome Back</h2>
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Sign in to your account</p>
+          <h2 className="text-3xl font-black text-navy uppercase tracking-tight leading-none mb-2">Login</h2>
         </div>
 
         {/* AUTH CARD */}
-        <div className="bg-white border-2 border-gray-100 shadow-2xl rounded-3xl overflow-hidden group">
-          <form onSubmit={handleLogin} className="p-8 md:p-10 space-y-6">
+        <div className="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden group">
+          <form onSubmit={handleLogin} className="p-6 md:p-8 space-y-4">
             
             {error && (
               <div className="bg-red/10 border-2 border-red/20 text-red text-[11px] font-black uppercase tracking-widest p-4 rounded-xl animate-in fade-in slide-in-from-top-2">
@@ -194,7 +189,7 @@ export default function LoginPage() {
           </form>
           
           {/* BOTTOM LINK */}
-          <div className="bg-gray-50/50 p-6 text-center border-t border-gray-100">
+          <div className="bg-gray-50/50 p-4 text-center border-t border-gray-100">
             <p className="text-[11px] font-bold text-gray-400 items-center justify-center gap-2 flex">
               Don't have an account? 
               <Link href="/signup" className="text-navy font-black border-b-2 border-navy/10 hover:border-navy transition-all pb-0.5">
@@ -205,12 +200,12 @@ export default function LoginPage() {
         </div>
 
         {/* FOOTER */}
-        <p className="mt-8 text-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">
+        <p className="mt-6 text-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">
           GovRecruit Verification Protocol Active
         </p>
 
       </main>
-      
+    </div>
     </div>
   );
 }
