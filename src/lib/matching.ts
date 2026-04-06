@@ -75,7 +75,8 @@ export function getEligibleJobs(candidate: CandidateProfile, allJobs: JobPost[])
 function isPostEligible(candidate: CandidateProfile, post: Post): boolean {
   // Step 1: Level Gate
   const minLevel = post.minQualificationLevel ?? 1;
-  if (candidate.level < minLevel) return false;
+  const candidateLevel = candidate.level ?? 0;
+  if (candidateLevel < minLevel) return false;
 
   // Step 2: Branch Match
   // A candidate needs to match AT LEAST ONE qualification object for this post
@@ -85,8 +86,8 @@ function isPostEligible(candidate: CandidateProfile, post: Post): boolean {
     // Basic level check for this specific qual object
     if (candidate.level < qual.level) continue;
 
-    const branches = qual.branches.map(b => b.toLowerCase());
-    const candidateBranch = candidate.branch.toLowerCase();
+    const branches = (qual.branches || []).map(b => b.toLowerCase());
+    const candidateBranch = (candidate.branch || 'any').toLowerCase();
 
     if (branches.includes('any')) {
       branchMatched = true;
@@ -124,9 +125,10 @@ function calculateJobMatchScore(candidate: CandidateProfile, job: JobPost, match
   }
 
   // 2. Branch Relevance (Reward specific branch)
-  if (candidate.branch.toLowerCase() !== 'any') {
+  const candidateBranch = (candidate.branch || 'any').toLowerCase();
+  if (candidateBranch !== 'any') {
     const hasSpecificMatch = primaryPost.qualification.some(q => 
-      q.branches.map(b => b.toLowerCase()).includes(candidate.branch.toLowerCase())
+      (q.branches || []).map(b => b.toLowerCase()).includes(candidateBranch)
     );
     if (hasSpecificMatch) score += 35;
   }

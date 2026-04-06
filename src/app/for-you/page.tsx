@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 
 // ─── SVG ICONS ───────────────────────────────────
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
@@ -13,14 +14,24 @@ export default function ForYouPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const savedProfile = localStorage.getItem('govrecruit_profile');
+    let profile: CandidateProfile | null = null;
+    if (savedProfile) {
+      try { profile = JSON.parse(savedProfile); } catch(e) { console.error(e); }
+    }
+
     async function fetchJobs() {
       try {
         const res = await fetch('/api/jobs');
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data)) {
-          const filtered = data.filter((j: any) => j.isRecommended || j.totalVacancy > 5000);
-          setJobs(filtered);
+          if (!profile || !profile.level) {
+            setJobs([]); // Clean slate if profile is incomplete
+            return;
+          }
+          const matched = getEligibleJobs(profile, data);
+          setJobs(matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts })));
         }
       } catch (e) {
         console.error(e);
@@ -49,10 +60,6 @@ export default function ForYouPage() {
 
       <main className="flex-1 max-w-[1440px] mx-auto p-6 md:p-12 w-full animate-in fade-in duration-700">
         <header className="mb-14 border-b-4 border-[#1a3a8f] pb-10">
-          <div className="flex items-center gap-4 mb-4">
-             <div className="w-10 h-10 bg-[#1a3a8f]/5 text-[#1a3a8f] rounded-xl flex items-center justify-center shadow-inner"><IconStar /></div>
-             <span className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Institutional Priority List</span>
-          </div>
           <h1 className="text-5xl font-black tracking-tight text-[#1a3a8f] uppercase leading-none">Recruitment for You.</h1>
           <p className="text-gray-500 font-bold uppercase tracking-widest mt-4">Showing all verified government openings matched to your profile.</p>
         </header>
@@ -71,9 +78,6 @@ export default function ForYouPage() {
                 key={idx}
                 className="bg-white border-2 border-gray-100 p-8 flex flex-col hover:border-[#1a3a8f] hover:shadow-2xl transition-all group h-full relative"
               >
-                <div className="absolute top-8 right-8 text-[#1a3a8f]/10 group-hover:text-[#1a3a8f]/20 transition-colors">
-                    <IconStar />
-                </div>
                 <h3 className="text-2xl font-black text-[#0D244D] leading-tight mb-auto group-hover:text-[#1a3a8f] transition-colors pr-6">
                   {job.title}
                 </h3>
@@ -90,8 +94,18 @@ export default function ForYouPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl">
-            <p className="text-xl font-black text-gray-400 uppercase tracking-widest">No matching jobs found in Baseline.</p>
+          <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center">
+            <div className="w-20 h-20 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mb-8">
+               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <h3 className="text-xl font-black text-navy uppercase mb-3 tracking-widest">No Matches Found in Baseline</h3>
+            <p className="text-sm font-bold text-gray-400 max-w-[400px] uppercase tracking-widest leading-relaxed">
+              We couldn't find any recruitments matching your current profile credentials. 
+              Please verify your qualifications in the baseline registry.
+            </p>
+            <Link href="/profile" className="mt-10 px-10 py-4 bg-[#1a3a8f] text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-[#122870] transition-all shadow-xl rounded-xl">
+               Update Baseline →
+            </Link>
           </div>
         )}
       </main>

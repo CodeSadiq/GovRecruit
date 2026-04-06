@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { JOBS as STATIC_JOBS, NOTIFICATIONS } from '@/lib/data';
 import JobDetailModal from '@/components/JobDetailModal';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 
 // ─── SVG ICONS (PROFESSIONAL SYSTEM) ──────────────────────────────────
@@ -19,6 +20,7 @@ const IconLocation = () => <svg width="16" height="16" viewBox="0 0 24 24" fill=
 const IconArrowRight = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
 
 export default function Home() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'for-you' | 'all' | 'notifications'>('for-you');
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,8 +28,14 @@ export default function Home() {
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
+    // Auth Check
+    const isAuth = localStorage.getItem('govrecruit_auth');
+    // We allow anonymous browsing of the portal index.
+    // Redirect only happens if an explicit action requires it.
+
     // Lead user profile
     const savedProfile = localStorage.getItem('govrecruit_profile');
     if (savedProfile) {
@@ -45,6 +53,12 @@ export default function Home() {
     fetchJobs();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('govrecruit_auth');
+    localStorage.removeItem('govrecruit_profile');
+    router.push('/login');
+  };
+
   const filteredJobs = dbJobs.filter(job => {
     const matchesSearch = (job.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (job.org || job.organization || '').toLowerCase().includes(searchQuery.toLowerCase());
@@ -54,9 +68,8 @@ export default function Home() {
 
   // ── RECRUITMENT MATCHING LOGIC ──
   const recommendedJobs = React.useMemo(() => {
-    if (!userProfile) {
-      // Fallback: top general jobs
-      return dbJobs.filter(j => j.totalVacancy > 2000).sort((a,b) => (b.totalVacancy || 0) - (a.totalVacancy || 0)).slice(0, 10);
+    if (!userProfile || !userProfile.level) {
+      return []; // No more 'Trending' fallback. Clean slate.
     }
     const matched = getEligibleJobs(userProfile, dbJobs);
     return matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchScore: m.matchScore }));
@@ -112,16 +125,46 @@ export default function Home() {
             <IconBell />
             <span className="absolute -top-1 -right-1 bg-red text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-navy text-[8px]">3</span>
           </button>
-          <Link href="/profile" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/5 px-4 py-2 rounded-xl transition-all text-white min-w-[140px] justify-center">
-            <span className="opacity-50"><IconUser /></span>
-            <span className="text-[12px] font-black uppercase tracking-widest truncate max-w-[120px]">
-              {userProfile ? (userProfile as any).fullName || 'Profile Index' : 'Login / Profile'}
-            </span>
-          </Link>
+          <div className="relative">
+            <button 
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/5 px-4 py-2.5 rounded-xl transition-all text-white min-w-[160px] justify-between group"
+            >
+              <div className="flex items-center gap-3">
+                <span className="opacity-50 group-hover:opacity-100 transition-opacity"><IconUser /></span>
+                <span className="text-[11px] font-black uppercase tracking-widest truncate max-w-[100px]">
+                  {userProfile ? (userProfile as any).fullName || 'Profile' : 'Profile'}
+                </span>
+              </div>
+              <span className={`text-[10px] transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`}>▼</span>
+            </button>
+
+            {showUserMenu && (
+              <div className="absolute top-full right-0 mt-2 w-full bg-white border-2 border-gray-100 shadow-2xl rounded-2xl overflow-hidden py-2 animate-in fade-in zoom-in-95 duration-200">
+                <Link 
+                  href="/profile" 
+                  className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-navy hover:bg-gray-50 transition-colors"
+                  onClick={() => setShowUserMenu(false)}
+                >
+                  <span className="opacity-30"><IconUser /></span>
+                  Profile Details
+                </Link>
+                <div className="h-[1px] bg-gray-100 mx-4 my-1"></div>
+                <button 
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-red hover:bg-red/5 transition-colors"
+                >
+                   <span className="opacity-30">⎆</span>
+                   Logout Session
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
       <main className="flex-1 pb-12 animate-in fade-in duration-700">
+        
 
         {/* VIEW: FOR YOU */}
         {activeTab === 'for-you' && (
@@ -146,7 +189,7 @@ export default function Home() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="border-none outline-none text-[15px] text-navy flex-1 bg-transparent placeholder:text-gray-300 font-bold uppercase"
-                      placeholder="Search baseline..."
+                      placeholder="Search jobs..."
                     />
                   </div>
                 </div>
@@ -162,34 +205,58 @@ export default function Home() {
                 <div className="bg-white border-2 border-gray-100 p-8 md:p-10 shadow-sm relative overflow-hidden">
                   <header className="flex items-center justify-between border-b-2 border-gray-100 pb-8 mb-10">
                     <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-navy/5 text-navy rounded-lg flex items-center justify-center shadow-inner scale-75 opacity-50"><IconStar /></div>
-                      <h2 className="text-xl font-black text-navy uppercase">Recruitment for you.</h2>
+                      <h2 className="text-xl font-black text-navy uppercase">
+                        {userProfile && userProfile.level ? "Your Matches" : "Complete Profile"}
+                      </h2>
                     </div>
                     <Link href="/for-you" className="text-[10px] font-black uppercase tracking-[0.2em] text-navy hover:underline opacity-50">View All ›</Link>
                   </header>
 
                   <div className="space-y-6">
-                    {recommendedJobs.map((job: any, idx) => (
-                      <Link
-                        href={`/jobs/${job.id || job._id}`}
-                        key={idx}
-                        className="group bg-gray-50/30 border-2 border-gray-100 p-8 flex flex-col md:flex-row md:items-center gap-8 transition-all hover:border-navy hover:bg-white hover:shadow-xl"
-                      >
-                        <div className="flex-1">
-                          <h3 className="text-2xl font-black text-[#0D244D] leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
-                          {job.matchedPosts && (
-                            <div className="mt-4 flex flex-wrap gap-2">
-                              <span className="text-[9px] font-black uppercase tracking-widest bg-navy text-white px-3 py-1 rounded-full shadow-lg shadow-navy/20">Matched for {job.matchedPosts.length} {job.matchedPosts.length === 1 ? 'post' : 'posts'}</span>
-                              <span className="text-[9px] font-bold uppercase tracking-widest text-navy/40 mt-1">including {job.matchedPosts[0].name}</span>
-                            </div>
-                          )}
+                    {recommendedJobs.length === 0 ? (
+                      <div className="py-16 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                        <div className="w-20 h-20 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mb-8 scale-110">
+                           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         </div>
-                        <div className="md:text-right md:border-l border-gray-100 md:pl-10 flex-shrink-0">
-                          <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Last Date</div>
-                          <div className="text-xl font-black text-red uppercase leading-none">{job.lastDate || job.importantDates?.lastDate}</div>
-                        </div>
-                      </Link>
-                    ))}
+                        <h3 className="text-xl font-black text-navy uppercase mb-3 tracking-widest">No Matches Found</h3>
+                        <p className="text-[11px] font-bold text-gray-400 max-w-[300px] uppercase tracking-tighter leading-relaxed">
+                          {!userProfile?.level 
+                            ? "Complete your educational baseline to see eligible government recruitments."
+                            : "No active recruitments currently match your specific qualification level and branch."
+                          }
+                        </p>
+                        <Link href="/profile" className="mt-8 px-8 py-3 bg-navy text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition-all shadow-lg rounded-xl">
+                           Setup Profile →
+                        </Link>
+                      </div>
+                    ) : (
+                      recommendedJobs.map((job: any, idx) => (
+                        <Link
+                          href={`/jobs/${job.id || job._id}`}
+                          key={idx}
+                          className="group bg-gray-50/30 border-2 border-gray-100 p-8 flex flex-col md:flex-row md:items-center gap-8 transition-all hover:border-navy hover:bg-white hover:shadow-xl"
+                        >
+                          <div className="flex-1">
+                            <h3 className="text-2xl font-black text-[#0D244D] leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
+                            {job.matchedPosts ? (
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                <span className="text-[9px] font-black uppercase tracking-widest bg-navy text-white px-3 py-1 rounded-full shadow-lg shadow-navy/20">Matched for {job.matchedPosts.length} {job.matchedPosts.length === 1 ? 'post' : 'posts'}</span>
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-navy/40 mt-1">including {job.matchedPosts[0].name}</span>
+                              </div>
+                            ) : (
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                <span className="text-[9px] font-black uppercase tracking-widest bg-gray-100 text-gray-400 px-3 py-1 rounded-full border border-gray-200">High Volume Opening</span>
+                                <span className="text-[9px] font-bold uppercase tracking-widest text-gray-300 mt-1">{job.totalVacancy || 0}+ Vacancies</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="md:text-right md:border-l border-gray-100 md:pl-10 flex-shrink-0">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Last Date</div>
+                            <div className="text-xl font-black text-red uppercase leading-none">{job.lastDate || job.importantDates?.lastDate}</div>
+                          </div>
+                        </Link>
+                      ))
+                    )}
                   </div>
                 </div>
               </section>
@@ -209,12 +276,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-8 border-l-4 border-navy border-2 border-gray-100 group relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform">🏛️</div>
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3">Job Matching</h4>
-                  <p className="text-base font-black tracking-tight leading-[1.1] mb-8 text-gray-900">Find the right government jobs for you by making your profile.</p>
-                  <Link href="/profile" className="block text-center bg-navy text-white px-8 py-4 font-black text-xs uppercase tracking-widest hover:bg-gray-800 transition-colors border-b-4 border-navy-dark">Make Profile ›</Link>
-                </div>
+                {/* Profile cards removed from home sidebar */}
               </aside>
             </div>
           </>
@@ -225,8 +287,8 @@ export default function Home() {
           <div className="max-w-[1440px] mx-auto p-6 md:p-12">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 border-b border-gray-100 pb-12">
               <div>
-                <h2 className="text-4xl font-black text-navy uppercase">National Feed</h2>
-                <p className="text-sm text-gray-500 font-bold uppercase tracking-widest opacity-60">Unified Recruitment Index</p>
+                <h2 className="text-4xl font-black text-navy uppercase">All Jobs</h2>
+                <p className="text-sm text-gray-500 font-bold uppercase tracking-widest opacity-60">Browse all openings</p>
               </div>
               <div className="flex bg-white border border-gray-200 rounded-2xl px-6 h-14 items-center gap-4 w-full md:w-[400px] shadow-sm">
                 <span className="text-gray-300"><IconSearch /></span>
@@ -302,10 +364,10 @@ export default function Home() {
             <strong className="text-navy text-sm font-black leading-none uppercase">GovRecruit</strong>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Privacy Policy</Link>
-            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Terms of Service</Link>
-            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Support Index</Link>
-            <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest ml-0 md:ml-10">© 2025 GOVRECRUIT SYSTEM</p>
+            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Privacy</Link>
+            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Terms</Link>
+            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Support</Link>
+            <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest ml-0 md:ml-10">© 2026 GovRecruit</p>
           </div>
         </div>
       </footer>
