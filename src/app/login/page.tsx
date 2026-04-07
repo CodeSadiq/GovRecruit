@@ -17,10 +17,6 @@ const IconGoogle = () => (
   </svg>
 );
 
-const IconArrowLeft = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
-
-import Navbar from '@/components/Navbar';
-
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -62,6 +58,8 @@ export default function LoginPage() {
         }));
       }
 
+      // Signal Navbar for immediate update
+      window.dispatchEvent(new Event('govrecruit_auth_change'));
       router.push('/');
     } catch (err: any) {
       setError(err.message);
@@ -74,6 +72,7 @@ export default function LoginPage() {
     setIsLoading(true);
     setTimeout(() => {
        localStorage.setItem('govrecruit_auth', 'true');
+       window.dispatchEvent(new Event('govrecruit_auth_change'));
        router.push('/');
        setIsLoading(false);
     }, 1000);
@@ -81,10 +80,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans overflow-hidden">
-      
-      {/* GLOBAL NAVBAR */}
-      <Navbar />
-
       <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative overflow-hidden">
       
       {/* BACKGROUND DECOR */}
@@ -94,7 +89,6 @@ export default function LoginPage() {
 
       <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
         
-
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black text-navy uppercase tracking-tight leading-none mb-2">Login</h2>
         </div>

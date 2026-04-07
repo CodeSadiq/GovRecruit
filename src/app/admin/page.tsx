@@ -187,7 +187,7 @@ export default function AdminPage() {
                               <td className="p-4 font-bold text-navy">{jobData.organization || jobData.org}</td>
                             </tr>
                             <tr className="border-b border-gray-50">
-                              <td className="p-4 bg-gray-50/50 font-black text-navy/40 uppercase tracking-widest">Reference Code</td>
+                              <td className="p-4 bg-gray-50/50 font-black text-navy/40 uppercase tracking-widest">Advertisement number </td>
                               <td className="p-4 font-mono font-bold text-navy">{jobData.advertisementNumber || "—"}</td>
                             </tr>
                             <tr className="border-b border-gray-50">

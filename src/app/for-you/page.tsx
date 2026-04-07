@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
+import Navbar from '@/components/Navbar';
 
 // ─── SVG ICONS ───────────────────────────────────
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
@@ -48,20 +49,6 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <nav className="bg-[#1a3a8f] h-[60px] flex items-center px-6 md:px-12 sticky top-0 z-[100] shadow-sm">
-        <Link href="/" className="flex items-center gap-3 no-underline mr-auto group">
-          <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center text-white group-hover:bg-white/20 transition-all">
-            <IconBuilding />
-          </div>
-          <div className="flex flex-col">
-            <strong className="text-white text-base font-black leading-none uppercase">GovRecruit</strong>
-          </div>
-        </Link>
-        <Link href="/" className="text-white/60 hover:text-white flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-colors">
-          <IconArrowLeft /> Back to Dashboard
-        </Link>
-      </nav>
-
       <main className="flex-1 max-w-[1440px] mx-auto p-6 md:p-12 w-full animate-in fade-in duration-700">
         <header className="mb-14 border-b-4 border-[#1a3a8f] pb-10">
           <h1 className="text-5xl font-black tracking-tight text-[#1a3a8f] uppercase leading-none">Recruitment for You.</h1>
@@ -76,26 +63,37 @@ export default function ForYouPage() {
           </div>
         ) : jobs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {jobs.map((job, idx) => (
-              <Link
-                href={`/jobs/${job.id || job._id}`}
-                key={idx}
-                className="bg-white border-2 border-gray-100 p-8 flex flex-col hover:border-[#1a3a8f] hover:shadow-2xl transition-all group h-full relative"
-              >
-                <h3 className="text-2xl font-black text-[#0D244D] leading-tight mb-auto group-hover:text-[#1a3a8f] transition-colors pr-6">
-                  {job.title}
-                </h3>
-                <div className="mt-8 pt-8 border-t border-gray-50 flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Last Date</span>
-                    <span className="text-base font-black text-red-500 uppercase">{job.lastDate || job.importantDates?.lastDate || job.notificationType || "Pending/NA"}</span>
+            {jobs.map((job, idx) => {
+              const lastDateVal = job.lastDate || job.importantDates?.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
+              const isFallback = !lastDateVal.includes('202');
+
+              return (
+                <Link
+                  href={`/all-jobs/${job.id || job._id}`}
+                  key={idx}
+                  className="bg-white border border-gray-100 p-10 flex flex-col hover:shadow-xl transition-all group h-full"
+                >
+                  <div className="grow mb-10">
+                    <h3 className="text-[26px] font-black text-[#1a3a8f] leading-[1.2] tracking-tight group-hover:text-[#122870] transition-colors">
+                      {job.title}
+                    </h3>
                   </div>
-                  <div className="bg-[#1a3a8f] text-white px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest group-hover:bg-[#122870] transition-colors">
-                    View Details
+                  
+                  <div className="pt-8 border-t border-gray-100 flex items-end justify-between">
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[11px] font-black uppercase tracking-wider text-gray-400">Last Date</div>
+                      <div className="text-[15px] font-black text-[#FF3B30] uppercase leading-tight max-w-[200px]">
+                        {isFallback && lastDateVal === "DETAILS AWAITED" ? `EARLY NOTIFICATION — FULL DETAILS AWAITED` : lastDateVal}
+                      </div>
+                    </div>
+                    
+                    <div className="px-6 py-3.5 bg-[#1a3a8f] text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-md group-hover:bg-[#122870] transition-colors whitespace-nowrap">
+                      View Details
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className="bg-white border-2 border-gray-100 p-20 text-center rounded-3xl flex flex-col items-center justify-center">

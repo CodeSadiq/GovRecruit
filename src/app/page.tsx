@@ -84,10 +84,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
-      {/* GLOBAL NAVBAR */}
-      <Navbar />
-
-      <main className="flex-1 pb-12 animate-in fade-in duration-700">
+      <main className="flex-1 pb-32 md:pb-48 animate-in fade-in duration-700">
 
 
         {/* VIEW: FOR YOU */}
@@ -126,7 +123,7 @@ export default function Home() {
               <section className="space-y-12">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
-                <div className="bg-white border-2 border-gray-100 p-8 md:p-10 shadow-sm relative overflow-hidden">
+                <div className="bg-white border-2 border-gray-100 p-8 md:p-10 shadow-sm relative overflow-hidden min-h-[650px] flex flex-col">
                   <header className="flex items-center justify-between border-b-2 border-gray-100 pb-8 mb-10">
                     <div className="flex items-center gap-4">
                       <h2 className="text-xl font-black text-navy uppercase">
@@ -136,9 +133,9 @@ export default function Home() {
                     <Link href="/for-you" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline">View All ›</Link>
                   </header>
 
-                  <div className="space-y-6">
+                  <div className="space-y-6 flex-1 flex flex-col">
                     {recommendedJobs.length === 0 ? (
-                      <div className="py-16 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                      <div className="flex-1 py-16 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
                         <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
                           No recruitments currently match your specific qualification level and branch.
                         </p>
@@ -154,7 +151,7 @@ export default function Home() {
                     ) : (
                       recommendedJobs.map((job: any, idx) => (
                         <Link
-                          href={`/jobs/${job.id || job._id}`}
+                          href={`/all-jobs/${job.id || job._id}`}
                           key={idx}
                           className="group bg-gray-50/30 border-2 border-gray-100 p-8 flex flex-col md:flex-row md:items-center gap-8 transition-all hover:border-navy hover:bg-white hover:shadow-xl"
                         >

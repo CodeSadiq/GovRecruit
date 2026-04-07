@@ -7,9 +7,6 @@ import { NOTIFICATIONS } from '@/lib/data';
 export default function NotificationsPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5">
-      {/* GLOBAL NAVBAR */}
-      <Navbar />
-
       <main className="flex-1 max-w-[1440px] mx-auto w-full p-6 md:p-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <header className="mb-16 border-b border-gray-200 pb-10">
           <h1 className="text-3xl font-black text-navy uppercase tracking-tight">Job Notifications.</h1>

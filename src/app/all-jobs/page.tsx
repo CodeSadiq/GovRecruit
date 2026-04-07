@@ -42,8 +42,6 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
-      {/* GLOBAL NAVBAR */}
-      <Navbar />
 
       <main className="flex-1 max-w-[1440px] mx-auto w-full p-6 md:p-12 animate-in fade-in duration-500">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 border-b border-gray-100 pb-12">
@@ -79,22 +77,37 @@ export default function JobsPage() {
           <div className="py-20 text-center opacity-40 font-black uppercase tracking-widest text-[10px]">Registry Synchronizing...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredJobs.map((job, idx) => (
-              <Link
-                href={`/jobs/${job.id || job._id}`}
-                key={idx}
-                className="bg-white border-2 border-gray-100 p-8 flex flex-col hover:border-navy hover:shadow-2xl transition-all group h-full shadow-sm"
-              >
-                <div className="grow">
-                  <h3 className="text-xl font-black text-[#0D244D] leading-tight mb-8 group-hover:text-navy transition-colors">{job.title || "Unknown Notification"}</h3>
-                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-300 mb-4">{job.organization || "Gov Recruitment"}</div>
-                </div>
-                <div className="flex items-center justify-between pt-6 border-t border-gray-50">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Last Date</div>
-                  <div className="text-[11px] font-black text-red uppercase tracking-widest">{job.lastDate || job.importantDates?.lastDate || "—"}</div>
-                </div>
-              </Link>
-            ))}
+            {filteredJobs.map((job, idx) => {
+              const lastDateVal = job.lastDate || job.importantDates?.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
+              const isFallback = !lastDateVal.includes('202');
+              
+              return (
+                <Link
+                  href={`/all-jobs/${job.id || job._id}`}
+                  key={idx}
+                  className="bg-white border border-gray-100 p-10 flex flex-col hover:shadow-xl transition-all group h-full"
+                >
+                  <div className="grow mb-10">
+                    <h3 className="text-[26px] font-black text-navy leading-[1.2] tracking-tight">
+                      {job.title || "Unknown Notification"}
+                    </h3>
+                  </div>
+                  
+                  <div className="pt-8 border-t border-gray-100 flex items-end justify-between">
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[11px] font-black uppercase tracking-wider text-gray-400">Last Date</div>
+                      <div className="text-[15px] font-black text-[#FF3B30] uppercase leading-tight max-w-[200px]">
+                        {isFallback && lastDateVal === "DETAILS AWAITED" ? `EARLY NOTIFICATION — FULL DETAILS AWAITED` : lastDateVal}
+                      </div>
+                    </div>
+                    
+                    <div className="px-6 py-3.5 bg-navy text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-md group-hover:bg-[#1a3a6e] transition-colors whitespace-nowrap">
+                      View Details
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
             {filteredJobs.length === 0 && (
               <div className="col-span-full py-40 text-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">No recruitment records match this filter</div>
             )}
