@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
 
 // ─── FULL DATA TREE ───────────────────
 const QUAL_TREE = [
@@ -443,55 +442,59 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* SIMPLIFIED FORM SECTION */}
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-12 max-w-[600px]">
-
-            <section className="space-y-10 pb-20">
+          {/* CONSOLIDATED BASELINE FORM SECTION */}
+          <div className="max-w-[1000px]">
+            <section className="bg-white border-2 border-gray-100 rounded-3xl p-8 md:p-14 shadow-sm space-y-12 relative overflow-hidden group/form">
+              {/* Background Decoration */}
+              <div className="absolute top-0 left-0 w-full h-2 bg-navy/5 group-hover/form:bg-navy transition-colors duration-500"></div>
 
               {/* ACADEMICS */}
-              <div className="space-y-6">
-                <div className="space-y-1">
-                  <h2 className="text-lg font-bold text-navy">Education Details</h2>
-                  <p className="text-xs text-gray-400 font-medium">Specify your highest level of accredited academic qualification.</p>
+              <div className="space-y-8">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-black text-navy uppercase tracking-tight flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-navy/20 rounded-full"></div>
+                    Education Details
+                  </h2>
+                  <p className="text-sm text-gray-400 font-bold uppercase tracking-widest pl-5">Specify your highest level of accredited academic qualification.</p>
                 </div>
 
-                <div className="space-y-5">
-                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Education Level</label>
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-[11px] font-black text-navy/40 uppercase tracking-[0.2em] ml-1">Education Level</label>
                     <div className="relative">
                       <select
                         value={selectedQual?.name || ''}
                         onChange={handleQualChange}
-                        className="w-full h-14 bg-white border border-gray-200 px-5 text-sm font-semibold text-navy appearance-none outline-none focus:border-navy focus:ring-4 focus:ring-navy/5 transition-all rounded-xl shadow-sm"
+                        className="w-full h-16 bg-gray-50 border-2 border-gray-100 px-6 text-sm font-black text-navy appearance-none outline-none focus:border-navy focus:bg-white focus:ring-8 focus:ring-navy/5 transition-all rounded-2xl shadow-sm uppercase tracking-wider"
                       >
-                        <option value="" disabled>Select Level</option>
+                        <option value="" disabled>Select Entry Level</option>
                         {LEVEL_GROUPS.map((group, idx) => (
-                          <optgroup key={idx} label={group.label}>
+                          <optgroup key={idx} label={group.label.toUpperCase()} className="text-[10px] text-gray-300">
                             {QUAL_TREE.filter(q => group.levels.includes(q.level)).map((qual, qIdx) => (
-                              <option key={qIdx} value={qual.name}>{qual.label}</option>
+                              <option key={qIdx} value={qual.name} className="text-navy font-bold">{qual.label}</option>
                             ))}
                           </optgroup>
                         ))}
                       </select>
-                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30 text-xs">▼</div>
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 text-xs">▼</div>
                     </div>
                   </div>
 
                   {selectedQual && selectedQual.branches.length > 0 && (
-                    <div className="space-y-2 animate-in slide-in-from-top-2 duration-400">
-                      <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Specialization Branch</label>
+                    <div className="space-y-3 animate-in slide-in-from-top-4 duration-500">
+                      <label className="text-[11px] font-black text-navy/40 uppercase tracking-[0.2em] ml-1">Specialization Branch</label>
                       <div className="relative">
                         <select
                           value={selectedBranch?.value || ''}
                           onChange={handleBranchChange}
-                          className="w-full h-14 bg-white border border-gray-200 px-5 text-sm font-semibold text-navy appearance-none outline-none focus:border-navy focus:ring-4 focus:ring-navy/5 transition-all rounded-xl shadow-sm"
+                          className="w-full h-16 bg-gray-50 border-2 border-gray-100 px-6 text-sm font-black text-navy appearance-none outline-none focus:border-navy focus:bg-white focus:ring-8 focus:ring-navy/5 transition-all rounded-2xl shadow-sm uppercase tracking-wider"
                         >
                           <option value="" disabled>Select Branch</option>
                           {selectedQual.branches.map((br: any, bIdx: number) => (
-                            <option key={bIdx} value={br.value}>{br.label}</option>
+                            <option key={bIdx} value={br.value} className="text-navy font-bold">{br.label}</option>
                           ))}
                         </select>
-                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none opacity-30 text-xs">▼</div>
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 text-xs">▼</div>
                       </div>
                     </div>
                   )}
@@ -499,33 +502,36 @@ export default function ProfilePage() {
               </div>
 
               {/* PERSONAL */}
-              <div className="space-y-6 pt-6 border-t border-gray-100">
-                <div className="space-y-1">
-                  <h2 className="text-lg font-bold text-navy">Identity Verification</h2>
-                  <p className="text-xs text-gray-400 font-medium">Enter your date of birth as recorded in your official documents.</p>
-                </div>
+              <div className="space-y-8 pt-10 border-t-2 border-gray-50">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Date of Birth</label>
+                  <h2 className="text-2xl font-black text-navy uppercase tracking-tight flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-navy/20 rounded-full"></div>
+                    Identity Verification
+                  </h2>
+                  <p className="text-sm text-gray-400 font-bold uppercase tracking-widest pl-5">Enter your date of birth as recorded in your official documents.</p>
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[11px] font-black text-navy/40 uppercase tracking-[0.2em] ml-1">Date of Birth</label>
                   <input
                     type="date"
                     value={dob}
                     onChange={(e) => setDob(e.target.value)}
-                    className="w-full h-14 bg-white border border-gray-200 px-5 text-sm font-semibold text-navy outline-none focus:border-navy transition-all rounded-xl shadow-sm focus:ring-4 focus:ring-navy/5"
+                    className="w-full h-16 bg-gray-50 border-2 border-gray-100 px-6 text-sm font-black text-navy outline-none focus:border-navy focus:bg-white transition-all rounded-2xl shadow-sm focus:ring-8 focus:ring-navy/5"
                   />
                 </div>
               </div>
 
               {/* SAVE & RESET */}
-              <div className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="pt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <button
                   onClick={handleSave}
                   disabled={isSaving || !dob || !selectedQual || (selectedQual.branches.length > 0 && !selectedBranch)}
-                  className="w-full h-14 bg-navy text-white font-bold text-sm tracking-wide shadow-lg shadow-navy/10 hover:bg-[#06142E] disabled:opacity-20 transition-all rounded-xl flex items-center justify-center gap-3 active:scale-[0.98]"
+                  className="w-full h-16 bg-navy text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-navy/20 hover:bg-[#06142E] disabled:opacity-20 transition-all rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] group/save"
                 >
                   {isSaving ? (
                     <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
                   ) : (
-                    <>Establish Profile Baseline</>
+                    <>Establish Profile Baseline <span className="transition-transform group-hover/save:translate-x-1">→</span></>
                   )}
                 </button>
                 <button
@@ -539,7 +545,7 @@ export default function ProfilePage() {
                       alert('Baseline Cleared.');
                     }
                   }}
-                  className="w-full h-14 bg-white border border-red-200 text-red-500 font-bold text-sm tracking-wide hover:bg-red-50 transition-all rounded-xl flex items-center justify-center gap-3 active:scale-[0.98]"
+                  className="w-full h-16 bg-white border-2 border-red-50 text-red-500 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-red-50 hover:border-red-100 transition-all rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98]"
                 >
                   Clear Selection
                 </button>

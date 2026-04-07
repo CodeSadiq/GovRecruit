@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation';
 // ── Icons ──────────────────────────────────────────
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
 const IconUser = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
-const IconBell = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -87,15 +86,6 @@ export default function Navbar() {
           </Link>
         ) : (
           <>
-            {/* New Notification Link rebuilt from scratch */}
-            <Link 
-              href="/notifications" 
-              title="Job Notifications"
-              className={`flex items-center justify-center w-10 h-10 transition-all no-underline text-white/50 hover:text-white hover:bg-white/10 rounded-xl focus:outline-none ${pathname === '/notifications' ? 'text-white bg-white/10 shadow-inner' : ''}`}
-            >
-              <IconBell />
-            </Link>
-
             <div className="relative">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}

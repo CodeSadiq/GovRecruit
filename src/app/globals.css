@@ -143,6 +143,12 @@
   min-height: 100vh;
 }
 
+@media (max-width: 768px) {
+  .article-wrap {
+    padding: 40px 20px 100px;
+  }
+}
+
 /* ── BREADCRUMB ── */
 .breadcrumb {
   font-family: var(--jp-mono);
