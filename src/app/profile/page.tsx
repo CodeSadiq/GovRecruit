@@ -405,11 +405,11 @@ export default function ProfilePage() {
           <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 md:p-10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-8 relative overflow-hidden group">
             {/* Background Accent */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-navy/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700"></div>
-            
+
             <div className="relative z-10 flex flex-col gap-5">
               <div className="space-y-1">
                 <div className="text-[10px] font-black uppercase tracking-[0.2em] text-navy/40 mb-1">Profile</div>
-                <h1 className="text-3xl md:text-5xl font-black text-navy uppercase leading-[0.9] tracking-tighter">
+                <h1 className="text-3xl md:text-5xl font-serif font-bold text-navy leading-[1.1] tracking-tight">
                   {userProfile.fullName || 'Citizen Profile'}
                 </h1>
               </div>
@@ -451,7 +451,7 @@ export default function ProfilePage() {
               {/* ACADEMICS */}
               <div className="space-y-8">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-black text-navy uppercase tracking-tight flex items-center gap-3">
+                  <h2 className="text-2xl font-serif font-bold text-navy tracking-tight flex items-center gap-3">
                     <div className="w-1.5 h-6 bg-navy/20 rounded-full"></div>
                     Education Details
                   </h2>
@@ -504,7 +504,7 @@ export default function ProfilePage() {
               {/* PERSONAL */}
               <div className="space-y-8 pt-10 border-t-2 border-gray-50">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-black text-navy uppercase tracking-tight flex items-center gap-3">
+                  <h2 className="text-2xl font-serif font-bold text-navy tracking-tight flex items-center gap-3">
                     <div className="w-1.5 h-6 bg-navy/20 rounded-full"></div>
                     Identity Verification
                   </h2>
@@ -531,7 +531,7 @@ export default function ProfilePage() {
                   {isSaving ? (
                     <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
                   ) : (
-                    <>Establish Profile Baseline <span className="transition-transform group-hover/save:translate-x-1">→</span></>
+                    <>Set Education Qualification <span className="transition-transform group-hover/save:translate-x-1">→</span></>
                   )}
                 </button>
                 <button

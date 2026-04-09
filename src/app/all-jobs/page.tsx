@@ -46,7 +46,7 @@ export default function JobsPage() {
       <main className="flex-1 max-w-[1440px] mx-auto w-full p-6 md:p-12 animate-in fade-in duration-500">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 border-b border-gray-100 pb-12">
           <div>
-            <h1 className="text-4xl font-black text-navy uppercase">All Jobs</h1>
+            <h1 className="text-4xl font-serif font-bold text-navy">All Jobs</h1>
             <p className="text-sm text-gray-500 font-bold uppercase tracking-widest opacity-60">Browse all openings</p>
           </div>
           <div className="flex bg-white border border-gray-200 rounded-2xl px-6 h-14 items-center gap-4 w-full md:w-[400px] shadow-sm group focus-within:border-navy transition-colors">
@@ -80,7 +80,7 @@ export default function JobsPage() {
             {filteredJobs.map((job, idx) => {
               const lastDateVal = job.lastDate || job.importantDates?.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
               const isFallback = !lastDateVal.includes('202');
-              
+
               return (
                 <Link
                   href={`/all-jobs/${job.id || job._id}`}
@@ -88,20 +88,20 @@ export default function JobsPage() {
                   className="bg-white border border-gray-100 p-10 flex flex-col hover:shadow-xl transition-all group h-full"
                 >
                   <div className="grow mb-10">
-                    <h3 className="text-[26px] font-black text-navy leading-[1.2] tracking-tight">
+                    <h3 className="text-[26px] font-serif font-bold text-navy leading-[1.2] tracking-tight group-hover:text-[#1a3a6e] transition-colors">
                       {job.title || "Unknown Notification"}
                     </h3>
                   </div>
-                  
+
                   <div className="pt-8 border-t border-gray-100 flex items-end justify-between">
                     <div className="flex flex-col gap-1">
-                      <div className="text-[11px] font-black uppercase tracking-wider text-gray-400">Last Date</div>
-                      <div className="text-[15px] font-black text-[#FF3B30] uppercase leading-tight max-w-[200px]">
+                      <div className="text-[11px] font-serif font-bold text-gray-400">Last Date</div>
+                      <div className="text-[15px] font-serif font-bold text-[#FF3B30] leading-tight max-w-[200px]">
                         {isFallback && lastDateVal === "DETAILS AWAITED" ? `EARLY NOTIFICATION — FULL DETAILS AWAITED` : lastDateVal}
                       </div>
                     </div>
-                    
-                    <div className="px-6 py-3.5 bg-navy text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-md group-hover:bg-[#1a3a6e] transition-colors whitespace-nowrap">
+
+                    <div className="px-6 py-3.5 bg-navy text-white text-[15px] font-serif font-bold rounded-full shadow-md group-hover:bg-[#1a3a6e] transition-colors whitespace-nowrap">
                       View Details
                     </div>
                   </div>

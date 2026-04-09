@@ -1,4 +1,11 @@
 import { useState, useEffect } from "react";
+interface QualNode {
+  level: number;
+  name: string;
+  label: string;
+  icon: string;
+  branches: { value: string; label: string }[];
+}
 
 // ─── DATA MAP (mirrors job_extraction_prompt.txt exactly) ───────────────────
 
@@ -987,8 +994,8 @@ const styles = `
 
 export default function QualificationForm() {
   const [step, setStep] = useState(1); // 1 = pick qual, 2 = pick branch, 3 = confirm
-  const [selectedQual, setSelectedQual] = useState(null);
-  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [selectedQual, setSelectedQual] = useState<QualNode | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
   const [branchQuery, setBranchQuery] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -997,7 +1004,7 @@ export default function QualificationForm() {
     const el = document.createElement("style");
     el.textContent = styles;
     document.head.appendChild(el);
-    return () => document.head.removeChild(el);
+    return () => { document.head.removeChild(el); };
   }, []);
 
   const currentBranches = selectedQual?.branches ?? [];
@@ -1024,7 +1031,7 @@ export default function QualificationForm() {
     ? JSON.stringify(outputProfile, null, 2)
     : "";
 
-  function selectQual(q) {
+  function selectQual(q: QualNode) {
     setSelectedQual(q);
     setSelectedBranch(null);
     setBranchQuery("");

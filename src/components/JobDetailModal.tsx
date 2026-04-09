@@ -28,7 +28,7 @@ export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
           <div className="w-15 h-15 bg-white/15 rounded-md flex items-center justify-center text-3xl mb-3.5 border border-white/20 shadow-sm">
             {job.emoji}
           </div>
-          <h2 className="text-[22px] font-extrabold tracking-tight mb-1">{job.title}</h2>
+          <h2 className="font-serif text-2xl font-bold tracking-tight mb-1">{job.title}</h2>
           <div className="text-[13.5px] opacity-70 font-medium">{job.org}</div>
         </div>
 

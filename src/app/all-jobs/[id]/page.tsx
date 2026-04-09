@@ -353,14 +353,15 @@ const styles = `
   }
   .jd-step:last-child { border-bottom: none; }
   .jd-step-num {
-    min-width: 24px; height: 24px;
-    border: 1px solid var(--navy);
-    color: var(--navy);
+    width: 26px; height: 26px;
+    background: var(--navy);
+    color: #fff;
     display: flex; align-items: center; justify-content: center;
+    border-radius: 0px;
     font-size: 11px;
     font-weight: 700;
     flex-shrink: 0;
-    margin-top: 1px;
+    margin-top: 2px;
   }
   .jd-step-text { font-size: 14px; line-height: 1.6; color: var(--ink-light); }
 
@@ -419,7 +420,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 const CAT_LABELS: Record<string, string> = {
   general: "GEN", ews: "EWS", obc: "OBC", sc: "SC", st: "ST", pwd: "PwBD",
 };
-const catCols = ["general", "ews", "obc", "sc", "st", "pwd"];
+const catCols = ["general", "ews", "obc", "sc", "st", "pwd"] as const;
 
 function hasCategoryData(catObj: any): boolean {
   if (!catObj) return false;

@@ -42,7 +42,7 @@ export default function LoginPage() {
       }
 
       const userData = await res.json();
-      
+
       // Success: Save session
       localStorage.setItem('govrecruit_auth', JSON.stringify({
         fullName: userData.fullName,
@@ -71,135 +71,135 @@ export default function LoginPage() {
   const handleGoogleLogin = () => {
     setIsLoading(true);
     setTimeout(() => {
-       localStorage.setItem('govrecruit_auth', 'true');
-       window.dispatchEvent(new Event('govrecruit_auth_change'));
-       router.push('/');
-       setIsLoading(false);
+      localStorage.setItem('govrecruit_auth', 'true');
+      window.dispatchEvent(new Event('govrecruit_auth_change'));
+      router.push('/');
+      setIsLoading(false);
     }, 1000);
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans overflow-hidden">
       <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative overflow-hidden">
-      
-      {/* BACKGROUND DECOR */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-[0.02] flex items-center justify-center">
-        <h1 className="text-[25vw] font-black uppercase text-navy rotate-[-10deg]">PORTAL</h1>
-      </div>
 
-      <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
-        
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-black text-navy uppercase tracking-tight leading-none mb-2">Login</h2>
+        {/* BACKGROUND DECOR */}
+        <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-[0.02] flex items-center justify-center">
+          <h1 className="text-[25vw] font-serif font-bold text-navy rotate-[-10deg]">Portal</h1>
         </div>
 
-        {/* AUTH CARD */}
-        <div className="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden group">
-          <form onSubmit={handleLogin} className="p-6 md:p-8 space-y-4">
-            
-            {error && (
-              <div className="bg-red/10 border-2 border-red/20 text-red text-[11px] font-black uppercase tracking-widest p-4 rounded-xl animate-in fade-in slide-in-from-top-2">
-                ⚠️ {error}
-              </div>
-            )}
-            
-            <div className="space-y-6">
-              {/* EMAIL */}
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
-                  Email Address
-                </label>
-                <div className="relative group/field">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
-                    <IconMail />
-                  </span>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@institution.gov"
-                    className="w-full bg-gray-50 border-2 border-transparent py-4 pl-12 pr-4 text-sm font-bold text-navy placeholder:text-gray-300 rounded-2xl focus:outline-none focus:border-navy focus:bg-white transition-all tracking-tight"
-                  />
-                </div>
-              </div>
+        <main className="w-full max-w-[440px] relative z-10 animate-in fade-in zoom-in-95 duration-700">
 
-              {/* PASSWORD */}
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
-                  Password
-                </label>
-                <div className="relative group/field">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
-                    <IconLock />
-                  </span>
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-gray-50 border-2 border-transparent py-4 pl-12 pr-4 text-sm font-bold text-navy placeholder:text-gray-300 rounded-2xl focus:outline-none focus:border-navy focus:bg-white transition-all"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* MAIN ACTION */}
-            <div className="pt-4">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-navy hover:bg-[#06142E] text-white py-4 px-8 font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-2xl relative overflow-hidden active:scale-[0.98]"
-              >
-                {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    <span>Sign In</span>
-                    <span className="group-hover/btn:translate-x-1 transition-transform"><IconArrowRight /></span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* SEPARATOR */}
-            <div className="flex items-center gap-4 py-2">
-              <div className="flex-1 h-[1px] bg-gray-100"></div>
-              <span className="text-[10px] font-black uppercase text-gray-300 tracking-widest">OR</span>
-              <div className="flex-1 h-[1px] bg-gray-100"></div>
-            </div>
-
-            {/* SOCIAL LOGIN */}
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-4 px-8 font-black text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-2xl hover:bg-gray-50 active:scale-[0.98]"
-            >
-              <IconGoogle />
-              <span>Continue with Google</span>
-            </button>
-
-          </form>
-          
-          {/* BOTTOM LINK */}
-          <div className="bg-gray-50/50 p-4 text-center border-t border-gray-100">
-            <p className="text-[11px] font-bold text-gray-400 items-center justify-center gap-2 flex">
-              Don't have an account? 
-              <Link href="/signup" className="text-navy font-black border-b-2 border-navy/10 hover:border-navy transition-all pb-0.5">
-                Sign up
-              </Link>
-            </p>
+          <div className="text-center mb-10">
+            <h2 className="text-4xl font-serif font-bold text-navy leading-none mb-2">Login</h2>
           </div>
-        </div>
 
-        {/* FOOTER */}
-        <p className="mt-6 text-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">
-          GovRecruit Verification Protocol Active
-        </p>
+          {/* AUTH CARD */}
+          <div className="bg-white border-2 border-gray-100 rounded-3xl overflow-hidden group">
+            <form onSubmit={handleLogin} className="p-6 md:p-8 space-y-4">
 
-      </main>
-    </div>
+              {error && (
+                <div className="bg-red/10 border-2 border-red/20 text-red text-[11px] font-black uppercase tracking-widest p-4 rounded-xl animate-in fade-in slide-in-from-top-2">
+                  ⚠️ {error}
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {/* EMAIL */}
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
+                    Email Address
+                  </label>
+                  <div className="relative group/field">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
+                      <IconMail />
+                    </span>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="name@institution.gov"
+                      className="w-full bg-gray-50 border-2 border-transparent py-4 pl-12 pr-4 text-sm font-bold text-navy placeholder:text-gray-300 rounded-2xl focus:outline-none focus:border-navy focus:bg-white transition-all tracking-tight"
+                    />
+                  </div>
+                </div>
+
+                {/* PASSWORD */}
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2.5 block px-1">
+                    Password
+                  </label>
+                  <div className="relative group/field">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-focus-within/field:text-navy transition-colors">
+                      <IconLock />
+                    </span>
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-gray-50 border-2 border-transparent py-4 pl-12 pr-4 text-sm font-bold text-navy placeholder:text-gray-300 rounded-2xl focus:outline-none focus:border-navy focus:bg-white transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* MAIN ACTION */}
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-navy hover:bg-[#06142E] text-white py-4 px-8 font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-4 group/btn shadow-lg shadow-navy/20 rounded-2xl relative overflow-hidden active:scale-[0.98]"
+                >
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <span>Sign In</span>
+                      <span className="group-hover/btn:translate-x-1 transition-transform"><IconArrowRight /></span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* SEPARATOR */}
+              <div className="flex items-center gap-4 py-2">
+                <div className="flex-1 h-[1px] bg-gray-100"></div>
+                <span className="text-[10px] font-black uppercase text-gray-300 tracking-widest">OR</span>
+                <div className="flex-1 h-[1px] bg-gray-100"></div>
+              </div>
+
+              {/* SOCIAL LOGIN */}
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-4 px-8 font-black text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-2xl hover:bg-gray-50 active:scale-[0.98]"
+              >
+                <IconGoogle />
+                <span>Continue with Google</span>
+              </button>
+
+            </form>
+
+            {/* BOTTOM LINK */}
+            <div className="bg-gray-50/50 p-4 text-center border-t border-gray-100">
+              <p className="text-[11px] font-bold text-gray-400 items-center justify-center gap-2 flex">
+                Don't have an account?
+                <Link href="/signup" className="text-navy font-black border-b-2 border-navy/10 hover:border-navy transition-all pb-0.5">
+                  Sign up
+                </Link>
+              </p>
+            </div>
+          </div>
+
+          {/* FOOTER */}
+          <p className="mt-6 text-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">
+            GovRecruit Verification Protocol Active
+          </p>
+
+        </main>
+      </div>
     </div>
   );
 }

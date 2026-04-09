@@ -19,8 +19,8 @@ export default function ForYouPage() {
     const savedProfile = localStorage.getItem('govrecruit_profile');
     let profile: CandidateProfile | null = null;
     if (savedProfile) {
-      try { 
-        profile = JSON.parse(savedProfile); 
+      try {
+        profile = JSON.parse(savedProfile);
         setUserProfile(profile);
       } catch (e) { console.error(e); }
     }
@@ -51,7 +51,7 @@ export default function ForYouPage() {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-1 max-w-[1440px] mx-auto p-6 md:p-12 w-full animate-in fade-in duration-700">
         <header className="mb-14 border-b-4 border-[#1a3a8f] pb-10">
-          <h1 className="text-5xl font-black tracking-tight text-[#1a3a8f] uppercase leading-none">Recruitment for You.</h1>
+          <h1 className="text-5xl font-serif font-bold tracking-tight text-[#1a3a8f] leading-none">Recruitment for You</h1>
           <p className="text-gray-500 font-bold uppercase tracking-widest mt-4">Showing all verified government openings matched to your profile.</p>
         </header>
 
@@ -74,20 +74,20 @@ export default function ForYouPage() {
                   className="bg-white border border-gray-100 p-10 flex flex-col hover:shadow-xl transition-all group h-full"
                 >
                   <div className="grow mb-10">
-                    <h3 className="text-[26px] font-black text-[#1a3a8f] leading-[1.2] tracking-tight group-hover:text-[#122870] transition-colors">
+                    <h3 className="text-[26px] font-serif font-bold text-[#1a3a8f] leading-[1.2] tracking-tight group-hover:text-[#122870] transition-colors">
                       {job.title}
                     </h3>
                   </div>
-                  
+
                   <div className="pt-8 border-t border-gray-100 flex items-end justify-between">
                     <div className="flex flex-col gap-1">
-                      <div className="text-[11px] font-black uppercase tracking-wider text-gray-400">Last Date</div>
-                      <div className="text-[15px] font-black text-[#FF3B30] uppercase leading-tight max-w-[200px]">
+                      <div className="text-[11px] font-serif font-bold text-gray-400">Last Date</div>
+                      <div className="text-[15px] font-serif font-bold text-[#FF3B30] leading-tight max-w-[200px]">
                         {isFallback && lastDateVal === "DETAILS AWAITED" ? `EARLY NOTIFICATION — FULL DETAILS AWAITED` : lastDateVal}
                       </div>
                     </div>
-                    
-                    <div className="px-6 py-3.5 bg-[#1a3a8f] text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-md group-hover:bg-[#122870] transition-colors whitespace-nowrap">
+
+                    <div className="px-6 py-3.5 bg-[#1a3a8f] text-white text-[15px] font-serif font-bold rounded-full shadow-md group-hover:bg-[#122870] transition-colors whitespace-nowrap">
                       View Details
                     </div>
                   </div>
@@ -104,8 +104,8 @@ export default function ForYouPage() {
               No recruitments currently match your specific qualification level and branch.
             </p>
             {!userProfile?.level && (
-              <Link 
-                href="/profile" 
+              <Link
+                href="/profile"
                 className="mt-8 px-10 py-3 bg-[#1a3a8f] text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#122870] transition-all shadow-xl rounded-xl no-underline"
               >
                 Setup Profile →

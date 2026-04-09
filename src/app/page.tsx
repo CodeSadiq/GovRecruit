@@ -105,13 +105,13 @@ export default function Home() {
         {activeTab === 'for-you' && (
           <>
             {/* HERO CLEAN */}
-            <div className="w-full bg-[#0D244D] relative min-h-[240px] flex items-center overflow-hidden bg-cover bg-center md:bg-right border-b-4 border-navy-dark"
+            <div className="w-full bg-[#0D244D] relative h-[190px] md:h-[240px] flex items-center overflow-hidden bg-cover bg-center md:bg-right border-b-4 border-navy-dark"
               style={{ backgroundImage: 'url(/herobg.png)' }}
             >
-              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 py-16">
-                <div className="max-w-[800px] text-center md:text-left space-y-6">
-                  <h1 className="text-2xl md:text-5xl font-black text-[#0D244D] uppercase leading-[0.9]">
-                    Recruitment for You.
+              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 py-8">
+                <div className="max-w-[800px] text-center md:text-left space-y-4">
+                  <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#0D244D] leading-tight">
+                    Recruitment for You
                   </h1>
                   <div className="max-w-[500px]">
                     <p className="text-[12px] md:text-[14px] text-[#344163]/80 font-bold uppercase leading-relaxed">
@@ -140,11 +140,11 @@ export default function Home() {
                 <div className="bg-white border-2 border-gray-100 p-8 md:p-10 shadow-sm relative overflow-hidden h-full flex flex-col">
                   <header className="flex items-center justify-between border-b-2 border-gray-100 pb-8 mb-10">
                     <div className="flex items-center gap-4">
-                      <h2 className="text-xl font-black text-navy uppercase">
+                      <h2 className="text-2xl font-serif font-bold text-navy">
                         Recruitment For You
                       </h2>
                     </div>
-                    <Link href="/for-you" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline">View All ›</Link>
+                    <Link href="/for-you" className="text-[14px] font-serif font-bold text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline">View All ›</Link>
                   </header>
 
                   <div className="space-y-6 flex-1 flex flex-col">
@@ -156,7 +156,7 @@ export default function Home() {
                         {!userProfile?.level && (
                           <Link
                             href="/profile"
-                            className="mt-8 px-10 py-3 bg-navy text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#06142E] transition-all shadow-xl rounded-xl no-underline"
+                            className="mt-8 px-10 py-3 bg-navy text-white text-[14px] font-serif font-bold hover:bg-[#06142E] transition-all shadow-xl rounded-xl no-underline"
                           >
                             Setup Profile →
                           </Link>
@@ -170,22 +170,22 @@ export default function Home() {
                           className="group bg-gray-50/30 border-2 border-gray-100 p-8 flex flex-col md:flex-row md:items-center gap-8 transition-all hover:border-navy hover:bg-white hover:shadow-xl"
                         >
                           <div className="flex-1">
-                            <h3 className="text-2xl font-black text-[#0D244D] leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
+                            <h3 className="text-2xl font-serif font-bold text-[#0D244D] leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
                             {job.matchedPosts ? (
                               <div className="mt-4 flex flex-wrap gap-2">
-                                <span className="text-[9px] font-black uppercase tracking-widest bg-navy text-white px-3 py-1 rounded-full shadow-lg shadow-navy/20">Matched for {job.matchedPosts.length} {job.matchedPosts.length === 1 ? 'post' : 'posts'}</span>
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-navy/40 mt-1">including {job.matchedPosts[0].name}</span>
+                                <span className="text-[10px] font-serif font-bold bg-navy text-white px-3 py-1 rounded-full shadow-lg shadow-navy/20">Matched for {job.matchedPosts.length} {job.matchedPosts.length === 1 ? 'post' : 'posts'}</span>
+                                <span className="text-[10px] font-serif font-bold text-navy/40 mt-1">including {job.matchedPosts[0].name}</span>
                               </div>
                             ) : (
                               <div className="mt-4 flex flex-wrap gap-2">
-                                <span className="text-[9px] font-black uppercase tracking-widest bg-gray-100 text-gray-400 px-3 py-1 rounded-full border border-gray-200">High Volume Opening</span>
-                                <span className="text-[9px] font-bold uppercase tracking-widest text-gray-300 mt-1">{job.totalVacancy || 0}+ Vacancies</span>
+                                <span className="text-[10px] font-serif font-bold bg-gray-100 text-gray-400 px-3 py-1 rounded-full border border-gray-200">High Volume Opening</span>
+                                <span className="text-[10px] font-serif font-bold text-gray-300 mt-1">{job.totalVacancy || 0}+ Vacancies</span>
                               </div>
                             )}
                           </div>
                           <div className="md:text-right md:border-l border-gray-100 md:pl-10 flex-shrink-0">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Last Date</div>
-                            <div className="text-xl font-black text-red uppercase leading-none">{job.lastDate || job.importantDates?.lastDate || job.notificationType || "Pending/NA"}</div>
+                            <div className="text-[10px] font-serif font-bold text-gray-400 mb-1">Last Date</div>
+                            <div className="text-xl font-serif font-bold text-red leading-none">{job.lastDate || job.importantDates?.lastDate || job.notificationType || "Pending/NA"}</div>
                           </div>
                         </Link>
                       ))
@@ -205,9 +205,9 @@ export default function Home() {
                           setCurrentCatIndex(idx);
                           setIsAutoPlaying(false); // Pause auto-play on manual click
                         }}
-                        className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${idx === currentCatIndex
-                            ? 'bg-navy text-white shadow-lg shadow-navy/20'
-                            : 'text-gray-400 hover:text-navy hover:bg-white'
+                        className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[10px] font-serif font-bold tracking-tight transition-all ${idx === currentCatIndex
+                          ? 'bg-navy text-white shadow-lg shadow-navy-light/40 ring-1 ring-white/20'
+                          : 'text-gray-400 hover:text-navy hover:bg-white'
                           }`}
                       >
                         {cat}
@@ -228,7 +228,7 @@ export default function Home() {
                           <div className="text-[8px] font-bold text-navy/30 uppercase tracking-[0.2em] mt-0.5">Live Updates</div>
                         </div>
                       </div>
-                      <Link href={`/${activeCategory.toLowerCase().replace(/\s+/g, '-')}`} className="text-[9px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-colors no-underline">
+                      <Link href={`/${activeCategory.toLowerCase().replace(/\s+/g, '-')}`} className="text-[14px] font-serif font-bold text-navy/40 hover:text-navy transition-colors no-underline">
                         View All ›
                       </Link>
                     </div>
@@ -240,7 +240,7 @@ export default function Home() {
                           key={i}
                           className="group block border-l-2 border-transparent hover:border-navy hover:pl-4 transition-all"
                         >
-                          <div className="text-[14px] font-bold text-[#344163] leading-snug group-hover:text-navy transition-colors mb-1">
+                          <div className="text-[15px] font-serif font-bold text-[#344163] leading-snug group-hover:text-navy transition-colors mb-1">
                             {n.text}
                           </div>
                           <div className="flex items-center gap-2">

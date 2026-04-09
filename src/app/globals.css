@@ -17,7 +17,7 @@
   --color-red: #ef4444;
 
   --font-sans: "Outfit", ui-sans-serif, system-ui;
-  --font-serif: "Instrument Serif", ui-serif, Georgia;
+  --font-serif: "Libre Baskerville", ui-serif, Georgia;
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -40,8 +40,9 @@
   h4,
   h5,
   h6 {
-    @apply text-text-h font-bold;
-    letter-spacing: -0.01em;
+    @apply text-text-h font-serif font-bold;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
 }
 
@@ -909,4 +910,3 @@ td.date-ok {
   padding: 1px 4px;
   color: var(--jp-ink-muted);
 }
-
