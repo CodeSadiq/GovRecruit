@@ -44,34 +44,22 @@ export default function JobsPage() {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
       <main className="flex-1 max-w-[1440px] mx-auto w-full p-6 md:p-12 animate-in fade-in duration-500">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 border-b border-gray-100 pb-12">
+        <header className="mb-14 border-b-4 border-navy pb-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
-            <h1 className="text-4xl font-serif font-bold text-navy">All Jobs</h1>
-            <p className="text-sm text-gray-500 font-bold uppercase tracking-widest opacity-60">Browse all openings</p>
+            <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
+            <p className="text-[10px] md:text-gray-500 font-bold uppercase tracking-widest mt-4">Broadcasting official verified government openings across the national registry.</p>
           </div>
-          <div className="flex bg-white border border-gray-200 rounded-2xl px-6 h-14 items-center gap-4 w-full md:w-[400px] shadow-sm group focus-within:border-navy transition-colors">
-            <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black"><IconSearch /></span>
+          <div className="flex bg-white border-2 border-gray-100 rounded-2xl px-5 h-12 md:h-14 items-center gap-3 w-full md:w-[400px] shadow-sm group focus-within:border-navy transition-all">
+            <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-sm font-black text-navy uppercase flex-1 placeholder:text-gray-200"
+              className="bg-transparent border-none outline-none text-xs md:text-sm font-black text-navy uppercase flex-1 placeholder:text-gray-200"
               placeholder="Search index..."
             />
           </div>
         </header>
 
-        {/* FILTER BAR SLIDER */}
-        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-8 mb-8 border-b border-gray-50">
-          {['all', 'central', 'state', 'banking', 'psu', 'defence', 'railway'].map(type => (
-            <button
-              key={type}
-              onClick={() => setFilterType(type)}
-              className={`px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] border-2 transition-all whitespace-nowrap ${filterType === type ? 'bg-navy text-white border-navy shadow-lg shadow-navy/10' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300'}`}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
 
         {isLoading ? (
           <div className="py-20 text-center opacity-40 font-black uppercase tracking-widest text-[10px]">Registry Synchronizing...</div>
@@ -85,8 +73,10 @@ export default function JobsPage() {
                 <Link
                   href={`/all-jobs/${job.id || job._id}`}
                   key={idx}
-                  className="bg-white border border-gray-100 p-10 flex flex-col hover:shadow-xl transition-all group h-full"
+                  className="bg-white border-2 border-gray-100 p-8 md:p-10 flex flex-col hover:shadow-2xl hover:-translate-y-2 transition-all group h-full rounded-[2rem] shadow-sm relative overflow-hidden"
                 >
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-navy/[0.02] rounded-bl-[4rem] group-hover:bg-navy/[0.05] transition-colors pointer-events-none"></div>
+
                   <div className="grow mb-10">
                     <h3 className="text-[26px] font-serif font-bold text-navy leading-[1.2] tracking-tight group-hover:text-[#1a3a6e] transition-colors">
                       {job.title || "Unknown Notification"}
@@ -101,7 +91,7 @@ export default function JobsPage() {
                       </div>
                     </div>
 
-                    <div className="px-6 py-3.5 bg-navy text-white text-[15px] font-serif font-bold rounded-full shadow-md group-hover:bg-[#1a3a6e] transition-colors whitespace-nowrap">
+                    <div className="px-6 py-3.5 bg-navy text-white text-[15px] font-serif font-bold rounded-full shadow-lg shadow-navy/20 group-hover:bg-[#1a3a6e] transition-all transform group-hover:scale-105 whitespace-nowrap">
                       View Details
                     </div>
                   </div>
@@ -118,10 +108,10 @@ export default function JobsPage() {
       <footer className="bg-white border-t-2 border-gray-100 py-10 px-6 md:px-12 mt-auto">
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-navy text-white rounded-lg flex items-center justify-center shadow-lg shadow-navy/20">🏛</div>
-            <strong className="text-navy text-sm font-black leading-none uppercase">GovRecruit</strong>
+            <div className="w-8 h-8 bg-white border border-gray-100 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="" className="w-5 h-5 object-contain" /></div>
+            <strong className="text-navy text-sm font-black leading-none uppercase">Rojgar Match</strong>
           </div>
-          <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">© 2026 GovRecruit Institutional Index</p>
+          <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">© 2026 Rojgar Match Institutional Index</p>
         </div>
       </footer>
     </div>

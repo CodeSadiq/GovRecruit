@@ -57,7 +57,7 @@ const styles = `
     --amber:      #78350f;
 
     font-family: var(--sans);
-    font-size: 15px;
+    font-size: 18px;
     line-height: 1.6;
     color: var(--ink);
     background: var(--paper);
@@ -69,7 +69,7 @@ const styles = `
 
   /* ── LAYOUT ── */
   .jd-wrap {
-    max-width: 860px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px 80px;
   }
@@ -157,7 +157,7 @@ const styles = `
   .jd-hero-cell.accent .jd-hero-label { color: rgba(255,255,255,0.55); }
   .jd-hero-value {
     font-family: var(--serif);
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
     color: var(--navy);
     line-height: 1;
@@ -198,7 +198,7 @@ const styles = `
   .jd-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 16px;
     border: 1px solid var(--border);
   }
   .jd-table th {
@@ -214,11 +214,13 @@ const styles = `
   }
   .jd-table th.center { text-align: center; }
   .jd-table td {
-    padding: 9px 12px;
+    padding: 10px 14px;
     border: 1px solid var(--border);
     vertical-align: middle;
     color: var(--ink);
-    font-size: 14px;
+    font-size: 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
   .jd-table tbody tr:nth-child(even) td { background: var(--paper-alt); }
   .jd-table tbody tr:hover td { background: #eeede9; }
@@ -227,7 +229,7 @@ const styles = `
     font-weight: 600;
     color: var(--ink-light);
     white-space: nowrap;
-    width: 200px;
+    width: 220px;
   }
   .jd-table td.mono { font-family: var(--mono); font-size: 13px; }
   .jd-table td.bold { font-weight: 700; }
@@ -387,8 +389,14 @@ const styles = `
   .tbl-scroll { overflow-x: auto; }
 
   @media (max-width: 600px) {
+    .jd { font-size: 18px; }
+    .jd-wrap { padding: 0 12px 60px; }
     .jd-hero { grid-template-columns: 1fr; }
-    .jd-table td.label { width: auto; }
+    .jd-hero-value { font-size: 26px !important; }
+    .jd-table { font-size: 15px; }
+    .jd-table td { padding: 10px 12px; font-size: 15px; word-break: break-word; }
+    .jd-table td.label { width: 140px; min-width: 140px; }
+    .jd-apply { font-size: 18px; padding: 20px; margin-top: 32px; word-break: break-all; }
   }
 `;
 
@@ -410,7 +418,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const job = await getJob(id);
   if (!job) return { title: "Recruitment Not Found" };
   return {
-    title: `${job.title} | GovRecruit`,
+    title: `${job.title} | Rojgar Match`,
     description: job.shortInfo || job.description,
   };
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "GovRecruit",
+  title: "Rojgar Match",
   description: "AI-Based Government Recruitment Platform (Personalized Job Feed System)",
 };
 

@@ -51,8 +51,8 @@ export default function ForYouPage() {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-1 max-w-[1440px] mx-auto p-6 md:p-12 w-full animate-in fade-in duration-700">
         <header className="mb-14 border-b-4 border-[#1a3a8f] pb-10">
-          <h1 className="text-5xl font-serif font-bold tracking-tight text-[#1a3a8f] leading-none">Recruitment for You</h1>
-          <p className="text-gray-500 font-bold uppercase tracking-widest mt-4">Showing all verified government openings matched to your profile.</p>
+          <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-[#1a3a8f] leading-tight">Recruitment for You</h1>
+          <p className="text-[10px] md:text-gray-500 font-bold uppercase tracking-widest mt-4">Showing official verified government openings matched to your profile.</p>
         </header>
 
         {isLoading ? (
@@ -71,8 +71,10 @@ export default function ForYouPage() {
                 <Link
                   href={`/all-jobs/${job.id || job._id}`}
                   key={idx}
-                  className="bg-white border border-gray-100 p-10 flex flex-col hover:shadow-xl transition-all group h-full"
+                  className="bg-white border-2 border-gray-100 p-8 md:p-10 flex flex-col hover:shadow-2xl hover:-translate-y-2 transition-all group h-full rounded-[2rem] shadow-sm relative overflow-hidden"
                 >
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-[#1a3a8f]/[0.02] rounded-bl-[4rem] group-hover:bg-[#1a3a8f]/[0.05] transition-colors pointer-events-none"></div>
+
                   <div className="grow mb-10">
                     <h3 className="text-[26px] font-serif font-bold text-[#1a3a8f] leading-[1.2] tracking-tight group-hover:text-[#122870] transition-colors">
                       {job.title}
@@ -87,7 +89,7 @@ export default function ForYouPage() {
                       </div>
                     </div>
 
-                    <div className="px-6 py-3.5 bg-[#1a3a8f] text-white text-[15px] font-serif font-bold rounded-full shadow-md group-hover:bg-[#122870] transition-colors whitespace-nowrap">
+                    <div className="px-6 py-3.5 bg-[#1a3a8f] text-white text-[15px] font-serif font-bold rounded-full shadow-lg shadow-[#1a3a8f]/20 group-hover:bg-[#122870] transition-all transform group-hover:scale-105 whitespace-nowrap">
                       View Details
                     </div>
                   </div>
@@ -118,10 +120,10 @@ export default function ForYouPage() {
       <footer className="bg-white border-t-2 border-gray-100 py-10 px-6 md:px-12">
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#1a3a8f] text-white rounded-lg flex items-center justify-center shadow-lg"><IconBuilding /></div>
-            <strong className="text-[#1a3a8f] text-sm font-black leading-none uppercase">GovRecruit</strong>
+            <div className="w-8 h-8 bg-white border border-gray-100 rounded-lg flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="" className="w-5 h-5 object-contain" /></div>
+            <strong className="text-[#1a3a8f] text-sm font-black leading-none uppercase">Rojgar Match</strong>
           </div>
-          <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">© 2026 GOVRECRUIT SYSTEM — OFFICIAL INDEX</p>
+          <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">© 2026 ROJGAR MATCH SYSTEM — OFFICIAL INDEX</p>
         </div>
       </footer>
     </div>

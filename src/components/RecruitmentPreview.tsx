@@ -259,6 +259,34 @@ const styles = `
     margin-top: 2px;
   }
   .jd-step-text { font-size: 14px; line-height: 1.6; color: var(--ink-light); }
+
+  /* ── EDIT MODE UTILS ── */
+  .jd-preview.is-editing .not-editable {
+    opacity: 0.35;
+    filter: grayscale(1);
+    pointer-events: none;
+    transition: all 400ms ease;
+  }
+
+  /* ── RESPONSIVENESS ── */
+  @media (max-width: 768px) {
+    .jd-preview { padding: 24px 16px; border-radius: 12px; }
+    .jd-title { font-size: 24px; }
+    .jd-hero { grid-template-columns: 1fr; border-bottom: 2px solid var(--navy); }
+    .jd-hero-cell { border-bottom: 1px solid var(--border); }
+    .jd-hero-cell:last-child { border-bottom: none; }
+    
+    .overflow-x-auto {
+      margin: 0 -16px;
+      padding: 0 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .jd-table { min-width: 500px; }
+    .jd-table td.label { width: 120px; }
+    
+    .jd-stage { min-width: 100px; }
+    .jd-stage-label { font-size: 11px; }
+  }
 `;
 
 const CAT_LABELS: Record<string, string> = {
@@ -322,7 +350,68 @@ function groupPostsByQual(posts: any[]): QualGroup[] {
     return Array.from(map.values());
 }
 
-export default function RecruitmentPreview({ job }: { job: any }) {
+const Editable = ({ path, value, className, multiline = false, style = {}, editable, onUpdate }: any) => {
+    const [localVal, setLocalVal] = React.useState(value || "");
+
+    React.useEffect(() => {
+        setLocalVal(value || "");
+    }, [value]);
+
+    const handleChange = (newVal: string) => {
+        setLocalVal(newVal);
+        onUpdate?.(path, newVal);
+    };
+
+    if (!editable) return <span className={className} style={style}>{value}</span>;
+
+    if (multiline) {
+        return (
+            <textarea
+                className={`${className} bg-blue-50/50 border-b border-blue-400 outline-none w-full resize-none`}
+                style={style}
+                value={localVal}
+                onChange={(e) => handleChange(e.target.value)}
+                rows={3}
+            />
+        );
+    }
+    return (
+        <input
+            className={`${className} bg-blue-50/50 border-b border-blue-400 outline-none w-full`}
+            style={style}
+            value={localVal}
+            onChange={(e) => handleChange(e.target.value)}
+        />
+    );
+};
+
+const EditableKey = ({ parentPath, oldKey, onRenameKey, className }: any) => {
+    const [localKey, setLocalKey] = React.useState(oldKey);
+    React.useEffect(() => { setLocalKey(oldKey); }, [oldKey]);
+
+    return (
+        <input
+            className={className}
+            value={localKey}
+            onChange={(e) => setLocalKey(e.target.value)}
+            onBlur={() => onRenameKey?.(parentPath, oldKey, localKey)}
+        />
+    );
+};
+
+export default function RecruitmentPreview({
+    job,
+    editable = false,
+    onUpdate,
+    onRenameKey,
+    onDeleteKey
+}: {
+    job: any,
+    editable?: boolean,
+    onUpdate?: (path: string, value: any) => void,
+    onRenameKey?: (parentPath: string, oldKey: string, newKey: string) => void,
+    onDeleteKey?: (parentPath: string, key: string) => void
+}) {
     if (!job) return null;
 
     const al = job.ageLimit || {};
@@ -350,18 +439,22 @@ export default function RecruitmentPreview({ job }: { job: any }) {
     const hasOverallCat = hasCategoryData(overallCatVac);
 
     return (
-        <div className="jd-preview">
+        <div className={`jd-preview ${editable ? 'is-editing' : ''}`}>
             <style dangerouslySetInnerHTML={{ __html: styles }} />
 
             {/* ── MASTHEAD ── */}
             <header className="jd-masthead">
                 <div className="jd-eyebrow">Official Recruitment Notice</div>
-                <h1 className="jd-title">{job.title}</h1>
+                <h1 className="jd-title">
+                    <Editable editable={editable} onUpdate={onUpdate} path="title" value={job.title} />
+                </h1>
                 {job.advertisementNumber && (
-                    <div className="jd-advert">Advt. No. {job.advertisementNumber}</div>
+                    <div className="jd-advert">
+                        Advt. No. <Editable editable={editable} onUpdate={onUpdate} path="advertisementNumber" value={job.advertisementNumber} />
+                    </div>
                 )}
                 {job.tags?.length > 0 && (
-                    <div className="jd-tags">
+                    <div className="jd-tags not-editable">
                         {job.tags.slice(0, 8).map((t: string) => (
                             <span key={t} className="jd-tag">{t}</span>
                         ))}
@@ -373,13 +466,17 @@ export default function RecruitmentPreview({ job }: { job: any }) {
             <div className="jd-hero">
                 <div className="jd-hero-cell accent">
                     <div className="jd-hero-label">Total Vacancies</div>
-                    <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
+                    <div className="jd-hero-value">
+                        <Editable editable={editable} onUpdate={onUpdate} path="totalVacancy" value={job.totalVacancy} />
+                    </div>
                     <div className="jd-hero-sub">Posts to be filled</div>
                 </div>
                 <div className="jd-hero-cell">
                     <div className="jd-hero-label">Age Limit</div>
                     <div className="jd-hero-value">
-                        {al.min && al.max ? `${al.min}–${al.max}` : al.max ? `≤ ${al.max}` : "—"}
+                        <Editable editable={editable} onUpdate={onUpdate} path="ageLimit.min" value={al.min} style={{ width: '40px' }} />
+                        –
+                        <Editable editable={editable} onUpdate={onUpdate} path="ageLimit.max" value={al.max} style={{ width: '40px' }} />
                     </div>
                     <div className="jd-hero-sub">
                         years{al.asOnDate ? ` as on ${fmtDate(al.asOnDate)}` : ""}
@@ -396,7 +493,9 @@ export default function RecruitmentPreview({ job }: { job: any }) {
 
             {/* ── LEDE ── */}
             {(job.description || job.shortInfo) && (
-                <div className="jd-lede">{job.description || job.shortInfo}</div>
+                <div className="jd-lede">
+                    <Editable editable={editable} onUpdate={onUpdate} path="description" value={job.description || job.shortInfo} multiline />
+                </div>
             )}
 
             {/* ── OVERVIEW ── */}
@@ -408,12 +507,16 @@ export default function RecruitmentPreview({ job }: { job: any }) {
                 <tbody>
                     <tr>
                         <td className="label">Organization</td>
-                        <td className="bold">{job.organization || job.org}</td>
+                        <td className="bold">
+                            <Editable editable={editable} onUpdate={onUpdate} path="organization" value={job.organization || job.org} />
+                        </td>
                     </tr>
                     {job.department && (
                         <tr>
                             <td className="label">Department</td>
-                            <td>{job.department}</td>
+                            <td>
+                                <Editable editable={editable} onUpdate={onUpdate} path="department" value={job.department} />
+                            </td>
                         </tr>
                     )}
                     <tr>
@@ -424,19 +527,29 @@ export default function RecruitmentPreview({ job }: { job: any }) {
                     </tr>
                     <tr>
                         <td className="label">Job Type</td>
-                        <td>{job.type || "Full Time / Permanent"}</td>
+                        <td>
+                            <Editable editable={editable} onUpdate={onUpdate} path="type" value={job.type || "Full Time / Permanent"} />
+                        </td>
                     </tr>
                     <tr>
                         <td className="label">Location</td>
-                        <td>{job.location?.length ? job.location.join(", ") : "All India"}</td>
+                        <td>
+                            <Editable editable={editable} onUpdate={onUpdate} path="location" value={Array.isArray(job.location) ? job.location.join(", ") : job.location || "All India"} />
+                        </td>
                     </tr>
                     {job.salary && (
                         <tr>
                             <td className="label">Scale of Pay</td>
                             <td className="bold">
-                                {typeof job.salary === 'object'
-                                    ? `${fmtMoney(job.salary.min)} to ${fmtMoney(job.salary.max)}`
-                                    : job.salary}
+                                {typeof job.salary === 'object' ? (
+                                    <div className="flex items-center gap-1">
+                                        <Editable editable={editable} onUpdate={onUpdate} path="salary.min" value={job.salary.min} />
+                                        <span> to </span>
+                                        <Editable editable={editable} onUpdate={onUpdate} path="salary.max" value={job.salary.max} />
+                                    </div>
+                                ) : (
+                                    <Editable editable={editable} onUpdate={onUpdate} path="salary" value={job.salary} />
+                                )}
                             </td>
                         </tr>
                     )}
@@ -444,67 +557,69 @@ export default function RecruitmentPreview({ job }: { job: any }) {
             </table>
 
             {/* ── POST-WISE VACANCY ── */}
-            <div className="jd-section">
-                <span className="jd-section-icon"><IconUsers /></span>
-                <span className="jd-section-title">Post-wise Vacancy</span>
-            </div>
-            <div style={{ overflowX: 'auto' }}>
-                <table className="jd-table">
-                    <thead>
-                        <tr>
-                            <th style={{ minWidth: 210 }}>Post / Designation</th>
-                            <th className="center" style={{ width: 70 }}>Total</th>
-                            {hasOverallCat && catCols.map(c => (
-                                <th className="center" key={c} style={{ width: 50 }}>{CAT_LABELS[c]}</th>
-                            ))}
-                            <th style={{ minWidth: 240 }}>Qualification Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {postGroups.flatMap((grp, gi) => {
-                            return grp.posts.map((p: any, pi: number) => {
-                                const catVac = p.categoryWiseVacancy || {};
-                                const hasPostCat = hasCategoryData(catVac);
-                                return (
-                                    <tr key={`${gi}-${pi}`}>
-                                        <td>{p.name}</td>
-                                        <td className="center mono bold">
-                                            {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
-                                        </td>
-                                        {hasOverallCat && catCols.map(c => (
-                                            <td key={c} className="center mono"
-                                                style={{ color: hasPostCat && catVac[c] != null ? "var(--navy)" : "var(--ink-muted)" }}>
-                                                {hasPostCat && catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"}
+            <div className="not-editable">
+                <div className="jd-section">
+                    <span className="jd-section-icon"><IconUsers /></span>
+                    <span className="jd-section-title">Post-wise Vacancy</span>
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                    <table className="jd-table">
+                        <thead>
+                            <tr>
+                                <th style={{ minWidth: 210 }}>Post / Designation</th>
+                                <th className="center" style={{ width: 70 }}>Total</th>
+                                {hasOverallCat && catCols.map(c => (
+                                    <th className="center" key={c} style={{ width: 50 }}>{CAT_LABELS[c]}</th>
+                                ))}
+                                <th style={{ minWidth: 240 }}>Qualification Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {postGroups.flatMap((grp, gi) => {
+                                return grp.posts.map((p: any, pi: number) => {
+                                    const catVac = p.categoryWiseVacancy || {};
+                                    const hasPostCat = hasCategoryData(catVac);
+                                    return (
+                                        <tr key={`${gi}-${pi}`}>
+                                            <td>{p.name}</td>
+                                            <td className="center mono bold">
+                                                {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
                                             </td>
-                                        ))}
-                                        {pi === 0 && (
-                                            <td rowSpan={grp.posts.length} style={{ verticalAlign: "top", background: "#fff" }}>
-                                                <div style={{ fontWeight: 600, color: "var(--navy)", lineHeight: 1.4 }}>
-                                                    {grp.qualText}
-                                                </div>
-                                                {grp.appearingNote && (
-                                                    <div style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, marginTop: 4 }}>
-                                                        {grp.appearingNote}
+                                            {hasOverallCat && catCols.map(c => (
+                                                <td key={c} className="center mono"
+                                                    style={{ color: hasPostCat && catVac[c] != null ? "var(--navy)" : "var(--ink-muted)" }}>
+                                                    {hasPostCat && catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"}
+                                                </td>
+                                            ))}
+                                            {pi === 0 && (
+                                                <td rowSpan={grp.posts.length} style={{ verticalAlign: "top", background: "#fff" }}>
+                                                    <div style={{ fontWeight: 600, color: "var(--navy)", lineHeight: 1.4 }}>
+                                                        {grp.qualText}
                                                     </div>
-                                                )}
-                                                {grp.qualNote && (
-                                                    <div style={{ fontSize: 12, color: "var(--amber)", marginTop: 6, borderLeft: "2px solid var(--amber)", paddingLeft: 8 }}>
-                                                        <strong>Note:</strong> {grp.qualNote}
-                                                    </div>
-                                                )}
-                                            </td>
-                                        )}
-                                    </tr>
-                                );
-                            });
-                        })}
-                    </tbody>
-                </table>
+                                                    {grp.appearingNote && (
+                                                        <div style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, marginTop: 4 }}>
+                                                            {grp.appearingNote}
+                                                        </div>
+                                                    )}
+                                                    {grp.qualNote && (
+                                                        <div style={{ fontSize: 12, color: "var(--amber)", marginTop: 6, borderLeft: "2px solid var(--amber)", paddingLeft: 8 }}>
+                                                            <strong>Note:</strong> {grp.qualNote}
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            )}
+                                        </tr>
+                                    );
+                                });
+                            })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* ── FEE SCHEDULE ── */}
             {Object.keys(feeMap).length > 0 && (
-                <>
+                <div className="not-editable">
                     <div className="jd-section">
                         <span className="jd-section-icon"><IconInfo /></span>
                         <span className="jd-section-title">Fee Schedule</span>
@@ -527,12 +642,12 @@ export default function RecruitmentPreview({ job }: { job: any }) {
                             ))}
                         </tbody>
                     </table>
-                </>
+                </div>
             )}
 
             {/* ── SELECTION PROCESS ── */}
             {job.selectionProcess?.length > 0 && (
-                <>
+                <div className="not-editable">
                     <div className="jd-section">
                         <span className="jd-section-icon"><IconBriefcase /></span>
                         <span className="jd-section-title">Selection Process</span>
@@ -550,12 +665,12 @@ export default function RecruitmentPreview({ job }: { job: any }) {
                             </React.Fragment>
                         ))}
                     </div>
-                </>
+                </div>
             )}
 
             {/* ── HOW TO APPLY ── */}
             {job.applicationProcess?.length > 0 && (
-                <>
+                <div className="not-editable">
                     <div className="jd-section">
                         <span className="jd-section-icon"><IconInfo /></span>
                         <span className="jd-section-title">How to Apply</span>
@@ -568,7 +683,7 @@ export default function RecruitmentPreview({ job }: { job: any }) {
                             </div>
                         ))}
                     </div>
-                </>
+                </div>
             )}
 
             {/* ── IMPORTANT DATES ── */}
@@ -584,14 +699,47 @@ export default function RecruitmentPreview({ job }: { job: any }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.entries(dates).filter(([k, v]) => v).map(([k, v]) => (
+                    {Object.entries(dates).filter(([k, v]) => v || editable).map(([k, v]) => (
                         <tr key={k}>
                             <td className="label" style={{ background: 'none', borderRight: 'none', width: 'auto' }}>
-                                {k.replace(/([A-Z])/g, ' $1')}
+                                {editable ? (
+                                    <div className="flex items-center gap-2 group">
+                                        <button
+                                            onClick={() => onDeleteKey?.('importantDates', k)}
+                                            className="opacity-0 group-hover:opacity-100 text-red hover:scale-110 transition-all text-xs"
+                                            title="Delete Entry"
+                                        >
+                                            ✕
+                                        </button>
+                                        <EditableKey
+                                            parentPath="importantDates"
+                                            oldKey={k}
+                                            onRenameKey={onRenameKey}
+                                            className="bg-blue-50/50 border-b border-blue-400 outline-none w-full text-[11px] font-bold uppercase tracking-wider"
+                                        />
+                                    </div>
+                                ) : (
+                                    k.replace(/([A-Z])/g, ' $1')
+                                )}
                             </td>
-                            <td className="center bold">{fmtDate(v as string)}</td>
+                            <td className="center bold">
+                                <Editable editable={editable} onUpdate={onUpdate} path={`importantDates.${k}`} value={v as string} />
+                                {!editable && <div className="text-[10px] text-gray-400 font-normal">{fmtDate(v as string)}</div>}
+                            </td>
                         </tr>
                     ))}
+                    {editable && (
+                        <tr>
+                            <td colSpan={2} className="p-2">
+                                <button
+                                    onClick={() => onUpdate?.(`importantDates.newEvent_${Date.now().toString().slice(-4)}`, "")}
+                                    className="w-full py-3 border-2 border-dashed border-blue-200 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] text-blue-400 hover:bg-blue-50 transition-all"
+                                >
+                                    + Insert New Event Timeline
+                                </button>
+                            </td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
         </div>
