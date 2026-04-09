@@ -5,6 +5,15 @@ export interface Qualification {
   extraConditions: string[];
   streamRequired?: string | null;
   institutionType?: string | null;
+  minExperienceYears?: number | null;
+  minMarksPercent?: number | null;
+  compulsorySubjects?: string[];
+}
+
+export interface EducationRequirement {
+  qualification: string;
+  level: number;
+  branches: string[];
 }
 
 export interface CategoryVacancy {
@@ -22,6 +31,7 @@ export interface Post {
   minQualificationLevel: number | null;
   prerequisite: string[];
   qualification: Qualification[];
+  educationRequirementForMatch: EducationRequirement[];
   categoryWiseVacancy: CategoryVacancy;
   appearingEligible: boolean;
   appearingConditions: string | null;

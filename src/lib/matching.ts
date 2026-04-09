@@ -21,15 +21,13 @@ const SCORE_EXACT = 60;
 const SCORE_MODERATE = 30;
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  PROFESSIONAL DEGREE GATE  (Fix #2 + Fix #3)
+//  PROFESSIONAL DEGREE GATE
 //
-//  These are terminal professional degrees that CANNOT be inferred from a
-//  general graduation level. If a job's qualification list requires one of
-//  these, the candidate MUST explicitly hold it (by qualification name or
-//  branch). A general Graduate profile does NOT satisfy "B.Ed", "LLB", etc.
+//  Terminal professional degrees that CANNOT be inferred from a general
+//  graduation level. The candidate MUST explicitly hold one.
 //
-//  Key   = normalised job qualification name
-//  Value = candidate qualification names / branches that satisfy the requirement
+//  Key   = normalised QUAL_TREE qualification name (lowercase)
+//  Value = candidate qualification names / branches that satisfy it
 // ─────────────────────────────────────────────────────────────────────────────
 const PROFESSIONAL_DEGREES: Record<string, string[]> = {
   'b.ed': ['b.ed', 'education', 'm.ed'],
@@ -53,27 +51,66 @@ const PROFESSIONAL_DEGREES: Record<string, string[]> = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  MODERATE MATCH: LEVEL GAP SAFETY WALL  (Fix #2)
+//  MODERATE MATCH: LEVEL GAP SAFETY WALL — HIGH STRICT MODE
 //
-//  Moderate matching (candidate exactly 1 level below requirement) is only
-//  permitted between directly adjacent general education tiers:
+//  Key   = candidate level
+//  Value = maximum job level allowed as a moderate suggestion.
+//          -1 = moderate completely disabled for that candidate level.
 //
-//    Candidate level 1 (10th)    → may see moderate suggestions for level 2 jobs only
-//    Candidate level 2 (12th)    → may see moderate suggestions for level 3 jobs only
-//    Candidate level 3 (Diploma) → may see moderate suggestions for level 4 jobs only
-//    Candidate level 4 (Graduate)→ may see moderate suggestions for level 5 jobs only
-//    Candidate level 5 (PG)      → may see moderate suggestions for level 6 jobs only
+//  Level 1 (10th)    → -1  NO moderate matching at all.
+//                         10th is a hard eligibility floor; showing 12th jobs
+//                         to a 10th candidate is incorrect and misleading.
 //
-//  This prevents a 12th-pass candidate from ever receiving a "moderate"
-//  suggestion for a Graduate-level post (even if the DB stored it as Level 3).
+//  Level 2 (12th)    →  3  Only Diploma/ITI/GNM/ANM level jobs allowed.
+//                         12th candidates must NEVER see Graduate (4) jobs.
+//
+//  Level 3 (Diploma) →  4  Graduate level jobs only.
+//                         But branch must be a NAMED match (see below).
+//
+//  Level 4 (Graduate)→  5  PG level jobs only.
+//
+//  Level 5 (PG)      →  6  PhD level jobs only.
 // ─────────────────────────────────────────────────────────────────────────────
 const MODERATE_MAX_JOB_LEVEL: Record<number, number> = {
-  1: 2,
+  1: -1,
   2: 3,
   3: 4,
   4: 5,
   5: 6,
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  MODERATE BRANCH STRICTNESS — HIGH STRICT MODE
+//
+//  Minimum branch score required for moderate to be allowed, per candidate level.
+//
+//  Level 2 (12th)    → 1  Loose/open match is fine. Most Diploma-level jobs
+//                          accept any stream, so 12th candidates can see them.
+//
+//  Level 3 (Diploma) → 2  NAMED branch match required. A "Civil Diploma"
+//                          candidate may see Graduate Civil Engineering jobs.
+//                          A generic Diploma candidate must NOT bubble up to
+//                          all Graduate posts just because branch is "any".
+//
+//  Level 4+          → 1  Loose match is fine at higher levels.
+// ─────────────────────────────────────────────────────────────────────────────
+const MODERATE_MIN_BRANCH_SCORE: Record<number, number> = {
+  1: 99, // irrelevant — level 1 fully blocked by MODERATE_MAX_JOB_LEVEL
+  2: 1,
+  3: 2,
+  4: 1,
+  5: 1,
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  EducationSegment — shape of a single educationRequirementForMatch entry.
+//  If your types/job.ts already defines this, remove it and import from there.
+// ─────────────────────────────────────────────────────────────────────────────
+interface EducationSegment {
+  qualification: string; // exact QUAL_TREE name, e.g. "B.Tech", "Diploma"
+  level: number;         // 1–6
+  branches: string[];    // canonical branch values or ["any"]
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  PUBLIC ENTRY POINT
@@ -115,27 +152,31 @@ function getMatchedPostsForJob(candidate: CandidateProfile, job: JobPost): Post[
 
   if (job.posts && job.posts.length > 0) {
     for (const post of job.posts) {
-      // Fix #1: always re-derive minQualificationLevel from the qual array
-      // to ignore incorrectly stored scalars in the database.
-      const corrected = withCorrectedLevel(post);
-      if (evaluatePost(candidate, corrected).qualifies) {
-        eligiblePosts.push(corrected);
+      if (evaluatePost(candidate, post).qualifies) {
+        eligiblePosts.push(post);
       }
     }
   } else if (job.qualification && job.qualification.length > 0) {
-    // No sub-posts: build a virtual post from root-level qualification
+    // No sub-posts: synthesise a virtual post from root-level data.
+    const virtualSegments: EducationSegment[] = job.qualification.map(q => ({
+      qualification: q.name,
+      level: q.level,
+      branches: q.branches ?? [],
+    }));
+
     const virtualPost: Post = {
       name: job.title,
       totalVacancy: job.totalVacancy,
-      // Fix #1: derive from qualification array, not from a stored scalar
       minQualificationLevel: Math.min(...job.qualification.map(q => q.level)),
       qualification: job.qualification,
+      educationRequirementForMatch: virtualSegments,
       prerequisite: [],
       categoryWiseVacancy: job.categoryWiseVacancyTotal,
       appearingEligible: false,
       appearingConditions: null,
       qualificationNote: null,
     };
+
     if (evaluatePost(candidate, virtualPost).qualifies) {
       eligiblePosts.push(virtualPost);
     }
@@ -144,20 +185,25 @@ function getMatchedPostsForJob(candidate: CandidateProfile, job: JobPost): Post[
   return eligiblePosts;
 }
 
-/**
- * Fix #1 — Always recompute minQualificationLevel from the qualification
- * array rather than trusting the stored scalar value, which can be wrong
- * (e.g. a Graduate post stored as Level 3 instead of Level 4).
- */
-function withCorrectedLevel(post: Post): Post {
-  if (!post.qualification || post.qualification.length === 0) return post;
-  const derived = Math.min(...post.qualification.map(q => q.level));
-  if (post.minQualificationLevel === derived) return post;
-  return { ...post, minQualificationLevel: derived };
+// ─────────────────────────────────────────────────────────────────────────────
+//  RESOLVE MATCHING SEGMENTS
+//
+//  Returns educationRequirementForMatch segments for a post.
+//  Falls back to qualification[] for pre-v8 jobs (backward-compat).
+// ─────────────────────────────────────────────────────────────────────────────
+function getSegments(post: Post): EducationSegment[] {
+  if (post.educationRequirementForMatch && post.educationRequirementForMatch.length > 0) {
+    return post.educationRequirementForMatch as EducationSegment[];
+  }
+  return (post.qualification ?? []).map(q => ({
+    qualification: q.name,
+    level: q.level,
+    branches: q.branches ?? [],
+  }));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  CORE EVALUATOR
+//  CORE EVALUATOR — HIGH STRICT MODERATE MODE
 // ─────────────────────────────────────────────────────────────────────────────
 interface EvalResult {
   qualifies: boolean;
@@ -166,65 +212,67 @@ interface EvalResult {
 }
 
 function evaluatePost(candidate: CandidateProfile, post: Post): EvalResult {
-  const minLevel = post.minQualificationLevel ?? 1;
+  const segments = getSegments(post);
   const candidateLevel = candidate.level ?? 0;
 
+  const minLevel = segments.length > 0
+    ? Math.min(...segments.map(s => s.level))
+    : (post.minQualificationLevel ?? 1);
+
   // ── Gate 1: Hard level floor ─────────────────────────────────────────────
-  // Candidate more than 1 level below → immediate reject
+  // Candidate more than 1 level below the minimum → immediate reject.
   if (candidateLevel < minLevel - 1) {
     return { qualifies: false, tier: 'none', branchScore: 0 };
   }
 
   const isModerateLevel = candidateLevel === minLevel - 1;
 
-  // ── Gate 2: Moderate safety wall (Fix #2) ───────────────────────────────
-  // Even if within 1 level, candidate-level ceiling must allow this job level.
+  // ── Gate 2: Moderate ceiling — HIGH STRICT ───────────────────────────────
+  // -1 ceiling = moderate completely disabled for this candidate level.
   if (isModerateLevel) {
-    const ceiling = MODERATE_MAX_JOB_LEVEL[candidateLevel] ?? (candidateLevel + 1);
-    if (minLevel > ceiling) {
+    const ceiling = MODERATE_MAX_JOB_LEVEL[candidateLevel] ?? -1;
+    if (ceiling === -1 || minLevel > ceiling) {
       return { qualifies: false, tier: 'none', branchScore: 0 };
     }
   }
 
-  // ── Gate 3: Professional degree gate (Fix #2 + Fix #3) ──────────────────
-  // If the post demands a specific professional credential, the candidate must
-  // explicitly hold it. Level proximity alone does not satisfy it.
-  if (checkProfessionalGate(candidate, post)) {
+  // ── Gate 3: Professional degree gate ────────────────────────────────────
+  if (checkProfessionalGate(candidate, post, segments)) {
     return { qualifies: false, tier: 'none', branchScore: 0 };
   }
 
-  // ── Gate 4: Branch match ─────────────────────────────────────────────────
+  // ── Gate 4: Branch match across all reachable segments ──────────────────
   let bestBranchScore = 0;
-  let levelMatched = false;
+  let anySegmentReachable = false;
 
-  for (const qual of post.qualification) {
-    if (candidateLevel < qual.level - 1) continue;
-    levelMatched = true;
-    const bs = scoreBranchMatch(candidate.branch, qual.branches ?? []);
+  for (const seg of segments) {
+    if (candidateLevel < seg.level - 1) continue;
+    anySegmentReachable = true;
+    const bs = scoreBranchMatch(candidate.branch, seg.branches);
     if (bs > bestBranchScore) bestBranchScore = bs;
     if (bestBranchScore === 2) break;
   }
 
-  if (!levelMatched && !isModerateLevel) {
+  if (!anySegmentReachable && !isModerateLevel) {
     return { qualifies: false, tier: 'none', branchScore: 0 };
   }
 
-  // Moderate path: branch must at least loosely match
+  // ── Moderate path — HIGH STRICT ─────────────────────────────────────────
   if (isModerateLevel) {
     let moderateBranch = 0;
-    for (const qual of post.qualification) {
-      moderateBranch = Math.max(
-        moderateBranch,
-        scoreBranchMatch(candidate.branch, qual.branches ?? [])
-      );
+    for (const seg of segments) {
+      moderateBranch = Math.max(moderateBranch, scoreBranchMatch(candidate.branch, seg.branches));
     }
-    if (moderateBranch > 0) {
+
+    // Enforce per-level minimum branch score requirement.
+    const minBranchRequired = MODERATE_MIN_BRANCH_SCORE[candidateLevel] ?? 1;
+    if (moderateBranch >= minBranchRequired) {
       return { qualifies: true, tier: 'moderate', branchScore: moderateBranch };
     }
     return { qualifies: false, tier: 'none', branchScore: 0 };
   }
 
-  // Exact / over-qualified path
+  // ── Exact / over-qualified path ──────────────────────────────────────────
   if (bestBranchScore > 0) {
     return { qualifies: true, tier: 'exact', branchScore: bestBranchScore };
   }
@@ -233,40 +281,53 @@ function evaluatePost(candidate: CandidateProfile, post: Post): EvalResult {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  PROFESSIONAL GATE CHECKER  (Fix #3)
+//  PROFESSIONAL GATE CHECKER
 //
-//  Returns true = BLOCK when the post requires a professional degree and the
-//  candidate does not hold it. Checks both the qualification name list and
-//  extraConditions / qualificationNote for "B.Ed" keyword mentions.
+//  Returns true = BLOCK when the post requires a specific professional degree
+//  and the candidate does not hold it.
+//
+//  Check order:
+//    1. segments (educationRequirementForMatch) — primary, exact QUAL_TREE names
+//    2. qualification[].name — legacy fallback for pre-v8 jobs
+//    3. extraConditions / qualificationNote — B.Ed free-text scan
 // ─────────────────────────────────────────────────────────────────────────────
-function checkProfessionalGate(candidate: CandidateProfile, post: Post): boolean {
+function checkProfessionalGate(
+  candidate: CandidateProfile,
+  post: Post,
+  segments: EducationSegment[]
+): boolean {
   const cQual = (candidate.qualification || '').toLowerCase().trim();
   const cBranch = (candidate.branch || '').toLowerCase().trim();
 
-  for (const qual of post.qualification) {
-    const qName = (qual.name || '').toLowerCase().trim();
-    const satisfiers = PROFESSIONAL_DEGREES[qName];
+  // Primary: segments
+  for (const seg of segments) {
+    const segName = seg.qualification.toLowerCase().trim();
+    const satisfiers = PROFESSIONAL_DEGREES[segName];
     if (!satisfiers) continue;
-
-    const candidateHoldsIt =
-      satisfiers.includes(cQual) ||
-      satisfiers.includes(cBranch);
-
-    if (!candidateHoldsIt) return true; // BLOCK — missing required professional degree
+    if (!satisfiers.includes(cQual) && !satisfiers.includes(cBranch)) return true;
   }
 
-  // Targeted B.Ed scan (Fix #3): covers cases where it appears in free-text
-  // conditions rather than as a named qualification object.
-  const bedMentionedInConditions = post.qualification.some(q =>
-    (q.extraConditions || []).some(c => /\bb\.?\s*ed\b/i.test(c))
-  );
-  const bedMentionedInNote = /\bb\.?\s*ed\b/i.test(post.qualificationNote || '');
+  // Legacy fallback: qualification[].name (pre-v8 jobs only)
+  if (!post.educationRequirementForMatch || post.educationRequirementForMatch.length === 0) {
+    for (const qual of (post.qualification ?? [])) {
+      const qName = (qual.name || '').toLowerCase().trim();
+      const satisfiers = PROFESSIONAL_DEGREES[qName];
+      if (!satisfiers) continue;
+      if (!satisfiers.includes(cQual) && !satisfiers.includes(cBranch)) return true;
+    }
+  }
 
-  if (bedMentionedInConditions || bedMentionedInNote) {
+  // B.Ed free-text scan
+  const bedInConditions = (post.qualification ?? []).some(q =>
+    (q.extraConditions ?? []).some(c => /\bb\.?\s*ed\b/i.test(c))
+  );
+  const bedInNote = /\bb\.?\s*ed\b/i.test(post.qualificationNote ?? '');
+
+  if (bedInConditions || bedInNote) {
     const candidateHasBed =
       /\bb\.?\s*ed\b/i.test(candidate.qualification) ||
       ['b.ed', 'education', 'm.ed'].includes(cBranch);
-    if (!candidateHasBed) return true; // BLOCK
+    if (!candidateHasBed) return true;
   }
 
   return false;
@@ -277,7 +338,7 @@ function checkProfessionalGate(candidate: CandidateProfile, post: Post): boolean
 //  2 = specific named match  |  1 = 'any' / open  |  0 = no match
 // ─────────────────────────────────────────────────────────────────────────────
 function scoreBranchMatch(candidateBranch: string, jobBranches: string[]): number {
-  if (!jobBranches || jobBranches.length === 0) return 1; // no restriction → open
+  if (!jobBranches || jobBranches.length === 0) return 1;
 
   const cb = (candidateBranch || 'any').toLowerCase().trim();
   const jb = jobBranches.map(b => b.toLowerCase().trim());
@@ -319,7 +380,6 @@ function partialBranchMatch(candidateBranch: string, jobBranches: string[]): boo
   for (const syn of synonyms) {
     if (jobBranches.some(jb => jb.includes(syn) || syn.includes(jb))) return true;
   }
-  // Reverse lookup
   for (const [key, syns] of Object.entries(BRANCH_SYNONYMS)) {
     if (syns.includes(candidateBranch)) {
       if (jobBranches.includes(key) || jobBranches.some(jb => jb.includes(key))) return true;
@@ -338,18 +398,23 @@ function calculateMatchScore(
 ): number {
   let score = 0;
   const primaryPost = matchedPosts[0];
-  const minLevel = primaryPost.minQualificationLevel ?? 1;
+  const segments = getSegments(primaryPost);
+
+  const minLevel = segments.length > 0
+    ? Math.min(...segments.map(s => s.level))
+    : (primaryPost.minQualificationLevel ?? 1);
 
   // 1. Level alignment (max 40 pts)
   if (candidate.level === minLevel) score += 40;
   else if (candidate.level > minLevel) score += 25;
   else if (candidate.level === minLevel - 1) score += 15;
 
-  // 2. Branch relevance (max 35 pts)
+  // 2. Branch relevance across all segments (max 35 pts)
   let bestBranch = 0;
-  for (const qual of primaryPost.qualification) {
-    const bs = scoreBranchMatch(candidate.branch, qual.branches ?? []);
+  for (const seg of segments) {
+    const bs = scoreBranchMatch(candidate.branch, seg.branches);
     if (bs > bestBranch) bestBranch = bs;
+    if (bestBranch === 2) break;
   }
   if (bestBranch === 2) score += 35;
   else if (bestBranch === 1) score += 15;
