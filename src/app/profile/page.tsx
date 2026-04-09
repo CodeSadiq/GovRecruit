@@ -434,10 +434,10 @@ export default function ProfilePage() {
             <div className="relative z-10">
               <button
                 onClick={handleLogout}
-                className="group/btn flex items-center gap-3 px-8 py-4 bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 transition-all rounded-xl shadow-lg shadow-red-500/5 active:scale-95"
+                className="group/btn flex items-center gap-2 px-5 py-2.5 bg-transparent border border-gray-100 text-red-500 hover:bg-red-50 hover:border-red-100 transition-all rounded-lg active:scale-95"
               >
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Logout</span>
-                <svg className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                <span className="text-[10px] font-black uppercase tracking-[0.15em]">Logout</span>
+                <svg className="w-3.5 h-3.5 opacity-60 group-hover/btn:opacity-100 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
               </button>
             </div>
           </div>
