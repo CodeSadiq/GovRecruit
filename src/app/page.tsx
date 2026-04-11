@@ -93,7 +93,7 @@ export default function Home() {
 
               {/* Pin top-right search (Tight corner) */}
               <div className="absolute top-2 right-2 md:top-6 md:right-8 z-30">
-                <div className="flex items-center bg-white border-2 border-gray-100 rounded-xl px-2 h-9 md:h-12 gap-1.5 w-[140px] md:w-[280px] transition-all focus-within:border-navy group shadow-sm">
+                <div className="flex items-center bg-white border-2 border-gray-100 rounded-xl px-2 h-8 md:h-12 gap-1.5 w-[130px] focus-within:w-[190px] md:focus-within:w-[280px] md:w-[280px] transition-all focus-within:border-navy group shadow-sm">
                   <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-[0.6] md:scale-90"><IconSearch /></span>
                   <input
                     value={searchQuery}
@@ -108,11 +108,11 @@ export default function Home() {
               <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-5 pb-16 md:py-16">
                 <div className="max-w-[800px] text-left space-y-3 md:space-y-6">
                   <h1 className="text-2xl md:text-6xl font-serif font-bold text-navy leading-tight drop-shadow-sm">
-                    Recruitment for You
+                    Government Jobs For You
                   </h1>
                   <div className="max-w-[450px] md:max-w-[650px]">
                     <p className="text-[10px] md:text-[16px] text-navy/60 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                      Verified openings matched to your profile.
+                      Verified openings matched to your qualifications.
                     </p>
                   </div>
                 </div>

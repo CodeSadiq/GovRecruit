@@ -176,31 +176,24 @@ export default function Navbar() {
                   </Link>
                 ) : (
                   <div className="space-y-6">
-                    {/* User Profile Card */}
-                    <div className="p-5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4 shadow-sm">
-                      <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-serif text-xl font-bold border border-blue-400/30 flex-shrink-0">
-                        {userProfile?.fullName?.charAt(0) || 'C'}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em] mb-0.5">Signed in as</span>
-                        <span className="text-white text-[17px] font-serif font-bold leading-tight decoration-white/10">{userProfile?.fullName || 'Candidate'}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Action Links */}
-                    <div className="flex flex-col gap-3">
-                      <Link
-                        href="/profile"
-                        className="flex items-center gap-4 p-3.5 rounded-xl hover:bg-white/5 transition-all no-underline group"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <div className="text-white/30 group-hover:text-blue-400 transition-colors flex-shrink-0"><IconUser /></div>
-                        <div className="flex flex-col">
-                          <span className="text-white text-[15px] font-serif font-bold group-hover:text-blue-400 transition-colors">Profile Settings</span>
-                          <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Personal details</span>
+                    {/* 👤 Refined Profile Container */}
+                    <Link
+                      href="/profile"
+                      className="p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col gap-3 group hover:bg-white/10 transition-all no-underline shadow-sm"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <h4 className="text-white text-[20px] font-serif font-bold leading-tight group-hover:text-blue-400 transition-colors">
+                        {userProfile?.fullName || 'Candidate'}
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-white/40 font-bold uppercase tracking-widest group-hover:text-white/70 transition-colors">
+                          Profile Details
+                        </span>
+                        <div className="text-white/20 group-hover:text-blue-400 transition-colors group-hover:translate-x-1 transition-transform">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </div>
-                      </Link>
-                    </div>
+                      </div>
+                    </Link>
                   </div>
                 )}
               </div>
