@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { JobPost, Post } from '@/types/job';
 
 // ── QUALIFICATION HELPERS ───────────────────────────────────────────────────
@@ -92,7 +93,7 @@ export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
             {job.emoji}
           </div>
           <h2 className="font-serif text-2xl font-bold tracking-tight mb-1">{job.title}</h2>
-          <div className="text-[13.5px] opacity-70 font-medium">{job.org}</div>
+          <div className="text-[13.5px] opacity-70 font-medium">{job.organization}</div>
         </div>
 
         {/* MODAL BODY */}
@@ -105,12 +106,12 @@ export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
               <div className="text-[11px] text-text-s uppercase font-bold tracking-wider">Salary</div>
             </div>
             <div className="bg-surface border border-border rounded-sm p-3 text-center">
-              <div className="text-base font-bold text-text-h mb-0.5">{job.location}</div>
+              <div className="text-base font-bold text-text-h mb-0.5">{(job.location || []).join(', ') || 'National'}</div>
               <div className="text-[11px] text-text-s uppercase font-bold tracking-wider">Location</div>
             </div>
             <div className="bg-surface border border-border rounded-sm p-3 text-center">
-              <div className={`text-base font-bold mb-0.5 ${(job.urgency === 'urgent' || !job.lastDate) ? 'text-red' : job.urgency === 'soon' ? 'text-amber' : 'text-green'}`}>
-                {job.lastDate || (job as any).importantDates?.lastDate || (job as any).notificationType || "Pending/NA"}
+              <div className={`text-base font-bold mb-0.5 ${(job.urgency === 'urgent' || !job.importantDates?.lastDate) ? 'text-red' : job.urgency === 'soon' ? 'text-amber' : 'text-green'}`}>
+                {job.importantDates?.lastDate || job.notificationType || "Pending/NA"}
               </div>
               <div className="text-[11px] text-text-s uppercase font-bold tracking-wider">Last Date</div>
             </div>
@@ -135,16 +136,16 @@ export default function JobDetailModal({ job, onClose }: JobDetailModalProps) {
                     </div>
                   ))}
                 </div>
-              ) : job.process}
+              ) : (job as any).selectionProcessNote || "Details in official notification"}
             </div>
           </section>
 
           <section>
             <div className="text-xs font-bold uppercase tracking-widest text-text-m mb-2.5">Age Limit</div>
             <div className="text-[13.5px] text-text-b leading-relaxed">
-              {job.ageMax > 0
-                ? `${job.ageMin} – ${job.ageMax} years (age relaxation applicable for reserved categories)`
-                : `Minimum ${job.ageMin} years`}
+              {(job.ageLimit?.max || 0) > 0
+                ? `${job.ageLimit?.min} – ${job.ageLimit?.max} years (age relaxation applicable for reserved categories)`
+                : job.ageLimit?.min ? `Minimum ${job.ageLimit.min} years` : "Details in official notification"}
             </div>
           </section>
 

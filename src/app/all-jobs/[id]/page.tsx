@@ -861,12 +861,12 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const dates = job.importantDates || {};
 
   // Normalise posts array
-  const rawPosts: any[] =
-    (job.posts || []).length > 0
-      ? job.posts
-      : job.qualification?.length
-        ? [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }]
-        : [];
+    const rawPosts: any[] =
+      (job.posts || []).length > 0
+        ? job.posts
+        : (job.qualification as any)
+          ? [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }]
+          : [];
 
   // Hero: derive age + salary from posts (new schema — per-post only)
   const heroAge = deriveAgeLimitFromPosts(rawPosts);

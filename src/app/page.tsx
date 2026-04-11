@@ -57,7 +57,7 @@ export default function Home() {
 
   const filteredJobs = dbJobs.filter(job => {
     const matchesSearch = (job.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (job.org || job.organization || '').toLowerCase().includes(searchQuery.toLowerCase());
+      (job.organization || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = filterType === 'all' || job.type === filterType;
     return matchesSearch && matchesType;
   });
@@ -200,7 +200,7 @@ export default function Home() {
                       </div>
 
                       <div key={activeCategory} className="space-y-5 animate-in fade-in slide-in-from-right-8 duration-700 flex-1">
-                        {activeItems.map((n, i) => (
+                        {activeItems.map((n: any, i: number) => (
                           <Link
                             href="#"
                             key={i}

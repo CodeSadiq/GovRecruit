@@ -100,7 +100,7 @@ export default function Navbar() {
                 >
                   <div className="flex items-center gap-2 md:gap-3">
                     <span className="opacity-50 group-hover:opacity-100 transition-opacity"><IconUser /></span>
-                    <span className="hidden md:inline text-[15px] font-serif font-bold truncate max-w-[100px]">
+                    <span className="hidden md:inline text-[15px] font-serif font-bold whitespace-nowrap">
                       {userProfile?.fullName || 'Candidate'}
                     </span>
                   </div>

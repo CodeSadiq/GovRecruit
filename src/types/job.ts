@@ -94,6 +94,7 @@ export interface Salary {
 
 export interface JobPost {
   id: string;
+  _id?: string;
   title: string;
   advertisementNumber: string | null;
   organization: string;
@@ -124,6 +125,8 @@ export interface JobPost {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+  emoji?: string;
+  urgency?: string;
   notificationType?: string;
   displayStatus?: DisplayStatus;
 }
