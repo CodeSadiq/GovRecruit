@@ -60,12 +60,12 @@ const styles = `
 
 // ── Sections Definition ─────────────────────────────
 const SECTIONS = [
-  { id: 'S1', title: 'Matriculation (10th)', levels: [1], icon: '🏫' },
-  { id: 'S2', title: 'Higher Secondary (12th)', levels: [2], icon: '📚' },
-  { id: 'S3', title: 'Diploma & ITI Certificates', levels: [3], icon: '🛠️' },
-  { id: 'S4', title: 'Graduation Degrees', levels: [4], icon: '🎓' },
-  { id: 'S5', title: 'Post-Graduation (PG)', levels: [5], icon: '🖋️' },
-  { id: 'S6', title: 'Doctorate (PhD)', levels: [6], icon: '🔬' }
+  { id: 'S1', title: 'Matriculation (10th)', levels: [1] },
+  { id: 'S2', title: 'Higher Secondary (12th)', levels: [2] },
+  { id: 'S3', title: 'Diploma & ITI Certificates', levels: [3] },
+  { id: 'S4', title: 'Graduation Degrees', levels: [4] },
+  { id: 'S5', title: 'Post-Graduation (PG)', levels: [5] },
+  { id: 'S6', title: 'Doctorate (PhD)', levels: [6] }
 ];
 
 // ── Main Component ──────────────────────────────────
@@ -119,7 +119,6 @@ export default function QualificationForm() {
           <div key={sec.id} className="level-section">
             <div className="section-header">
               <div className="section-title-wrap">
-                <div className="section-icon">{sec.icon}</div>
                 <div>
                   <div className="section-subtitle">Academic Level 0{sec.levels[0]}</div>
                   <div className="section-title">{sec.title}</div>
@@ -161,7 +160,7 @@ export default function QualificationForm() {
       {showBranchesFor && (
         <div className="branch-overlay">
           <div className="branch-modal animate-in zoom-in-95 duration-200">
-            <h2 className="text-2xl font-black text-white mb-2">{showBranchesFor.icon} Specify Branch</h2>
+            <h2 className="text-2xl font-black text-white mb-2">Specify Branch</h2>
             <p className="text-white/40 text-[10px] font-black uppercase mb-8 tracking-widest">{showBranchesFor.label}</p>
             
             <div className="max-h-[300px] overflow-y-auto pr-2">
