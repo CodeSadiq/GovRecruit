@@ -77,7 +77,7 @@ export default function ForYouPage() {
             <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
               No recruitments currently match your specific qualification level and branch.
             </p>
-            {!userProfile?.level && (
+            {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
               <Link
                 href="/profile"
                 className="mt-8 px-10 py-3 bg-[#1a3a8f] text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#122870] transition-all shadow-xl rounded-xl no-underline"
