@@ -81,8 +81,8 @@ export default function Navbar() {
           <NavLink href="/all-jobs">All Jobs</NavLink>
         </div>
 
-        {/* 👤 Personnel Access & ☰ MB MENU TOGGLE */}
-        <div className="flex items-center gap-1 md:gap-4 ml-1 md:ml-10">
+        {/* 👤 Personnel Access (Desktop Only) */}
+        <div className="hidden lg:flex items-center gap-4 ml-10">
           {!isLoggedIn ? (
             <Link
               href="/login"
@@ -131,10 +131,14 @@ export default function Navbar() {
             </>
           )}
 
-          {/* ☰ MB MENU TOGGLE (Far Right) */}
+        </div>
+
+        {/* ☰ MB MENU TOGGLE (Mobile Only) */}
+        <div className="flex lg:hidden items-center">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden text-white/80 hover:text-white focus:outline-none transition-colors ml-2"
+            className="p-2 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/20"
+            aria-label="Toggle Menu"
           >
             {isMobileMenuOpen ? <IconX /> : <IconMenu />}
           </button>
@@ -145,40 +149,108 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <>
           <div className="fixed inset-0 bg-black/60 z-[1000] lg:hidden animate-in fade-in duration-300" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="fixed top-0 right-0 h-full w-[280px] z-[1001] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-400 lg:hidden border-l border-white/10 opacity-100"
+          <div className="fixed top-0 right-0 h-full w-[280px] z-[1001] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-400 lg:hidden border-l border-white/10 opacity-100 flex flex-col"
             style={{ backgroundColor: '#0D244D' }}
           >
-            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-[#0D244D]">
+            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-[#0D244D] flex-shrink-0">
               <strong className="text-white text-sm font-serif font-bold uppercase tracking-widest opacity-40">Menu</strong>
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-white/60 hover:text-white"><IconX /></button>
             </div>
-            <div className="flex flex-col p-8 space-y-8 bg-[#0D244D] h-full">
-              <Link
-                href="/for-you"
-                className="group flex flex-col no-underline bg-transparent"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span className="text-white text-2xl font-serif font-bold group-hover:text-blue-400 transition-colors">For You</span>
-                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Matched Recruitment</span>
-              </Link>
-              <Link
-                href="/all-jobs"
-                className="group flex flex-col no-underline bg-transparent"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span className="text-white text-2xl font-serif font-bold group-hover:text-blue-400 transition-colors">All Jobs</span>
-                <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Global Repository</span>
-              </Link>
+            <div className="flex flex-col p-6 space-y-10 overflow-y-auto flex-1 pb-12">
+              
+              {/* 👤 Personnel Access (Top of Drawer) */}
+              <div className="flex flex-col gap-6">
+                {!isLoggedIn ? (
+                  <Link
+                    href="/login"
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 no-underline group active:bg-white/10 transition-all shadow-sm"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-400 group-hover:text-[#0D244D] transition-all">
+                      <IconUser />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-white text-lg font-serif font-bold group-hover:text-amber-400 transition-colors">Candidate Login</span>
+                      <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Access your dashboard</span>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="space-y-6">
+                    {/* User Profile Card */}
+                    <div className="p-5 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4 shadow-sm">
+                      <div className="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-serif text-xl font-bold border border-blue-400/30 flex-shrink-0">
+                        {userProfile?.fullName?.charAt(0) || 'C'}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em] mb-0.5">Signed in as</span>
+                        <span className="text-white text-[17px] font-serif font-bold leading-tight decoration-white/10">{userProfile?.fullName || 'Candidate'}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Action Links */}
+                    <div className="flex flex-col gap-3">
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-4 p-3.5 rounded-xl hover:bg-white/5 transition-all no-underline group"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <div className="text-white/30 group-hover:text-blue-400 transition-colors flex-shrink-0"><IconUser /></div>
+                        <div className="flex flex-col">
+                          <span className="text-white text-[15px] font-serif font-bold group-hover:text-blue-400 transition-colors">Profile Settings</span>
+                          <span className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Personal details</span>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-              <div className="pt-12 border-t border-white/5 bg-transparent">
+              {/* 🗺 Navigation Links */}
+              <div className="flex flex-col gap-2 pt-2">
+                <div className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em] mb-2 px-4">Navigation</div>
                 <Link
-                  href="/"
-                  className="text-white/40 hover:text-white text-sm font-serif font-bold no-underline flex items-center gap-2"
+                  href="/for-you"
+                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-all no-underline group"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <span className="text-xs">←</span> Return to Dashboard
+                  <div className="w-1 h-8 rounded-full bg-blue-500 group-hover:bg-blue-400 transition-all opacity-40 group-hover:opacity-100 flex-shrink-0"></div>
+                  <div className="flex flex-col">
+                    <span className="text-white text-xl font-serif font-bold group-hover:text-blue-400 transition-colors">For You</span>
+                    <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Matched recruitment</span>
+                  </div>
+                </Link>
+                <Link
+                  href="/all-jobs"
+                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-all no-underline group"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <div className="w-1 h-8 rounded-full bg-white opacity-10 group-hover:opacity-40 transition-all flex-shrink-0"></div>
+                  <div className="flex flex-col">
+                    <span className="text-white text-xl font-serif font-bold group-hover:text-white transition-colors">All Jobs</span>
+                    <span className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Global repository</span>
+                  </div>
                 </Link>
               </div>
+
+              {/* 🚪 Logout (Bottom of Drawer) */}
+              {isLoggedIn && (
+                <div className="border-t border-white/5 pt-10 mt-auto pb-4">
+                  <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8"></div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left bg-transparent border-none p-0 flex items-center gap-4 p-4 rounded-xl hover:bg-red-500/5 transition-all group cursor-pointer"
+                  >
+                    <div className="text-red-400/30 group-hover:text-red-400 transition-colors flex-shrink-0">
+                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-red-400 text-lg font-serif font-bold group-hover:text-red-300 transition-colors">Logout Session</span>
+                      <span className="text-[10px] text-white/20 font-bold uppercase tracking-widest">Exit your account</span>
+                    </div>
+                  </button>
+                </div>
+              )}
+
             </div>
           </div>
         </>

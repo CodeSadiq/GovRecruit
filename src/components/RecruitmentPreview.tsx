@@ -11,10 +11,12 @@ const IconBriefcase = () => <svg width="14" height="14" viewBox="0 0 24 24" fill
 const IconShield = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>;
 const IconCreditCard = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>;
 const IconExternalLink = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>;
+const IconCheckGreen = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>;
 
 // ── CONSTANTS ────────────────────────────────────────────────────────────────
 const CAT_LABELS: Record<string, string> = { general: "GEN", ews: "EWS", obc: "OBC", sc: "SC", st: "ST", pwd: "PwBD" };
 const catCols = ["general", "ews", "obc", "sc", "st", "pwd"] as const;
+const RELAX_LABELS: Record<string, string> = { obc: "OBC", sc: "SC", st: "ST", pwd: "PwBD", exServiceman: "Ex-SM", female: "Female" };
 
 // ── STYLES ───────────────────────────────────────────────────────────────────
 const styles = `
@@ -220,6 +222,33 @@ const styles = `
 
   .tbl-scroll { overflow-x: auto; margin-bottom: 24px; }
 
+  /* ── QUAL CELL STYLES ── */
+  .qual-cell { padding: 10px 14px; border: 1px solid var(--border); vertical-align: top; background: #fff; min-width: 280px; }
+  .qual-course-pill { display: inline-block; font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--navy); background: rgba(30,58,95,0.07); border: 1px solid rgba(30,58,95,0.15); padding: 3px 9px; border-radius: 3px; margin-bottom: 4px; }
+  .qual-branch-line { font-size: 13px; color: var(--ink-light); margin: 5px 0 0 2px; line-height: 1.5; }
+  .qual-branch-label { font-weight: 600; color: var(--ink); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px; }
+  .qual-extra { font-size: 12px; color: var(--amber); background: var(--amber-bg); border-left: 3px solid #d97706; padding: 6px 10px; margin-top: 8px; line-height: 1.5; }
+  .qual-or-sep { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+  .qual-or-sep-line { flex: 1; height: 1px; background: var(--border); }
+  .qual-or-sep-badge { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--ink-muted); background: var(--paper-alt); border: 1px solid var(--border); padding: 2px 7px; border-radius: 4px; letter-spacing: 0.1em; }
+  .qual-appearing { display: inline-flex; align-items: center; gap: 5px; background: var(--green-light); color: var(--green); font-weight: 600; padding: 5px 9px; border-radius: 3px; font-size: 12px; margin-top: 10px; border: 1px solid #86efac; line-height: 1.4; }
+  .qual-prereq { display: inline-flex; align-items: center; gap: 5px; background: #fef9c3; color: #713f12; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 3px; margin-top: 8px; border: 1px solid #fde047; line-height: 1.4; }
+
+  /* ── AGE CELL STYLES ── */
+  .age-main { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .age-ason { font-size: 10px; color: var(--ink-muted); margin-top: 2px; white-space: nowrap; }
+  .age-relax-row { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--blue); margin-top: 2px; flex-wrap: wrap; }
+
+  /* ── SALARY CELL ── */
+  .sal-level { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--navy); }
+  .sal-range { font-size: 12px; color: var(--ink-muted); margin-top: 2px; white-space: nowrap; }
+
+  /* ── CAT VAC CHIP ── */
+  .cat-vac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; min-width: 160px; }
+  .cat-vac-chip { text-align: center; background: var(--paper-alt); border: 1px solid var(--border); border-radius: 2px; padding: 2px 0; }
+  .cat-vac-chip-label { font-family: var(--mono); font-size: 8px; color: var(--ink-muted); display: block; letter-spacing: 0.04em; }
+  .cat-vac-chip-val { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--navy); display: block; }
+
   /* ── EDITING ── */
   .jd-edit-field {
     background: rgba(59, 130, 246, 0.05);
@@ -236,57 +265,130 @@ function hasCategoryData(cv: any): boolean {
   return Object.values(cv).some(v => v != null);
 }
 
-function qualLabel(q: any): string {
-    if (!q) return "Not specified";
-    if (typeof q === "string") return q;
-    if (q.course !== undefined) {
-        const courseStr = Array.isArray(q.course) ? q.course.join(" / ") : String(q.course);
-        const validBranches = Array.isArray(q.branch) ? q.branch.filter((b: string) => b && b.toLowerCase() !== "any") : [];
-        const branchStr = validBranches.length > 0 ? ` in ${validBranches.join(", ")}` : "";
-        const extra = q.extraQualificationText?.trim() || "";
-        return `${courseStr}${branchStr}${extra ? ` — ${extra}` : ""}`;
-    }
-    if (q.name !== undefined) {
-        const branch = q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any") ? ` in ${q.branches.join(" / ")}` : "";
+// ── QUALIFICATION CELL ────────────────────────────────────────────────────────
+function QualCell({ post }: { post: any }) {
+  const q = post.qualification;
+  if (q && !Array.isArray(q) && q.course !== undefined) {
+    const courses: string[] = Array.isArray(q.course) ? q.course : [q.course];
+    const branches: string[] = (Array.isArray(q.branch) ? q.branch : []).filter((b: string) => b && b.toLowerCase() !== "any");
+    const extra: string = q.extraQualificationText?.trim() || "";
+    return (
+      <td className="qual-cell">
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          {courses.map((c, i) => (
+            <React.Fragment key={i}>
+              <span style={{ fontWeight: 700, color: "var(--navy)", fontSize: "12px" }}>{c}</span>
+              {i < courses.length - 1 && <div style={{ margin: "2px 0", fontSize: "10px", color: "var(--ink-muted)", fontStyle: "italic" }}>— OR —</div>}
+            </React.Fragment>
+          ))}
+        </div>
+        {branches.length > 0 && <div className="qual-branch-line"><span className="qual-branch-label">Stream / Branch: </span>{branches.join(", ")}</div>}
+        {extra && <div className="qual-extra"><strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>{extra}</div>}
+        {post.prerequisite?.length > 0 && <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>}
+        {post.appearingEligible && (
+          <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--ink-light)" }}>
+            <span style={{ fontWeight: 600, color: "var(--green)" }}><IconCheckGreen /> Appearing eligible</span>
+            {post.appearingConditions ? ` — ${post.appearingConditions}` : ""}
+          </div>
+        )}
+      </td>
+    );
+  }
+  const qualArr: any[] = Array.isArray(q) ? q : q ? [q] : [];
+  if (qualArr.length === 0) return <td className="qual-cell" style={{ color: "var(--ink-muted)", fontStyle: "italic" }}>Not specified</td>;
+  return (
+    <td className="qual-cell">
+      {qualArr.map((item, i) => {
+        const name = item.name || item.qualification || "Degree";
+        const branches = (item.branches || item.branch || []).filter((b: string) => b && b.toLowerCase() !== "any");
         const extras: string[] = [];
-        if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
-        if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
-        if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
-        return `${q.name || "Degree"}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
-    }
-    return "Not specified";
+        if (item.streamRequired) extras.push(`Stream: ${item.streamRequired}`);
+        if (item.minMarksPercent) extras.push(`Min. ${item.minMarksPercent}% marks`);
+        if (item.minExperienceYears) extras.push(`${item.minExperienceYears} yr exp.`);
+        if (item.extraQualificationText?.trim()) extras.push(item.extraQualificationText.trim());
+        return (
+          <React.Fragment key={i}>
+            {i > 0 && <div style={{ margin: "4px 0", fontSize: "10px", color: "var(--ink-muted)", fontStyle: "italic" }}>— OR —</div>}
+            <span style={{ fontWeight: 700, color: "var(--navy)", fontSize: "12px" }}>{name}</span>
+            {branches.length > 0 && <div className="qual-branch-line"><span className="qual-branch-label">Branch: </span>{branches.join(", ")}</div>}
+            {extras.length > 0 && <div className="qual-extra"><strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>{extras.join(" · ")}</div>}
+          </React.Fragment>
+        );
+      })}
+      {post.prerequisite?.length > 0 && <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>}
+      {post.appearingEligible && (
+        <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--ink-light)" }}>
+          <span style={{ fontWeight: 600, color: "var(--green)" }}><IconCheckGreen /> Appearing eligible</span>
+          {post.appearingConditions ? ` — ${post.appearingConditions}` : ""}
+        </div>
+      )}
+    </td>
+  );
 }
 
-function qualFingerprint(p: any): string {
-    const qual = p.qualification;
-    if (qual && !Array.isArray(qual) && qual.course !== undefined) {
-        const courseKey = (Array.isArray(qual.course) ? [...qual.course].sort() : [qual.course]).join(",");
-        const branchKey = (Array.isArray(qual.branch) ? [...qual.branch].sort() : []).join(",");
-        const extraKey = qual.extraQualificationText?.trim() || "";
-        return `course:${courseKey}|branch:${branchKey}|extra:${extraKey}|app:${p.appearingEligible ? p.appearingConditions || "yes" : "no"}`;
-    }
-    const quals: any[] = Array.isArray(qual) ? qual : (qual ? [qual] : []);
-    return quals.map(qualLabel).join(" | ") + "|app:" + (p.appearingEligible ? p.appearingConditions || "yes" : "no");
+// ── AGE CELL ─────────────────────────────────────────────────────────────────
+function AgeCell({ post, job }: { post: any; job: any }) {
+  const pAL = post?.ageLimit || {};
+  const jAL = job?.ageLimit || {};
+  const min = pAL.min ?? jAL.min;
+  const max = pAL.max ?? jAL.max;
+  const asOn = pAL.asOnDate ?? jAL.asOnDate;
+  if (!min && !max) return <td className="center mono" style={{ color: "var(--ink-muted)", border: "1px solid var(--border)" }}>—</td>;
+  const rawRelax = (pAL.relaxation && Object.keys(pAL.relaxation).length > 0) ? pAL.relaxation : jAL.relaxation;
+  const relaxEntries = rawRelax ? Object.entries(rawRelax).filter(([, v]) => v != null && v !== 0 && !isNaN(Number(v))) as [string, number][] : [];
+  return (
+    <td className="center" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)" }}>
+      <div className="age-main" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "14px", lineHeight: "1.2" }}>{min && max ? `${min}–${max}` : max ? `≤ ${max}` : `≥ ${min}`}</div>
+      {asOn && <div className="age-ason" style={{ fontSize: "10px", color: "var(--ink-muted)", marginTop: "2px", fontWeight: 500 }}>as on {fmtDate(asOn)}</div>}
+      {relaxEntries.length > 0 && (
+        <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px" }}>
+          {relaxEntries.map(([cat, val], idx) => (
+            <span key={cat} style={{ fontSize: "11px", color: "var(--ink-light)", fontWeight: 600, whiteSpace: "nowrap" }}>
+              {RELAX_LABELS[cat] || cat.toUpperCase()}: {max ? Number(max) + Number(val) : `+${val}`}
+              {idx < relaxEntries.length - 1 ? <span style={{ color: "var(--border)", marginLeft: "6px", fontWeight: 400 }}>|</span> : ""}
+            </span>
+          ))}
+        </div>
+      )}
+    </td>
+  );
 }
 
-function groupPostsByQual(posts: any[]) {
-    const map = new Map<string, any>();
-    for (const p of posts) {
-        const fp = qualFingerprint(p);
-        if (!map.has(fp)) {
-            const qual = p.qualification;
-            let qualTexts = (qual && !Array.isArray(qual) && qual.course !== undefined) ? [qualLabel(qual)] : (Array.isArray(qual) ? qual : (qual ? [qual] : [])).map(qualLabel).filter(Boolean);
-            if (qualTexts.length === 0) qualTexts = ["Not specified"];
-            map.set(fp, {
-                qualTexts,
-                qualNote: p.qualificationNote || null,
-                appearingNote: p.appearingEligible ? (p.appearingConditions || "Appearing candidates eligible") : null,
-                posts: [],
-            });
-        }
-        map.get(fp)!.posts.push(p);
-    }
-    return Array.from(map.values());
+// ── SALARY CELL ───────────────────────────────────────────────────────────────
+function SalaryCell({ post, job }: { post: any; job: any }) {
+  const pSal = post?.salary || {};
+  const jSal = job?.salary || {};
+  const payLevel = pSal.payLevel ?? jSal.payLevel;
+  const min = pSal.min ?? jSal.min;
+  const max = pSal.max ?? jSal.max;
+  if (!payLevel && !min && !max) return <td className="center" style={{ padding: "10px 12px", border: "1px solid var(--border)", color: "var(--ink-muted)" }}>—</td>;
+  return (
+    <td className="center" style={{ padding: "10px 12px", border: "1px solid var(--border)", verticalAlign: "middle" }}>
+      {payLevel != null && <div className="sal-level" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "13px" }}>Level {payLevel}</div>}
+      {(min || max) ? (
+        <div className="sal-range" style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "2px" }}>{min ? fmtMoney(min) : ""}{min && max ? " – " : ""}{max ? fmtMoney(max) : ""}</div>
+      ) : null}
+    </td>
+  );
+}
+
+// ── CATEGORY VAC CELL ─────────────────────────────────────────────────────────
+function CatVacCell({ post, job }: { post: any; job: any }) {
+  const catVac = post?.categoryWiseVacancy || job?.categoryWiseVacancy;
+  const hasData = hasCategoryData(catVac);
+  if (!hasData) return <td className="center mono" style={{ fontSize: 15, padding: "10px 12px", border: "1px solid var(--border)", color: "var(--ink-muted)" }}>—</td>;
+  return (
+    <td style={{ padding: "10px 12px", border: "1px solid var(--border)", verticalAlign: "middle" }}>
+      <div className="cat-vac-grid">
+        {catCols.map((c) => (
+          <div key={c} className="cat-vac-chip">
+            <span className="cat-vac-chip-label">{CAT_LABELS[c]}</span>
+            <span className="cat-vac-chip-val">{catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"}</span>
+          </div>
+        ))}
+      </div>
+    </td>
+  );
 }
 
 const Editable = ({ editable, value, onUpdate, path }: any) => {
@@ -330,15 +432,12 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
   ];
 
   const rawPosts: any[] = (job.posts || []).length > 0 ? job.posts : [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }];
-  const postGroups = groupPostsByQual(rawPosts);
-  const overallCatVac = job.categoryWiseVacancyTotal || {};
-  const hasOverallCat = hasCategoryData(overallCatVac);
 
   return (
     <div className="jd">
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="jd-wrap">
-        
+
         {/* MASTHEAD */}
         <header className="jd-masthead">
           <div className="jd-eyebrow">Official Recruitment Notice</div>
@@ -406,91 +505,48 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
         {/* VACANCIES */}
         <div className="jd-section">
           <span className="jd-section-icon"><IconUsers /></span>
-          <span className="jd-section-title">Post-wise Vacancy</span>
+          <span className="jd-section-title">Post-wise Vacancy & Eligibility</span>
         </div>
         <div className="tbl-scroll">
           <table className="jd-table">
             <thead>
               <tr>
-                <th style={{ minWidth: 210 }}>Post / Designation</th>
-                <th className="center" style={{ width: 70 }}>Total</th>
-                {hasOverallCat && catCols.map(c => <th className="center" key={c} style={{ width: 50 }}>{CAT_LABELS[c]}</th>)}
-                <th style={{ minWidth: 280 }}>Qualification Details</th>
+                <th style={{ minWidth: 180 }}>Post / Designation</th>
+                <th className="center" style={{ width: 80 }}>Total</th>
+                <th className="center" style={{ minWidth: 170 }}>Category Vacancy</th>
+                <th className="center" style={{ minWidth: 130 }}>Age Limit (incl. Relaxation)</th>
+                <th className="center" style={{ minWidth: 120 }}>Salary / Pay Level</th>
+                <th style={{ minWidth: 280 }}>Qualification & Requirements</th>
               </tr>
             </thead>
             <tbody>
-              {postGroups.flatMap((grp, gi) => (
-                grp.posts.map((p: any, pi: number) => {
-                  const catVac = p.categoryWiseVacancy || {};
-                  return (
-                    <tr key={`${gi}-${pi}`}>
-                      <td>{p.name}</td>
-                      <td className="center mono bold" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
-                        {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
-                      </td>
-                      {hasOverallCat && catCols.map(c => (
-                        <td key={c} className="center mono" style={{ whiteSpace: "nowrap" }}>
-                          {catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"}
-                        </td>
-                      ))}
-                      {pi === 0 && (
-                        <td rowSpan={grp.posts.length} style={{ verticalAlign: "top", background: "#fff" }}>
-                           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                              {grp.qualTexts.map((qt: string, qIdx: number) => (
-                                <React.Fragment key={qIdx}>
-                                  <div style={{ fontWeight: 600, color: "var(--navy)", lineHeight: 1.5 }}>{qt}</div>
-                                  {qIdx < grp.qualTexts.length - 1 && (
-                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                      <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
-                                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--ink-muted)", padding: "2px 6px", borderRadius: "4px", border: "1px solid var(--border)" }}>OR</span>
-                                      <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
-                                    </div>
-                                  )}
-                                </React.Fragment>
-                              ))}
-                           </div>
-                           {grp.appearingNote && <div style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, marginTop: 12, paddingTop: 8, borderTop: "1px dashed var(--border)" }}>{grp.appearingNote}</div>}
-                           {grp.qualNote && <div style={{ fontSize: 12, color: "var(--amber)", marginTop: 8, borderLeft: "3px solid var(--amber)", paddingLeft: 10, background: "var(--amber-bg)", padding: "8px 10px", borderRadius: "0 4px 4px 0" }}>{grp.qualNote}</div>}
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })
+              {rawPosts.map((p: any, idx: number) => (
+                <tr key={idx}>
+                  <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
+                    {p.name}
+                  </td>
+                  <td className="center bold mono" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)", fontSize: 15, whiteSpace: "nowrap" }}>
+                    {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
+                  </td>
+                  <CatVacCell post={p} job={job} />
+                  <AgeCell post={p} job={job} />
+                  <SalaryCell post={p} job={job} />
+                  <QualCell post={p} />
+                </tr>
               ))}
               <tr className="tr-total">
                 <td>Total (All Posts)</td>
-                <td className="center mono" style={{ whiteSpace: "nowrap" }}>{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</td>
-                {hasOverallCat && catCols.map(c => <td key={c} className="center mono" style={{ whiteSpace: "nowrap" }}>{overallCatVac[c] != null ? overallCatVac[c].toLocaleString("en-IN") : "—"}</td>)}
-                <td></td>
+                <td className="center mono" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
+                  {job.totalVacancy?.toLocaleString("en-IN") ?? "—"}
+                </td>
+                <td />
+                <td />
+                <td />
+                <td />
               </tr>
             </tbody>
           </table>
         </div>
-
-        {/* AGE LIMIT */}
-        <div className="jd-section">
-          <span className="jd-section-icon"><IconUsers /></span>
-          <span className="jd-section-title">Age Limit</span>
-        </div>
-        <table className="jd-table">
-          <thead><tr><th>Category</th><th className="center">Min</th><th className="center">Max</th><th>As on Date</th></tr></thead>
-          <tbody>
-            <tr>
-              <td>General / UR</td>
-              <td className="center mono">{al.min ? `${al.min} yrs` : "—"}</td>
-              <td className="center mono bold">{al.max ? `${al.max} yrs` : "—"}</td>
-              <td className="mono">{al.asOnDate ? fmtDate(al.asOnDate) : "—"}</td>
-            </tr>
-            {relaxRows.map(r => (
-              <tr key={r.label}>
-                <td>{r.label}</td>
-                <td className="center mono">{al.min ? `${al.min} yrs` : "—"}</td>
-                <td className="center mono green">{al.max ? `${al.max + r.val} yrs (+${r.val})` : "—"}</td>
-                <td className="mono">{al.asOnDate ? fmtDate(al.asOnDate) : "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
 
         {/* FEE */}
         <div className="jd-section">
@@ -509,6 +565,58 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
           </tbody>
         </table>
 
+        {/* RECRUITMENT PROCEDURES */}
+        {(() => {
+          const getSteps = (primary: any, secondary?: any, tertiary?: any) => {
+            const val = primary || secondary || tertiary;
+            if (!val) return [];
+            if (Array.isArray(val)) return val;
+            if (typeof val === 'string') return val.split(/\n|,|;/).map(s => s.trim()).filter(Boolean);
+            return [];
+          };
+
+          const selSteps = getSteps(job.selectionProcess, (job as any).selection_process, (job as any).selectionStages);
+          const appSteps = getSteps(job.applicationProcess, (job as any).application_process, (job as any).howToApply);
+
+          return (
+            <>
+              {selSteps.length > 0 && (
+                <>
+                  <div className="jd-section">
+                    <span className="jd-section-icon"><IconBriefcase /></span>
+                    <span className="jd-section-title">Selection Process</span>
+                  </div>
+                  <div style={{ padding: "0 4px", fontSize: 14 }}>
+                    {selSteps.map((stage: string, idx: number) => (
+                      <div key={idx} style={{ display: "flex", gap: "10px", marginBottom: "8px", alignItems: "flex-start" }}>
+                        <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "var(--navy)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", flexShrink: 0, fontWeight: 700 }}>{idx + 1}</div>
+                        <div style={{ color: "var(--ink-light)", lineHeight: "1.4" }}>{stage}</div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {appSteps.length > 0 && (
+                <>
+                  <div className="jd-section">
+                    <span className="jd-section-icon"><IconInfo /></span>
+                    <span className="jd-section-title">How to Apply</span>
+                  </div>
+                  <div style={{ padding: "0 4px", fontSize: 14 }}>
+                    {appSteps.map((step: string, idx: number) => (
+                      <div key={idx} style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "flex-start" }}>
+                        <div style={{ width: "20px", height: "20px", borderRadius: "4px", background: "var(--paper-alt)", border: "1px solid var(--border)", color: "var(--navy)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", flexShrink: 0, fontWeight: 700 }}>{idx + 1}</div>
+                        <div style={{ color: "var(--ink-light)", lineHeight: "1.5" }}>{step}</div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          );
+        })()}
+
         {/* TIMELINE */}
         <div className="jd-section">
           <span className="jd-section-icon"><IconCalendar /></span>
@@ -516,12 +624,18 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
         </div>
         <table className="jd-table">
           <tbody>
-            {timelineRows.filter(row => dates[row.key as keyof typeof dates]).map(row => (
-              <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
-                <td className="label">{row.label}</td>
-                <td className="bold">{fmtDate(dates[row.key as keyof typeof dates] as string)}</td>
-              </tr>
-            ))}
+            {timelineRows.map(row => {
+              const val = dates[row.key as keyof typeof dates];
+              if (!val && row.key !== 'examDate') return null;
+              return (
+                <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
+                  <td className="label">{row.label}</td>
+                  <td className={val ? "bold" : "red bold"}>
+                    {val ? fmtDate(val as string) : "Not announced"}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 

@@ -10,6 +10,18 @@ const PostSchema = new mongoose.Schema({
   appearingConditions: { type: String },
   qualificationNote: { type: String },
   qualification: mongoose.Schema.Types.Mixed,
+  ageLimit: {
+    min: Number,
+    max: Number,
+    asOnDate: String,
+    relaxation: mongoose.Schema.Types.Mixed
+  },
+  salary: {
+    payLevel: Number,
+    min: Number,
+    max: Number,
+    currency: String
+  },
   categoryWiseVacancy: {
     general: Number,
     ews: Number,
@@ -18,7 +30,7 @@ const PostSchema = new mongoose.Schema({
     st: Number,
     pwd: Number
   }
-}, { _id: false });
+}, { _id: false, strict: false });
 
 const JobSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
@@ -98,5 +110,9 @@ const JobSchema = new mongoose.Schema({
   notificationType: { type: String },
   active: { type: Boolean, default: true }
 }, { timestamps: true, strict: false });
+// Purge cache in development so Next.js picks up changes seamlessly
+if (process.env.NODE_ENV !== 'production' && mongoose.models.Job) {
+  delete mongoose.models.Job;
+}
 
 export default mongoose.models.Job || mongoose.model('Job', JobSchema);

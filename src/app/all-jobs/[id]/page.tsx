@@ -32,7 +32,7 @@ const IconExternalLink = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
 );
 const IconCheckGreen = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
 );
 
 // ── STYLES ───────────────────────────────────────────────────────────────────
@@ -264,126 +264,183 @@ const styles = `
     font-size: 13px;
   }
 
-  /* ── QUALIFICATION DISPLAY (NEW) ── */
-  .jd-qual-container {
+  /* ── QUAL CELL STYLES ── */
+  .qual-cell {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    vertical-align: top;
     background: #fff;
-    padding: 0;
+    min-width: 280px;
   }
 
-  .jd-qual-block {
-    margin-bottom: 14px;
-  }
-
-  .jd-qual-block:last-child {
-    margin-bottom: 0;
-  }
-
-  /* Course/Degree Name */
-  .jd-qual-course {
+  .qual-course-pill {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 13px;
     font-weight: 700;
     color: var(--navy);
-    font-size: 15px;
-    margin-bottom: 5px;
-    display: inline-block;
-    padding: 3px 8px;
-    background: rgba(30, 58, 95, 0.06);
+    background: rgba(30,58,95,0.07);
+    border: 1px solid rgba(30,58,95,0.15);
+    padding: 3px 9px;
     border-radius: 3px;
+    margin-bottom: 4px;
   }
 
-  /* Branch/Specialization */
-  .jd-qual-branch {
+  .qual-branch-line {
     font-size: 13px;
     color: var(--ink-light);
-    margin: 4px 0 4px 16px;
-    padding-left: 0;
+    margin: 5px 0 0 2px;
+    line-height: 1.5;
   }
 
-  .jd-qual-branch-label {
+  .qual-branch-label {
     font-weight: 600;
     color: var(--ink);
-    display: block;
-    margin-bottom: 3px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 4px;
   }
 
-  .jd-qual-branch-list {
-    font-size: 13px;
-    color: var(--ink-light);
+  .qual-extra {
+    font-size: 12px;
+    color: var(--amber);
+    background: var(--amber-bg);
+    border-left: 3px solid #d97706;
+    padding: 6px 10px;
+    margin-top: 8px;
     line-height: 1.5;
   }
 
-  /* Extra requirements (marks, experience, etc.) */
-  .jd-qual-extra {
-    font-size: 13px;
-    color: var(--ink-light);
-    margin: 8px 0 0 16px;
-    padding-left: 10px;
-    border-left: 2px solid var(--border);
-    line-height: 1.5;
+  .qual-or-sep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .qual-or-sep-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .qual-or-sep-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    background: var(--paper-alt);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
   }
 
-  .jd-qual-extra-item {
-    margin: 2px 0;
-  }
-
-  /* Appearing eligibility badge */
-  .jd-qual-appearing {
+  .qual-appearing {
     display: inline-flex;
     align-items: center;
     gap: 5px;
     background: var(--green-light);
     color: var(--green);
     font-weight: 600;
-    padding: 6px 10px;
+    padding: 5px 9px;
     border-radius: 3px;
     font-size: 12px;
-    margin-top: 8px;
-    border: 1px solid #86efac;
-  }
-
-  .jd-qual-appearing svg {
-    width: 13px;
-    height: 13px;
-    flex-shrink: 0;
-  }
-
-  /* Qualification note (amber warning box) */
-  .jd-qual-note {
-    font-size: 12px;
-    color: var(--amber);
-    background: var(--amber-bg);
-    border-left: 3px solid var(--amber);
-    padding: 8px 10px;
     margin-top: 10px;
-    line-height: 1.5;
+    border: 1px solid #86efac;
+    line-height: 1.4;
   }
 
-  .jd-qual-note strong {
-    color: var(--amber);
+  .qual-prereq {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #fef9c3;
+    color: #713f12;
+    font-size: 11px;
     font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 3px;
+    margin-top: 8px;
+    border: 1px solid #fde047;
+    line-height: 1.4;
   }
 
-  /* OR separator between multiple qualifications */
-  .jd-qual-separator {
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
+  /* ── AGE CELL STYLES ── */
+  .age-main {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+  .age-ason {
+    font-size: 10px;
     color: var(--ink-muted);
-    margin: 10px 0;
-    padding: 4px 0;
+    margin-top: 2px;
+    white-space: nowrap;
   }
-
-  /* ── COMMON QUAL NOTICE ── */
-  .jd-qual-banner {
+  .age-relax-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--blue);
+    margin-top: 2px;
+    flex-wrap: wrap;
+  }
+  .age-relax-chip {
     background: var(--blue-bg);
     border: 1px solid #bfdbfe;
-    border-left: 3px solid var(--blue);
-    padding: 10px 14px;
-    font-size: 14px;
-    color: var(--ink);
-    margin-bottom: 10px;
-    line-height: 1.6;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
   }
-  .jd-qual-banner strong { color: var(--blue); }
+
+  /* ── SALARY CELL ── */
+  .sal-level {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .sal-range {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  /* ── CAT VAC CHIP ── */
+  .cat-vac-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    min-width: 160px;
+  }
+  .cat-vac-chip {
+    text-align: center;
+    background: var(--paper-alt);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2px 0;
+  }
+  .cat-vac-chip-label {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--ink-muted);
+    display: block;
+    letter-spacing: 0.04em;
+  }
+  .cat-vac-chip-val {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    display: block;
+  }
 
   /* ── ELIGIBILITY BADGES ── */
   .jd-badges {
@@ -500,13 +557,13 @@ const styles = `
     .jd-table td { padding: 10px 12px; font-size: 15px; word-break: break-word; }
     .jd-table td.label { width: 140px; min-width: 140px; }
     .jd-apply { font-size: 18px; padding: 20px; margin-top: 32px; word-break: break-all; }
-    .jd-qual-course { font-size: 14px; }
-    .jd-qual-branch, .jd-qual-extra { font-size: 12px; }
+    .qual-course-pill { font-size: 12px; }
+    .qual-branch-line, .qual-extra { font-size: 11px; }
+    .cat-vac-grid { grid-template-columns: repeat(3, 1fr); }
   }
 `;
 
 // ── DATA FETCHING ─────────────────────────────────────────────────────────────
-
 async function getJob(id: string): Promise<JobPost | null> {
   try {
     await dbConnect();
@@ -528,122 +585,282 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
 const CAT_LABELS: Record<string, string> = {
   general: "GEN", ews: "EWS", obc: "OBC", sc: "SC", st: "ST", pwd: "PwBD",
 };
 const catCols = ["general", "ews", "obc", "sc", "st", "pwd"] as const;
 
+const RELAX_LABELS: Record<string, string> = {
+  obc: "OBC", sc: "SC", st: "ST", pwd: "PwBD",
+  exServiceman: "Ex-SM", female: "Female",
+};
+
+const DATE_ROWS: { label: string; key: string; highlight?: boolean }[] = [
+  { label: "Notification Released", key: "notificationRelease" },
+  { label: "Application Opens", key: "startDate" },
+  { label: "Application Closes", key: "lastDate", highlight: true },
+  { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
+  { label: "Correction Window Closes", key: "correctionWindowLastDate" },
+  { label: "Admit Card", key: "admitCardDate" },
+  { label: "Examination Date", key: "examDate", highlight: true },
+  { label: "Result Declaration", key: "resultDate" },
+  { label: "Interview", key: "interviewDate" },
+  { label: "Document Verification", key: "documentVerificationDate" },
+];
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 function hasCategoryData(catObj: any): boolean {
   if (!catObj) return false;
   return Object.values(catObj).some((v) => v !== null && v !== undefined);
 }
 
-// ── QUALIFICATION LABEL ───────────────────────────────────────────────────────
-function qualLabel(q: any): string {
-    if (!q) return "Not specified";
-    if (typeof q === "string") return q;
+/** Derive a representative age limit from posts[] for the hero strip */
+function deriveAgeLimitFromPosts(posts: any[]): { min: number | null; max: number | null; asOnDate: string | null } {
+  for (const p of posts) {
+    if (p.ageLimit?.max) return { min: p.ageLimit.min ?? null, max: p.ageLimit.max, asOnDate: p.ageLimit.asOnDate ?? null };
+  }
+  return { min: null, max: null, asOnDate: null };
+}
 
-    if (q.course !== undefined) {
-        const courseStr = Array.isArray(q.course) ? q.course.join(" / ") : String(q.course);
-        const validBranches = Array.isArray(q.branch) ? q.branch.filter((b: string) => b && b.toLowerCase() !== "any") : [];
-        const branchStr = validBranches.length > 0 ? ` in ${validBranches.join(", ")}` : "";
-        const extra = q.extraQualificationText?.trim() || "";
-        return `${courseStr}${branchStr}${extra ? ` — ${extra}` : ""}`;
+/** Derive a representative salary from posts[] for the hero strip */
+function deriveSalaryFromPosts(posts: any[]): { payLevel: number | null; min: number | null; max: number | null } {
+  for (const p of posts) {
+    if (p.salary?.payLevel || p.salary?.min || p.salary?.max) {
+      return { payLevel: p.salary.payLevel ?? null, min: p.salary.min ?? null, max: p.salary.max ?? null };
     }
+  }
+  return { payLevel: null, min: null, max: null };
+}
 
-    if (q.name !== undefined) {
-        const branch = q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any") ? ` in ${q.branches.join(" / ")}` : "";
+// ── QUALIFICATION CELL ────────────────────────────────────────────────────────
+/**
+ * Renders the rich qualification object from the new schema:
+ *   { course: string[], branch: string[], extraQualificationText: string }
+ * Also handles legacy string / array-of-objects formats gracefully.
+ */
+function QualCell({ post, rowSpan }: { post: any; rowSpan?: number }) {
+  const q = post.qualification;
+
+  // ── NEW SCHEMA: { course, branch, extraQualificationText } ──
+  if (q && !Array.isArray(q) && q.course !== undefined) {
+    const courses: string[] = Array.isArray(q.course) ? q.course : [q.course];
+    const branches: string[] = (Array.isArray(q.branch) ? q.branch : []).filter(
+      (b: string) => b && b.toLowerCase() !== "any"
+    );
+    const extra: string = q.extraQualificationText?.trim() || "";
+
+    return (
+      <td className="qual-cell" rowSpan={rowSpan}>
+        {/* Course pills — removed container per feedback */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          {courses.map((c, i) => (
+            <React.Fragment key={i}>
+              <span style={{ fontWeight: 700, color: "var(--navy)", fontSize: "14.5px" }}>{c}</span>
+              {i < courses.length - 1 && (
+                <div style={{ margin: "2px 0", fontSize: "12px", color: "var(--ink-muted)", fontStyle: "italic" }}>
+                  — OR —
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Branch / Specialization */}
+        {branches.length > 0 && (
+          <div className="qual-branch-line">
+            <span className="qual-branch-label">Stream / Branch: </span>
+            {branches.join(", ")}
+          </div>
+        )}
+
+        {/* Extra requirements (marks, exp, certs) */}
+        {extra && (
+          <div className="qual-extra">
+            <strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>
+            {extra}
+          </div>
+        )}
+
+        {/* Prerequisite exam */}
+        {post.prerequisite?.length > 0 && (
+          <div className="qual-prereq">
+            ⚠ {post.prerequisite.join("; ")}
+          </div>
+        )}
+
+        {/* Appearing eligibility — removed container per feedback */}
+        {post.appearingEligible && (
+          <div style={{ marginTop: "8px", fontSize: "13px", color: "var(--ink-light)", lineHeight: "1.4" }}>
+            <span style={{ fontWeight: 600, color: "var(--green)" }}>Appearing eligible</span>
+            {post.appearingConditions ? ` — ${post.appearingConditions}` : ""}
+          </div>
+        )}
+      </td>
+    );
+  }
+
+  const qualArr: any[] = Array.isArray(q) ? q : q ? [q] : [];
+
+  if (qualArr.length === 0) {
+    return <td className="qual-cell" rowSpan={rowSpan} style={{ color: "var(--ink-muted)", fontStyle: "italic" }}>Not specified</td>;
+  }
+
+  return (
+    <td className="qual-cell" rowSpan={rowSpan}>
+      {qualArr.map((item, i) => {
+        const name = item.name || item.qualification || "Degree";
+        const branches: string[] = (item.branches || item.branch || []).filter(
+          (b: string) => b && b.toLowerCase() !== "any"
+        );
         const extras: string[] = [];
-        if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
-        if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
-        if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
-        return `${q.name || "Degree"}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
-    }
-    return "Not specified";
+        if (item.streamRequired) extras.push(`Stream: ${item.streamRequired}`);
+        if (item.minMarksPercent) extras.push(`Min. ${item.minMarksPercent}% marks`);
+        if (item.minExperienceYears) extras.push(`${item.minExperienceYears} yr exp.`);
+        if (item.extraQualificationText?.trim()) extras.push(item.extraQualificationText.trim());
+
+        return (
+          <React.Fragment key={i}>
+            {i > 0 && (
+              <div style={{ margin: "4px 0", fontSize: "12px", color: "var(--ink-muted)", fontStyle: "italic" }}>
+                — OR —
+              </div>
+            )}
+            <span style={{ fontWeight: 700, color: "var(--navy)", fontSize: "14.5px" }}>{name}</span>
+            {branches.length > 0 && (
+              <div className="qual-branch-line">
+                <span className="qual-branch-label">Branch: </span>
+                {branches.join(", ")}
+              </div>
+            )}
+            {extras.length > 0 && (
+              <div className="qual-extra">
+                <strong style={{ fontWeight: 600, color: "var(--amber)" }}>Note: </strong>
+                {extras.join(" · ")}
+              </div>
+            )}
+          </React.Fragment>
+        );
+      })}
+
+      {post.prerequisite?.length > 0 && (
+        <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>
+      )}
+      {post.appearingEligible && (
+        <div style={{ marginTop: "8px", fontSize: "13px", color: "var(--ink-light)", lineHeight: "1.4" }}>
+          <span style={{ fontWeight: 600, color: "var(--green)" }}>Appearing eligible</span>
+          {post.appearingConditions ? ` — ${post.appearingConditions}` : ""}
+        </div>
+      )}
+    </td>
+  );
 }
 
-function qualFingerprint(p: any): string {
-    const qual = p.qualification;
-    if (qual && !Array.isArray(qual) && qual.course !== undefined) {
-        const courseKey = (Array.isArray(qual.course) ? [...qual.course].sort() : [qual.course]).join(",");
-        const branchKey = (Array.isArray(qual.branch) ? [...qual.branch].sort() : []).join(",");
-        const extraKey = qual.extraQualificationText?.trim() || "";
-        return `course:${courseKey}|branch:${branchKey}|extra:${extraKey}|app:${p.appearingEligible ? p.appearingConditions || "yes" : "no"}`;
-    }
-    const quals: any[] = Array.isArray(qual) ? qual : (qual ? [qual] : []);
-    return quals.map(qualLabel).join(" | ") + "|app:" + (p.appearingEligible ? p.appearingConditions || "yes" : "no");
+// ── AGE CELL ─────────────────────────────────────────────────────────────────
+function AgeCell({ post, job }: { post: any; job: any }) {
+  // Deep fallback: Mongoose might return an empty object {} for omitted subdocuments
+  const pAL = post?.ageLimit || {};
+  const jAL = job?.ageLimit || {};
+
+  const min = pAL.min ?? jAL.min;
+  const max = pAL.max ?? jAL.max;
+  const asOn = pAL.asOnDate ?? jAL.asOnDate;
+
+  if (!min && !max) return <td className="jd-table center mono" style={{ color: "var(--ink-muted)", border: "1px solid var(--border)" }}>—</td>;
+
+  const rawRelax = (pAL.relaxation && Object.keys(pAL.relaxation).length > 0) ? pAL.relaxation : jAL.relaxation;
+  const relaxEntries = rawRelax
+    ? Object.entries(rawRelax).filter(([, v]) => v != null && v !== 0 && !isNaN(Number(v))) as [string, number][]
+    : [];
+
+  return (
+    <td className="center" style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)" }}>
+      <div className="age-main" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "14px", lineHeight: "1.2" }}>
+        {min && max ? `${min}–${max}` : max ? `≤ ${max}` : `≥ ${min}`}
+      </div>
+      {asOn && (
+        <div className="age-ason" style={{ fontSize: "10px", color: "var(--ink-muted)", marginTop: "2px", fontWeight: 500 }}>
+          as on {fmtDate(asOn)}
+        </div>
+      )}
+      {relaxEntries.length > 0 && (
+        <div style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px" }}>
+          {relaxEntries.map(([cat, val], idx) => (
+            <span key={cat} style={{ fontSize: "11px", color: "var(--ink-light)", fontWeight: 600, whiteSpace: "nowrap" }}>
+              {RELAX_LABELS[cat] || cat.toUpperCase()}: {max ? Number(max) + Number(val) : `+${val}`}
+              {idx < relaxEntries.length - 1 ? <span style={{ color: "var(--border)", marginLeft: "6px", fontWeight: 400 }}>|</span> : ""}
+            </span>
+          ))}
+        </div>
+      )}
+    </td>
+  );
 }
 
-function groupPostsByQual(posts: any[]): QualGroup[] {
-    const map = new Map<string, QualGroup>();
-    for (const p of posts) {
-        const fp = qualFingerprint(p);
-        if (!map.has(fp)) {
-            const qual = p.qualification;
-            let qualTexts = (qual && !Array.isArray(qual) && qual.course !== undefined) ? [qualLabel(qual)] : (Array.isArray(qual) ? qual : (qual ? [qual] : [])).map(qualLabel).filter(Boolean);
-            if (qualTexts.length === 0) qualTexts = ["Not specified"];
-            map.set(fp, {
-                qualTexts,
-                qualNote: p.qualificationNote || null,
-                appearingNote: p.appearingEligible ? (p.appearingConditions || "Appearing candidates eligible") : null,
-                posts: [],
-            });
-        }
-        map.get(fp)!.posts.push(p);
-    }
-    return Array.from(map.values());
+// ── SALARY CELL ───────────────────────────────────────────────────────────────
+function SalaryCell({ post, job }: { post: any; job: any }) {
+  // Deep fallback
+  const pSal = post?.salary || {};
+  const jSal = job?.salary || {};
+
+  const payLevel = pSal.payLevel ?? jSal.payLevel;
+  const min = pSal.min ?? jSal.min;
+  const max = pSal.max ?? jSal.max;
+
+  if (!payLevel && !min && !max) {
+    return <td className="center" style={{ padding: "10px 12px", border: "1px solid var(--border)", color: "var(--ink-muted)" }}>—</td>;
+  }
+  return (
+    <td className="center" style={{ padding: "10px 12px", border: "1px solid var(--border)", verticalAlign: "middle" }}>
+      {payLevel != null && <div className="sal-level" style={{ fontWeight: 700, color: "var(--ink)", fontSize: "13px" }}>Level {payLevel}</div>}
+      {(min || max) ? (
+        <div className="sal-range" style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "2px" }}>
+          {min ? fmtMoney(min) : ""}
+          {min && max ? " – " : ""}
+          {max ? fmtMoney(max) : ""}
+        </div>
+      ) : null}
+    </td>
+  );
+}
+
+// ── CATEGORY VAC CELL ─────────────────────────────────────────────────────────
+function CatVacCell({ post, job }: { post: any; job: any }) {
+  const catVac = post.categoryWiseVacancy || job.categoryWiseVacancy;
+  const hasData = hasCategoryData(catVac);
+  if (!hasData) {
+    return (
+      <td className="center mono" style={{ padding: "10px 12px", border: "1px solid var(--border)", color: "var(--ink-muted)", fontSize: 15 }}>
+        —
+      </td>
+    );
+  }
+  return (
+    <td style={{ padding: "10px 12px", border: "1px solid var(--border)", verticalAlign: "middle" }}>
+      <div className="cat-vac-grid">
+        {catCols.map((c) => (
+          <div key={c} className="cat-vac-chip">
+            <span className="cat-vac-chip-label">{CAT_LABELS[c]}</span>
+            <span className="cat-vac-chip-val">
+              {catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </td>
+  );
 }
 
 // ── PAGE COMPONENT ─────────────────────────────────────────────────────────────
-
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const job = await getJob(id);
   if (!job) notFound();
 
-  const al = job.ageLimit || {};
   const af = job.applicationFee || { paymentMode: [] };
   const dates = job.importantDates || {};
 
-  // Fee grouping: amount → categories
-  const feeMap: Record<string, string[]> = {};
-  Object.entries(af).forEach(([cat, val]) => {
-    if (cat === "paymentMode" || val === null || val === undefined) return;
-    const k = String(val);
-    if (!feeMap[k]) feeMap[k] = [];
-    feeMap[k].push(CAT_LABELS[cat] || cat.toUpperCase());
-  });
-
-  // Age relaxation rows
-  const relaxRows = al.relaxation
-    ? Object.entries(al.relaxation)
-      .filter(([, v]) => v !== null)
-      .map(([cat, val]) => ({
-        label:
-          cat === "exServiceman" ? "Ex-Serviceman"
-            : cat === "female" ? "Female"
-              : cat.toUpperCase(),
-        val: val as number,
-      }))
-    : [];
-
-  // Timeline rows
-  const dateRows: { label: string; key: string; highlight?: boolean }[] = [
-    { label: "Notification Released", key: "notificationRelease" },
-    { label: "Application Opens", key: "startDate" },
-    { label: "Application Closes", key: "lastDate", highlight: true },
-    { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
-    { label: "Correction Window Closes", key: "correctionWindowLastDate" },
-    { label: "Admit Card", key: "admitCardDate" },
-    { label: "Examination Date", key: "examDate", highlight: true },
-    { label: "Result Declaration", key: "resultDate" },
-    { label: "Interview", key: "interviewDate" },
-    { label: "Document Verification", key: "documentVerificationDate" },
-  ];
-
-  // Posts normalisation
+  // Normalise posts array
   const rawPosts: any[] =
     (job.posts || []).length > 0
       ? job.posts
@@ -651,11 +868,30 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         ? [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }]
         : [];
 
-  const postGroups = groupPostsByQual(rawPosts);
-  const singleGroup = postGroups.length === 1;
+  // Hero: derive age + salary from posts (new schema — per-post only)
+  const heroAge = deriveAgeLimitFromPosts(rawPosts);
+  const heroSal = deriveSalaryFromPosts(rawPosts);
 
-  const overallCatVac = job.categoryWiseVacancyTotal || {};
-  const hasOverallCat = hasCategoryData(overallCatVac);
+  // Check if any post has category-wise vacancy data
+  const anyPostHasCatVac = rawPosts.some((p) => hasCategoryData(p.categoryWiseVacancy));
+
+  // Check if all posts share identical salary (to decide whether to show salary column)
+  const salaryValues = rawPosts.map((p) => `${p.salary?.payLevel}|${p.salary?.min}|${p.salary?.max}`);
+  const allSameSalary = salaryValues.every((v) => v === salaryValues[0]);
+  const anySalary = rawPosts.some((p) => p.salary?.payLevel || p.salary?.min || p.salary?.max);
+
+  // Fee grouping: amount → categories
+  const feeMap: Record<string, string[]> = {};
+  const FEE_CAT_LABELS: Record<string, string> = {
+    general: "General", ews: "EWS", obc: "OBC", sc: "SC", st: "ST",
+    pwd: "PwBD", female: "Female", exServiceman: "Ex-Serviceman",
+  };
+  Object.entries(af).forEach(([cat, val]) => {
+    if (cat === "paymentMode" || val === null || val === undefined) return;
+    const k = String(val);
+    if (!feeMap[k]) feeMap[k] = [];
+    feeMap[k].push(FEE_CAT_LABELS[cat] || cat);
+  });
 
   return (
     <>
@@ -684,15 +920,25 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <div className="jd-hero-cell accent">
               <div className="jd-hero-label">Total Vacancies</div>
               <div className="jd-hero-value">{job.totalVacancy?.toLocaleString("en-IN") ?? "—"}</div>
-              <div className="jd-hero-sub">Posts to be filled</div>
+              <div className="jd-hero-sub">{rawPosts.length} post{rawPosts.length !== 1 ? "s" : ""}</div>
             </div>
             <div className="jd-hero-cell">
               <div className="jd-hero-label">Age Limit</div>
               <div className="jd-hero-value" style={{ fontSize: 22 }}>
-                {al.min && al.max ? `${al.min}–${al.max}` : al.max ? `≤ ${al.max}` : "—"}
+                {heroAge.min && heroAge.max
+                  ? `${heroAge.min}–${heroAge.max}`
+                  : heroAge.max
+                    ? `≤ ${heroAge.max}`
+                    : heroSal.payLevel
+                      ? `Level ${heroSal.payLevel}`
+                      : "—"}
               </div>
               <div className="jd-hero-sub">
-                years{al.asOnDate ? ` as on ${fmtDate(al.asOnDate)}` : ""}
+                {heroAge.max
+                  ? `years${heroAge.asOnDate ? ` as on ${fmtDate(heroAge.asOnDate)}` : ""}`
+                  : heroSal.payLevel
+                    ? "Pay Level"
+                    : "See post details"}
               </div>
             </div>
             <div className="jd-hero-cell">
@@ -725,19 +971,31 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               {job.notificationType && (
                 <tr><td className="label">Notification Type</td><td>{job.notificationType}</td></tr>
               )}
-              {job.salary?.payLevel && (
-                <tr><td className="label">Pay Level</td><td>Level {job.salary.payLevel}</td></tr>
+              {/* Salary shown in overview only if all posts share the same salary */}
+              {allSameSalary && heroSal.payLevel && (
+                <tr><td className="label">Pay Level</td><td>Level {heroSal.payLevel}</td></tr>
               )}
-              {(job.salary?.min || job.salary?.max) && (
+              {allSameSalary && (heroSal.min || heroSal.max) && (
                 <tr>
                   <td className="label">Salary</td>
                   <td className="bold">
-                    {job.salary?.min ? fmtMoney(job.salary.min) : ""}
-                    {job.salary?.max ? ` – ${fmtMoney(job.salary.max)}` : ""}
-                    {job.salary?.currency ? ` ${job.salary.currency}` : ""}
+                    {heroSal.min ? fmtMoney(heroSal.min) : ""}
+                    {heroSal.min && heroSal.max ? " – " : ""}
+                    {heroSal.max ? fmtMoney(heroSal.max) : ""}
+                    {" INR"}
                   </td>
                 </tr>
               )}
+              {/* Eligibility flags */}
+              {job.categoryEligibility?.length > 0 && (
+                <tr>
+                  <td className="label">Category Eligibility</td>
+                  <td>{job.categoryEligibility.join(", ")}</td>
+                </tr>
+              )}
+              {job.pwdEligible && <tr><td className="label">PwBD Eligible</td><td style={{ color: "var(--green)", fontWeight: 600 }}>Yes</td></tr>}
+              {job.femaleOnly && <tr><td className="label">Female Only</td><td style={{ color: "var(--crimson)", fontWeight: 600 }}>Yes</td></tr>}
+              {job.exServicemanQuota && <tr><td className="label">Ex-Serviceman Quota</td><td style={{ fontWeight: 600 }}>Yes</td></tr>}
               {job.officialWebsite && (
                 <tr>
                   <td className="label">Official Website</td>
@@ -753,79 +1011,53 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           </table>
 
           {/* ══════════════════════════════════════════════════════════════════
-              POST-WISE VACANCY WITH IMPROVED QUALIFICATION DISPLAY
+              POST-WISE VACANCY TABLE
+              Columns: Post | Vacancies | Category-wise | Age | Salary | Qualification
           ══════════════════════════════════════════════════════════════════ */}
           <div className="jd-section">
             <span className="jd-section-icon"><IconUsers /></span>
-            <span className="jd-section-title">Post-wise Vacancy</span>
+            <span className="jd-section-title">Post-wise Vacancy & Eligibility</span>
           </div>
 
           <div className="tbl-scroll">
             <table className="jd-table">
               <thead>
                 <tr>
-                  <th style={{ minWidth: 210 }}>Post / Designation</th>
-                  <th className="center" style={{ width: 70 }}>Total</th>
-                  {hasOverallCat && catCols.map(c => (
-                    <th className="center" key={c} style={{ width: 50 }}>{CAT_LABELS[c]}</th>
-                  ))}
-                  <th style={{ minWidth: 280 }}>Qualification Details</th>
+                  <th style={{ minWidth: 180 }}>Post / Designation</th>
+                  <th className="center" style={{ width: 80 }}>Total</th>
+                  <th className="center" style={{ minWidth: 170 }}>Category Vacancy</th>
+                  <th className="center" style={{ minWidth: 130 }}>Age Limit (incl. Relaxation)</th>
+                  <th className="center" style={{ minWidth: 120 }}>Salary / Pay Level</th>
+                  <th style={{ minWidth: 280 }}>Qualification & Requirements</th>
                 </tr>
               </thead>
               <tbody>
-                {postGroups.flatMap((grp, gi) => {
-                  return grp.posts.map((p: any, pi: number) => {
-                    const catVac = p.categoryWiseVacancy || {};
-                    const hasPostCat = hasCategoryData(catVac);
-                    return (
-                      <tr key={`${gi}-${pi}`}>
-                        <td>{p.name}</td>
-                        <td className="center mono bold" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
-                          {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
-                        </td>
-                        {hasOverallCat && catCols.map(c => (
-                          <td key={c} className="center mono"
-                            style={{ color: hasPostCat && catVac[c] != null ? "var(--navy)" : "var(--ink-muted)", whiteSpace: "nowrap" }}>
-                            {hasPostCat && catVac[c] != null ? catVac[c].toLocaleString("en-IN") : "—"}
-                          </td>
-                        ))}
-                        {pi === 0 && (
-                          <td rowSpan={grp.posts.length} style={{ verticalAlign: "top", background: "#fff" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                              {grp.qualTexts.map((qt, qIdx) => (
-                                <React.Fragment key={qIdx}>
-                                  <div style={{ fontWeight: 600, color: "var(--navy)", lineHeight: 1.5 }}>
-                                    {qt}
-                                  </div>
-                                  {qIdx < grp.qualTexts.length - 1 && (
-                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                      <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
-                                      <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--ink-muted)", background: "var(--paper-alt)", padding: "2px 6px", borderRadius: "4px", border: "1px solid var(--border)", letterSpacing: "0.1em" }}>OR</span>
-                                      <div style={{ flex: 1, height: "1px", background: "var(--border)" }}></div>
-                                    </div>
-                                  )}
-                                </React.Fragment>
-                              ))}
-                            </div>
+                {rawPosts.map((p: any, idx: number) => (
+                  <tr key={idx}>
+                    {/* Post name */}
+                    <td style={{ verticalAlign: "top", fontWeight: 600, fontSize: 14, paddingTop: 12 }}>
+                      {p.name}
+                    </td>
 
-                            {/* Appearing eligibility note */}
-                            {grp.appearingNote && (
-                              <div style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, marginTop: 12, paddingTop: 8, borderTop: "1px dashed var(--border)" }}>
-                                {grp.appearingNote}
-                              </div>
-                            )}
+                    {/* Total vacancy */}
+                    <td className="center bold mono"
+                      style={{ verticalAlign: "middle", padding: "10px 12px", border: "1px solid var(--border)", fontSize: 15, whiteSpace: "nowrap" }}>
+                      {p.totalVacancy != null ? p.totalVacancy.toLocaleString("en-IN") : "—"}
+                    </td>
 
-                            {grp.qualNote && (
-                              <div style={{ fontSize: 12, color: "var(--amber)", marginTop: 8, borderLeft: "3px solid var(--amber)", paddingLeft: 10, background: "var(--amber-bg)", padding: "8px 10px", borderRadius: "0 4px 4px 0" }}>
-                                <strong>Note:</strong> {grp.qualNote}
-                              </div>
-                            )}
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  });
-                })}
+                    {/* Category-wise vacancies — compact chip grid */}
+                    <CatVacCell post={p} job={job} />
+
+                    {/* Age limit + relaxation chips */}
+                    <AgeCell post={p} job={job} />
+
+                    {/* Salary (always shown) */}
+                    <SalaryCell post={p} job={job} />
+
+                    {/* Qualification — rich display */}
+                    <QualCell post={p} />
+                  </tr>
+                ))}
 
                 {/* Totals row */}
                 <tr className="tr-total">
@@ -833,57 +1065,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                   <td className="center mono" style={{ fontSize: 15, whiteSpace: "nowrap" }}>
                     {job.totalVacancy?.toLocaleString("en-IN") ?? "—"}
                   </td>
-                  {hasOverallCat && catCols.map(c => (
-                    <td key={c} className="center mono" style={{ whiteSpace: "nowrap" }}>
-                      {overallCatVac[c] != null ? overallCatVac[c].toLocaleString("en-IN") : "—"}
-                    </td>
-                  ))}
+                  <td />
+                  <td />
+                  <td />
                   <td />
                 </tr>
               </tbody>
             </table>
           </div>
-
-
-          {/* ══════════════════════════════════════════════════════════════════
-              AGE LIMIT — fully bordered, relaxation computed
-          ══════════════════════════════════════════════════════════════════ */}
-          {(al.min || al.max) && (
-            <>
-              <div className="jd-section">
-                <span className="jd-section-icon"><IconUsers /></span>
-                <span className="jd-section-title">Age Limit</span>
-              </div>
-              <table className="jd-table">
-                <thead>
-                  <tr>
-                    <th>Category</th>
-                    <th className="center">Min Age</th>
-                    <th className="center">Max Age</th>
-                    <th>As on Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>General / UR</td>
-                    <td className="center mono">{al.min ? `${al.min} yrs` : "—"}</td>
-                    <td className="center mono bold">{al.max ? `${al.max} yrs` : "—"}</td>
-                    <td className="mono">{al.asOnDate ? fmtDate(al.asOnDate) : "—"}</td>
-                  </tr>
-                  {relaxRows.map(r => (
-                    <tr key={r.label}>
-                      <td>{r.label}</td>
-                      <td className="center mono">{al.min ? `${al.min} yrs` : "—"}</td>
-                      <td className="center mono green">
-                        {al.max ? `${al.max + r.val} yrs (+${r.val})` : "—"}
-                      </td>
-                      <td className="mono">{al.asOnDate ? fmtDate(al.asOnDate) : "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
 
           {/* ══════════════════════════════════════════════════════════════════
               APPLICATION FEE
@@ -922,52 +1111,66 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           )}
 
           {/* ══════════════════════════════════════════════════════════════════
-              SELECTION PROCESS
+              RECRUITMENT PROCEDURES (Selection & Application)
           ══════════════════════════════════════════════════════════════════ */}
-          {job.selectionProcess?.length > 0 && (
-            <>
-              <div className="jd-section">
-                <span className="jd-section-icon"><IconBriefcase /></span>
-                <span className="jd-section-title">Selection Process</span>
-              </div>
-              <div className="jd-stages">
-                {job.selectionProcess.map((stage: string, idx: number) => (
-                  <React.Fragment key={idx}>
-                    <div className="jd-stage">
-                      <div className="jd-stage-num">{idx + 1}</div>
-                      <div className="jd-stage-label">{stage}</div>
+          {(() => {
+            const getSteps = (primary: any, secondary?: any, tertiary?: any) => {
+              const val = primary || secondary || tertiary;
+              if (!val) return [];
+              if (Array.isArray(val)) return val;
+              if (typeof val === 'string') return val.split(/\n|,|;/).map(s => s.trim()).filter(Boolean);
+              return [];
+            };
+
+            const selSteps = getSteps(job.selectionProcess, (job as any).selection_process, (job as any).selectionStages);
+            const appSteps = getSteps(job.applicationProcess, (job as any).application_process, (job as any).howToApply);
+
+            return (
+              <>
+                {selSteps.length > 0 && (
+                  <>
+                    <div className="jd-section">
+                      <span className="jd-section-icon"><IconBriefcase /></span>
+                      <span className="jd-section-title">Selection Process</span>
                     </div>
-                    {idx < job.selectionProcess.length - 1 && (
-                      <div className="jd-stage-arrow"><IconArrow /></div>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            </>
-          )}
+                    <div className="jd-stages">
+                      {selSteps.map((stage: string, idx: number) => (
+                        <React.Fragment key={idx}>
+                          <div className="jd-stage">
+                            <div className="jd-stage-num">{idx + 1}</div>
+                            <div className="jd-stage-label">{stage}</div>
+                          </div>
+                          {idx < selSteps.length - 1 && (
+                            <div className="jd-stage-arrow"><IconArrow /></div>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {appSteps.length > 0 && (
+                  <>
+                    <div className="jd-section">
+                      <span className="jd-section-icon"><IconInfo /></span>
+                      <span className="jd-section-title">How to Apply</span>
+                    </div>
+                    <div className="jd-steps">
+                      {appSteps.map((step: string, idx: number) => (
+                        <div key={idx} className="jd-step">
+                          <div className="jd-step-num">{idx + 1}</div>
+                          <p className="jd-step-text">{step}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            );
+          })()}
 
           {/* ══════════════════════════════════════════════════════════════════
-              HOW TO APPLY
-          ══════════════════════════════════════════════════════════════════ */}
-          {job.applicationProcess?.length > 0 && (
-            <>
-              <div className="jd-section">
-                <span className="jd-section-icon"><IconInfo /></span>
-                <span className="jd-section-title">How to Apply</span>
-              </div>
-              <div className="jd-steps">
-                {job.applicationProcess.map((step: string, idx: number) => (
-                  <div key={idx} className="jd-step">
-                    <div className="jd-step-num">{idx + 1}</div>
-                    <p className="jd-step-text">{step}</p>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* ══════════════════════════════════════════════════════════════════
-              IMPORTANT DATES — fully bordered, highlighted deadline rows
+              IMPORTANT DATES
           ══════════════════════════════════════════════════════════════════ */}
           <div className="jd-section">
             <span className="jd-section-icon"><IconCalendar /></span>
@@ -981,7 +1184,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               </tr>
             </thead>
             <tbody>
-              {dateRows.map(row => {
+              {DATE_ROWS.map((row) => {
                 const val = (dates as any)[row.key];
                 if (!val && !row.highlight) return null;
                 return (

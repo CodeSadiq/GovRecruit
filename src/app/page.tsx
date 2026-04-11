@@ -134,10 +134,10 @@ export default function Home() {
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
-                <div className="bg-white border-2 border-gray-100 p-4 md:p-10 shadow-sm relative overflow-hidden h-full flex flex-col rounded-3xl">
-                  <header className="flex items-center justify-between border-b-2 border-gray-100 pb-4 md:pb-8 mb-6 md:mb-10">
+                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-100 p-0 md:p-10 md:shadow-sm relative overflow-hidden h-full flex flex-col md:rounded-3xl">
+                  <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-2 md:px-0">
                     <div className="flex items-center gap-4">
-                      <h2 className="text-xl md:text-2xl font-serif font-bold text-navy">
+                      <h2 className="text-lg md:text-2xl font-serif font-bold text-navy">
                         Recruitment For You
                       </h2>
                     </div>
@@ -164,25 +164,27 @@ export default function Home() {
                         <Link
                           href={`/all-jobs/${job.id || job._id}`}
                           key={idx}
-                          className="group bg-white border-2 border-gray-100 p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6 md:gap-8 transition-all hover:border-navy hover:shadow-2xl hover:-translate-y-1 rounded-2xl shadow-sm"
+                          className="group bg-white border-2 border-gray-100 p-3 md:p-8 flex flex-col md:flex-row md:items-center gap-2 md:gap-8 transition-all hover:border-navy hover:shadow-2xl hover:-translate-y-1 rounded-2xl shadow-sm"
                         >
                           <div className="flex-1">
-                            <h3 className="text-2xl font-serif font-bold text-[#0D244D] leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
-                            {job.matchedPosts ? (
-                              <div className="mt-4 flex flex-wrap gap-2">
-                                <span className="text-[10px] font-serif font-bold bg-navy text-white px-3 py-1 rounded-full shadow-lg shadow-navy/20">Matched for {job.matchedPosts.length} {job.matchedPosts.length === 1 ? 'post' : 'posts'}</span>
-                                <span className="text-[10px] font-serif font-bold text-navy/40 mt-1">including {job.matchedPosts[0].name}</span>
-                              </div>
-                            ) : (
-                              <div className="mt-4 flex flex-wrap gap-2">
-                                <span className="text-[10px] font-serif font-bold bg-gray-100 text-gray-400 px-3 py-1 rounded-full border border-gray-200">High Volume Opening</span>
-                                <span className="text-[10px] font-serif font-bold text-gray-300 mt-1">{job.totalVacancy || 0}+ Vacancies</span>
-                              </div>
-                            )}
+                            <h3 className="text-[15px] md:text-2xl font-serif font-bold text-[#0D244D] leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
+                            <div className="mt-1.5 md:mt-4 flex flex-wrap items-center gap-2">
+                              {job.matchedPosts ? (
+                                <>
+                                  <span className="text-[9px] md:text-[10px] font-serif font-bold bg-navy text-white px-2 py-0.5 md:px-3 md:py-1 rounded-full">{job.matchedPosts.length} post{job.matchedPosts.length === 1 ? '' : 's'} matched</span>
+                                  <span className="hidden md:inline text-[10px] font-serif font-bold text-navy/40">including {job.matchedPosts[0].name}</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="text-[9px] md:text-[10px] font-serif font-bold bg-gray-50 text-gray-400 px-2 py-0.5 rounded-full border border-gray-100">Direct Entry</span>
+                                  <span className="text-[9px] font-serif font-bold text-gray-300">{job.totalVacancy || 0}+ vacancies</span>
+                                </>
+                              )}
+                            </div>
                           </div>
-                          <div className="md:text-right md:border-l border-gray-100 md:pl-10 flex-shrink-0">
+                          <div className="md:text-right md:border-l border-gray-100 md:pl-10 flex-shrink-0 flex items-baseline justify-between md:block mt-3 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-gray-50 md:border-none">
                             <div className="text-[10px] font-serif font-bold text-gray-400 mb-1">Last Date</div>
-                            <div className="text-xl font-serif font-bold text-red leading-none">{job.lastDate || job.importantDates?.lastDate || job.notificationType || "Pending/NA"}</div>
+                            <div className="text-[13px] md:text-xl font-serif font-bold text-red leading-none">{job.lastDate || job.importantDates?.lastDate || job.notificationType || "Pending/NA"}</div>
                           </div>
                         </Link>
                       ))
@@ -191,62 +193,86 @@ export default function Home() {
                 </div>
               </section>
 
-              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full">
-                <div className="bg-white border-2 border-gray-100 p-0 shadow-sm overflow-hidden flex flex-col h-full rounded-3xl">
-                  {/* CATEGORY TABS - PREMIUM CHIPS */}
-                  <div className="flex overflow-x-auto no-scrollbar bg-gray-50/50 border-b border-gray-100 p-2 gap-2">
-                    {categories.map((cat, idx) => (
-                      <button
-                        key={cat}
-                        onClick={() => {
-                          setCurrentCatIndex(idx);
-                          setIsAutoPlaying(false);
-                        }}
-                        className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[10px] font-serif font-bold tracking-tight transition-all ${idx === currentCatIndex
-                          ? 'bg-navy text-white shadow-lg shadow-navy-light/40 ring-1 ring-white/20'
-                          : 'text-gray-400 hover:text-navy hover:bg-white'
-                          }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-8">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-navy/5 text-navy rounded-lg animate-pulse">
-                          <IconBell />
+              <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-24 md:mt-0">
+                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-100 p-0 md:shadow-sm overflow-hidden flex flex-col h-full md:rounded-3xl">
+                  <div
+                    onClick={() => setIsAutoPlaying(false)}
+                    className="relative overflow-hidden flex-1 flex flex-col cursor-pointer"
+                  >
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="flex items-center justify-between mb-6 h-8 min-h-[32px]">
+                        <div className="flex-1 flex items-center gap-3 min-w-0 pr-4">
+                          <div className="p-1.5 md:p-2 bg-navy/5 text-navy rounded-lg flex-shrink-0">
+                            <IconBell />
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-[#0D244D] animate-in fade-in slide-in-from-left duration-300 truncate">
+                              {activeCategory}
+                            </h3>
+                            <div className="text-[8px] font-bold text-navy/30 uppercase tracking-[0.2em] mt-0.5 truncate">Live Bulletin</div>
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                          <h3 className="text-[12px] font-black uppercase tracking-widest text-[#0D244D]">
-                            {activeCategory}
-                          </h3>
-                          <div className="text-[8px] font-bold text-navy/30 uppercase tracking-[0.2em] mt-0.5">Live Updates</div>
+
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className="flex gap-1 flex-shrink-0">
+                            <button
+                              onClick={() => setCurrentCatIndex((prev) => (prev - 1 + categories.length) % categories.length)}
+                              className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy hover:bg-navy hover:text-white transition-all border-none cursor-pointer active:scale-90 shadow-sm"
+                              title="Previous"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                            </button>
+                            <button
+                              onClick={() => setCurrentCatIndex((prev) => (prev + 1) % categories.length)}
+                              className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy hover:bg-navy hover:text-white transition-all border-none cursor-pointer active:scale-90 shadow-sm"
+                              title="Next"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <Link href={`/${activeCategory.toLowerCase().replace(/\s+/g, '-')}`} className="text-[14px] font-serif font-bold text-navy/40 hover:text-navy transition-colors no-underline">
-                        View All ›
-                      </Link>
+
+                      <div key={activeCategory} className="space-y-5 animate-in fade-in slide-in-from-right-8 duration-700 flex-1">
+                        {activeItems.map((n, i) => (
+                          <Link
+                            href="#"
+                            key={i}
+                            className="group block border-l-2 border-transparent hover:border-navy hover:pl-4 transition-all"
+                          >
+                            <div className="text-[14px] md:text-[15px] font-serif font-bold text-[#344163] leading-snug group-hover:text-navy transition-colors mb-1">
+                              {n.text}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="w-1 h-1 bg-green-500 rounded-full group-hover:animate-ping"></span>
+                              <div className="text-[8px] font-black uppercase tracking-widest text-navy/20">{n.time}</div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* DOT TRACKER */}
+                      <div className="mt-8 flex items-center justify-center gap-2">
+                        {categories.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCurrentCatIndex(idx);
+                              setIsAutoPlaying(false);
+                            }}
+                            className={`h-1 rounded-full transition-all duration-500 border-none p-0 cursor-pointer ${idx === currentCatIndex ? 'bg-navy w-6' : 'bg-gray-200 w-2 hover:bg-gray-300'}`}
+                          />
+                        ))}
+                      </div>
                     </div>
 
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                      {activeItems.map((n, i) => (
-                        <Link
-                          href="#"
-                          key={i}
-                          className="group block border-l-2 border-transparent hover:border-navy hover:pl-4 transition-all"
-                        >
-                          <div className="text-[15px] font-serif font-bold text-[#344163] leading-snug group-hover:text-navy transition-colors mb-1">
-                            {n.text}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full group-hover:animate-ping"></span>
-                            <div className="text-[9px] font-black uppercase tracking-widest text-navy/20">{n.time}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+                    <style jsx>{`
+                      @keyframes progress {
+                        from { transform: translateX(-100%); }
+                        to { transform: translateX(0); }
+                      }
+                    `}</style>
                   </div>
                 </div>
               </aside>
@@ -258,20 +284,20 @@ export default function Home() {
       </main >
 
       {/* SIMPLE FOOTER */}
-      < footer className="bg-white border-t-2 border-gray-100 py-10 px-6 md:px-12 mt-auto" >
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white border border-gray-100 rounded-lg flex items-center justify-center overflow-hidden shadow-sm"><img src="/logo.png" alt="" className="w-5 h-5 object-contain" /></div>
-            <strong className="text-navy text-sm font-black leading-none uppercase">Rojgar Match</strong>
+      <footer className="bg-white border-t border-gray-100 py-6 md:py-10 px-6 md:px-12 mt-auto">
+        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-white border border-gray-100 rounded flex items-center justify-center overflow-hidden"><img src="/logo.png" alt="" className="w-4 h-4 object-contain" /></div>
+            <strong className="text-navy text-[11px] font-black uppercase tracking-wider">Rojgar Match</strong>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Privacy</Link>
-            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Terms</Link>
-            <Link href="#" className="text-[10px] text-gray-400 font-black uppercase tracking-widest hover:text-navy transition-colors">Support</Link>
-            <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest ml-0 md:ml-10">© 2026 Rojgar Match</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <Link href="#" className="text-[9px] text-gray-400 font-bold uppercase tracking-widest hover:text-navy">Privacy</Link>
+            <Link href="#" className="text-[9px] text-gray-400 font-bold uppercase tracking-widest hover:text-navy">Terms</Link>
+            <Link href="#" className="text-[9px] text-gray-400 font-bold uppercase tracking-widest hover:text-navy">Support</Link>
+            <p className="text-[9px] text-gray-300 font-bold uppercase tracking-widest md:ml-10">© 2026</p>
           </div>
         </div>
-      </footer >
+      </footer>
 
       <JobDetailModal job={selectedJob} onClose={() => setSelectedJob(null)} />
     </div >
