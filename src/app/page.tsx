@@ -64,11 +64,11 @@ export default function Home() {
 
   // ── RECRUITMENT MATCHING LOGIC ──
   const recommendedJobs = React.useMemo(() => {
-    if (!userProfile || !userProfile.level) {
+    if (!userProfile || !userProfile.qualifications || userProfile.qualifications.length === 0) {
       return [];
     }
     const matched = getEligibleJobs(userProfile, dbJobs);
-    return matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchScore: m.matchScore }));
+    return matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchScore: m.matchScore, matchedOn: m.matchedOn }));
   }, [userProfile, dbJobs]);
 
   return (
@@ -144,7 +144,7 @@ export default function Home() {
                         <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
                           No recruitments currently match your specific qualification level and branch.
                         </p>
-                        {!userProfile?.level && (
+                        {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
                           <Link
                             href="/profile"
                             className="mt-8 px-10 py-3 bg-navy text-white text-[14px] font-serif font-bold hover:bg-[#06142E] transition-all shadow-xl rounded-xl no-underline"

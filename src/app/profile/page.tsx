@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/Navbar';
 
 // ─── FULL DATA TREE ───────────────────
 const QUAL_TREE = [
@@ -280,18 +281,18 @@ const QUAL_TREE = [
 ];
 
 const LEVEL_GROUPS = [
-  { label: "School Level", levels: [1, 2] },
-  { label: "Diploma / Certificate Level", levels: [3] },
-  { label: "Graduation Level", levels: [4] },
-  { label: "Post Graduation Level", levels: [5] },
-  { label: "Doctorate Level", levels: [6] },
+  { id: 1, label: "10th / Matriculation", levels: [1] },
+  { id: 2, label: "12th / Intermediate", levels: [2] },
+  { id: 3, label: "Diploma & ITI", levels: [3] },
+  { id: 4, label: "Graduation (Bachelor's)", levels: [4] },
+  { id: 5, label: "Post-Graduation (Master's)", levels: [5] },
+  { id: 6, label: "PhD / Research", levels: [6] },
 ];
 
 export default function ProfilePage() {
   const router = useRouter();
   const [dob, setDob] = useState('');
-  const [selectedQual, setSelectedQual] = useState<any>(null);
-  const [selectedBranch, setSelectedBranch] = useState<any>(null);
+  const [selectedLevels, setSelectedLevels] = useState<Record<number, { qual: string, branch: string }>>({});
   const [completed, setCompleted] = useState(false);
   const [userProfile, setUserProfile] = useState<any>({ fullName: '', email: '' });
   const [isLoaded, setIsLoaded] = useState(false);
@@ -304,50 +305,60 @@ export default function ProfilePage() {
       return;
     }
 
-    // Load AUTH data first (always present if logged in)
     const authData = JSON.parse(isAuth);
     setUserProfile({ fullName: authData.fullName, email: authData.email });
 
-    // Overlay PROFILE data if it exists
     const saved = localStorage.getItem('govrecruit_profile');
     if (saved) {
       const parsed = JSON.parse(saved);
       setUserProfile((prev: any) => ({ ...prev, ...parsed }));
-      if (parsed.qualification) {
-        const qual = QUAL_TREE.find(q => q.name === parsed.qualification);
-        if (qual) {
-          setSelectedQual(qual);
-          const branch = qual.branches.find(b => b.value === parsed.branch);
-          if (branch) setSelectedBranch(branch);
-        }
+      if (parsed.dob) setDob(parsed.dob);
+      
+      if (parsed.qualifications && Array.isArray(parsed.qualifications)) {
+        const initialState: Record<number, { qual: string, branch: string }> = {};
+        parsed.qualifications.forEach((q: any) => {
+          initialState[q.level] = { qual: q.name, branch: q.branch };
+        });
+        setSelectedLevels(initialState);
       }
-      if (parsed.dob) {
-        setDob(parsed.dob);
-        setCompleted(true);
-      }
+      setCompleted(true);
     }
     setIsLoaded(true);
   }, [router]);
 
-  const handleQualChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const qual = QUAL_TREE.find(q => q.name === e.target.value);
-    setSelectedQual(qual || null);
-    setSelectedBranch(null);
+  const handleLevelQualChange = (levelId: number, qualName: string) => {
+    setSelectedLevels(prev => ({
+      ...prev,
+      [levelId]: { qual: qualName, branch: '' }
+    }));
   };
 
-  const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const branch = selectedQual?.branches.find((b: any) => b.value === e.target.value);
-    setSelectedBranch(branch || null);
+  const handleLevelBranchChange = (levelId: number, branchValue: string) => {
+    setSelectedLevels(prev => ({
+      ...prev,
+      [levelId]: { ...prev[levelId], branch: branchValue }
+    }));
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Collect all selected levels into the qualifications array
+      const qualifications = Object.entries(selectedLevels)
+        .filter(([_, data]) => data.qual !== "")
+        .map(([levelId, data]) => {
+          const qualNode = QUAL_TREE.find(q => q.name === data.qual);
+          return {
+            name: data.qual,
+            level: parseInt(levelId),
+            label: qualNode?.label || data.qual,
+            branch: data.branch
+          };
+        });
+
       const profileData = {
         dob,
-        qualification: selectedQual.name,
-        level: selectedQual.level,
-        branch: selectedBranch?.value || 'any'
+        qualifications
       };
 
       const res = await fetch('/api/profile', {
@@ -360,7 +371,9 @@ export default function ProfilePage() {
 
       const fullProfile = { ...userProfile, ...profileData };
       localStorage.setItem('govrecruit_profile', JSON.stringify(fullProfile));
+      window.dispatchEvent(new Event('govrecruit_auth_change'));
       setCompleted(true);
+      alert('Full Multi-Level Profile Saved Successfully! ✅');
     } catch (err) {
       console.error(err);
       alert('Error saving profile');
@@ -369,179 +382,157 @@ export default function ProfilePage() {
     }
   };
 
-  if (!isLoaded) return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-navy/20 border-t-navy rounded-full animate-spin"></div>
-    </div>
-  );
-
   const handleLogout = () => {
     localStorage.removeItem('govrecruit_auth');
     localStorage.removeItem('govrecruit_profile');
     router.push('/login');
   };
 
+  if (!isLoaded) return (
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+      <div className="w-10 h-10 border-4 border-navy/20 border-t-navy rounded-full animate-spin"></div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
 
       <main className="flex-1 overflow-y-auto px-6 md:px-12 py-10">
-        <div className="max-w-[1000px] mx-auto space-y-12 animate-in fade-in duration-700">
+        <div className="max-w-[1100px] mx-auto space-y-12 animate-in fade-in duration-700">
 
-          {/* IDENTITY SECTION - PREMIUM PROFILE CARD */}
-          <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 md:p-10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-8 relative overflow-hidden group">
-            {/* Background Accent */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-navy/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700"></div>
-
-            <div className="relative z-10 flex flex-col gap-5">
-              <div className="space-y-1">
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-navy/40 mb-1">Profile</div>
-                <h1 className="text-3xl md:text-5xl font-serif font-bold text-navy leading-[1.1] tracking-tight">
-                  {userProfile.fullName || 'Citizen Profile'}
-                </h1>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+            <div className="flex flex-col gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-navy">{userProfile.fullName || 'Citizen Profile'}</h1>
+                <p className="text-gray-500 text-sm mt-1">{userProfile.email}</p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
-                  <svg className="w-4 h-4 text-navy/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  <p className="text-sm font-bold text-navy/60">
-                    {userProfile.email}
-                  </p>
+              {completed ? (
+                <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100 w-fit">
+                  Qualification Recorded
                 </div>
-
-                {completed && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm">
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    Qualification Verified
-                  </div>
-                )}
-              </div>
+              ) : (
+                <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-red-500 bg-red-50 px-3 py-1 rounded-full border border-red-100 w-fit">
+                  Qualification Not Recorded
+                </div>
+              )}
             </div>
 
-            <div className="relative z-10">
-              <button
-                onClick={handleLogout}
-                className="group/btn flex items-center gap-2 px-5 py-2.5 bg-transparent border border-gray-100 text-red-500 hover:bg-red-50 hover:border-red-100 transition-all rounded-lg active:scale-95"
-              >
-                <span className="text-[10px] font-black uppercase tracking-[0.15em]">Logout</span>
-                <svg className="w-3.5 h-3.5 opacity-60 group-hover/btn:opacity-100 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-              </button>
-            </div>
+            <button
+              onClick={handleLogout}
+              className="text-xs font-bold text-red-500 hover:text-red-700 transition-colors uppercase tracking-widest"
+            >
+              Sign Out ⎆
+            </button>
           </div>
 
-          {/* CONSOLIDATED BASELINE FORM SECTION */}
-          <div className="max-w-[1000px]">
-            <section className="bg-white border-2 border-gray-100 rounded-3xl p-8 md:p-14 shadow-sm space-y-12 relative overflow-hidden group/form">
-              {/* Background Decoration */}
-              <div className="absolute top-0 left-0 w-full h-2 bg-navy/5 group-hover/form:bg-navy transition-colors duration-500"></div>
+          <div className="max-w-[1100px]">
+            <section className="bg-white border border-gray-200 rounded-xl p-6 md:p-10 shadow-sm space-y-8">
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold text-navy">Set Qualification</h2>
+                <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold">Update your qualifications to see eligible jobs.</p>
+              </div>
 
-              {/* ACADEMICS */}
               <div className="space-y-8">
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-serif font-bold text-navy tracking-tight flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-navy/20 rounded-full"></div>
-                    Education Details
-                  </h2>
-                  <p className="text-sm text-gray-400 font-bold uppercase tracking-widest pl-5">Specify your highest level of accredited academic qualification.</p>
-                </div>
+                {LEVEL_GROUPS.map((group) => {
+                  const levelState = selectedLevels[group.id] || { qual: '', branch: '' };
+                  const qualsForLevel = QUAL_TREE.filter(q => group.levels.includes(q.level));
+                  const currentQual = QUAL_TREE.find(q => q.name === levelState.qual);
 
-                <div className="space-y-6">
-                  <div className="space-y-3">
-                    <label className="text-[11px] font-black text-navy/40 uppercase tracking-[0.2em] ml-1">Education Level</label>
-                    <div className="relative">
-                      <select
-                        value={selectedQual?.name || ''}
-                        onChange={handleQualChange}
-                        className="w-full h-16 bg-gray-50 border-2 border-gray-100 px-6 text-sm font-black text-navy appearance-none outline-none focus:border-navy focus:bg-white focus:ring-8 focus:ring-navy/5 transition-all rounded-2xl shadow-sm uppercase tracking-wider"
-                      >
-                        <option value="" disabled>Select Entry Level</option>
-                        {LEVEL_GROUPS.map((group, idx) => (
-                          <optgroup key={idx} label={group.label.toUpperCase()} className="text-[10px] text-gray-300">
-                            {QUAL_TREE.filter(q => group.levels.includes(q.level)).map((qual, qIdx) => (
-                              <option key={qIdx} value={qual.name} className="text-navy font-bold">{qual.label}</option>
-                            ))}
-                          </optgroup>
-                        ))}
-                      </select>
-                      <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 text-xs">▼</div>
-                    </div>
-                  </div>
-
-                  {selectedQual && selectedQual.branches.length > 0 && (
-                    <div className="space-y-3 animate-in slide-in-from-top-4 duration-500">
-                      <label className="text-[11px] font-black text-navy/40 uppercase tracking-[0.2em] ml-1">Specialization Branch</label>
-                      <div className="relative">
+                  return (
+                    <div key={group.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8 border-b border-gray-100 last:border-0 last:pb-0">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{group.label}</label>
                         <select
-                          value={selectedBranch?.value || ''}
-                          onChange={handleBranchChange}
-                          className="w-full h-16 bg-gray-50 border-2 border-gray-100 px-6 text-sm font-black text-navy appearance-none outline-none focus:border-navy focus:bg-white focus:ring-8 focus:ring-navy/5 transition-all rounded-2xl shadow-sm uppercase tracking-wider"
+                          value={levelState.qual}
+                          onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
+                          className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${
+                            levelState.qual 
+                              ? "bg-blue-50 border-blue-200 text-blue-700" 
+                              : "bg-gray-50 border-gray-200 text-navy focus:border-navy"
+                          }`}
                         >
-                          <option value="" disabled>Select Branch</option>
-                          {selectedQual.branches.map((br: any, bIdx: number) => (
-                            <option key={bIdx} value={br.value} className="text-navy font-bold">{br.label}</option>
+                          <option value="">-- No Record --</option>
+                          {qualsForLevel.map(q => (
+                            <option key={q.name} value={q.name}>{q.label}</option>
                           ))}
                         </select>
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 text-xs">▼</div>
                       </div>
+
+                      {currentQual && currentQual.branches.length > 0 && (
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            {group.id <= 2 ? "Academic Stream" : 
+                             group.id === 3 ? "Trade Branch" : 
+                             "Professional Branch"}
+                          </label>
+                          <select
+                            value={levelState.branch}
+                            onChange={(e) => handleLevelBranchChange(group.id, e.target.value)}
+                            className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${
+                              levelState.branch 
+                                ? "bg-blue-50 border-blue-200 text-blue-700"
+                                : "bg-gray-50 border-gray-200 text-navy focus:border-navy"
+                            }`}
+                          >
+                            <option value="">-- No Record --</option>
+                            {currentQual.branches.map(b => (
+                              <option key={b.value} value={b.value}>{b.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  );
+                })}
+
+                <div className="pt-6 border-t border-gray-100">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date of Birth</label>
+                        <input
+                          type="date"
+                          value={dob}
+                          onChange={(e) => setDob(e.target.value)}
+                          className={`w-full h-12 border px-4 text-sm font-bold outline-none transition-all rounded-lg ${
+                            dob 
+                              ? "bg-blue-50 border-blue-200 text-blue-700" 
+                              : "bg-gray-50 border-gray-200 text-navy focus:border-navy"
+                          }`}
+                        />
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          onClick={handleSave}
+                          disabled={isSaving || !dob}
+                          className="flex-1 h-12 bg-navy text-white font-bold text-[11px] uppercase tracking-widest rounded-lg shadow-sm hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-30"
+                        >
+                          {isSaving ? 'Saving...' : 'Save Qualification'}
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                             if(confirm('Clear all settings?')) {
+                               setSelectedLevels({});
+                               setDob('');
+                               localStorage.removeItem('govrecruit_profile');
+                               window.location.reload();
+                             }
+                          }}
+                          className="px-6 h-12 bg-transparent text-red-400 font-bold text-[10px] uppercase tracking-widest rounded-lg hover:bg-red-50 transition-all border border-transparent hover:border-red-100"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                   </div>
                 </div>
               </div>
-
-              {/* PERSONAL */}
-              <div className="space-y-8 pt-10 border-t-2 border-gray-50">
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-serif font-bold text-navy tracking-tight flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-navy/20 rounded-full"></div>
-                    Identity Verification
-                  </h2>
-                  <p className="text-sm text-gray-400 font-bold uppercase tracking-widest pl-5">Enter your date of birth as recorded in your official documents.</p>
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[11px] font-black text-navy/40 uppercase tracking-[0.2em] ml-1">Date of Birth</label>
-                  <input
-                    type="date"
-                    value={dob}
-                    onChange={(e) => setDob(e.target.value)}
-                    className="w-full h-16 bg-gray-50 border-2 border-gray-100 px-6 text-sm font-black text-navy outline-none focus:border-navy focus:bg-white transition-all rounded-2xl shadow-sm focus:ring-8 focus:ring-navy/5"
-                  />
-                </div>
-              </div>
-
-              {/* SAVE & RESET */}
-              <div className="pt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <button
-                  onClick={handleSave}
-                  disabled={isSaving || !dob || !selectedQual || (selectedQual.branches.length > 0 && !selectedBranch)}
-                  className="w-full h-16 bg-navy text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-navy/20 hover:bg-[#06142E] disabled:opacity-20 transition-all rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] group/save"
-                >
-                  {isSaving ? (
-                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                  ) : (
-                    <>Set Education Qualification <span className="transition-transform group-hover/save:translate-x-1">→</span></>
-                  )}
-                </button>
-                <button
-                  onClick={() => {
-                    if (confirm('Clear all education and identity details? This will reset your profile baseline.')) {
-                      setDob('');
-                      setSelectedQual(null);
-                      setSelectedBranch(null);
-                      setCompleted(false);
-                      localStorage.removeItem('govrecruit_profile');
-                      alert('Baseline Cleared.');
-                    }
-                  }}
-                  className="w-full h-16 bg-white border-2 border-red-50 text-red-500 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-red-50 hover:border-red-100 transition-all rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98]"
-                >
-                  Clear Selection
-                </button>
-              </div>
-
             </section>
           </div>
 
-          <p className="text-center text-[10px] font-bold text-gray-300 uppercase tracking-widest pt-10">
-            GovRecruit Verification System — Baseline Protocol
+          <p className="text-center text-[10px] font-bold text-gray-300 uppercase tracking-widest py-10">
+            GovRecruit Verification Baseline — Registry Sync v4.1
           </p>
         </div>
       </main>

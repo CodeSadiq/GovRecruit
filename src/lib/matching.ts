@@ -1,9 +1,18 @@
 import { JobPost, Post } from '@/types/job';
 
-export interface CandidateProfile {
-  qualification: string;
+export interface QualificationEntry {
+  name: string;
   level: number;
+  label: string;
   branch: string;
+}
+
+export interface CandidateProfile {
+  fullName?: string;
+  email?: string;
+  dob?: string;
+  // Support for multiple qualifications across different levels
+  qualifications: QualificationEntry[];
 }
 
 export interface MatchedJob {
@@ -11,6 +20,7 @@ export interface MatchedJob {
   matchedPosts: Post[];
   matchScore: number;
   matchTier: 'exact' | 'none';
+  matchedOn?: string; // e.g. "12th" or "B.Tech"
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -22,8 +32,13 @@ export function getEligibleJobs(
 ): MatchedJob[] {
   const results: MatchedJob[] = [];
 
+  // Robust check for missing or legacy profile data
+  if (!candidate || !candidate.qualifications || !Array.isArray(candidate.qualifications)) {
+    return results;
+  }
+
   for (const job of allJobs) {
-    const matchedPosts = getMatchedPostsForJob(candidate, job);
+    const { matchedPosts, matchedOn } = getMatchedPostsForJob(candidate, job);
     if (matchedPosts.length === 0) continue;
 
     results.push({
@@ -31,6 +46,7 @@ export function getEligibleJobs(
       matchedPosts,
       matchScore: 100,
       matchTier: 'exact',
+      matchedOn
     });
   }
 
@@ -40,17 +56,22 @@ export function getEligibleJobs(
 // ─────────────────────────────────────────────────────────────────────────────
 //  COLLECT ELIGIBLE POSTS FOR ONE JOB
 // ─────────────────────────────────────────────────────────────────────────────
-function getMatchedPostsForJob(candidate: CandidateProfile, job: JobPost): Post[] {
+function getMatchedPostsForJob(candidate: CandidateProfile, job: JobPost): { matchedPosts: Post[], matchedOn: string } {
   const eligiblePosts: Post[] = [];
+  const matchedQualLabels: Set<string> = new Set();
 
   if (job.posts && job.posts.length > 0) {
     for (const post of job.posts) {
-      if (evaluatePost(candidate, post)) {
-        eligiblePosts.push(post);
-      }
+      // Check if ANY of the candidate's qualification records match this post's requirement.
+      candidate.qualifications.forEach(q => {
+        if (evaluatePost(q, post)) {
+          if (!eligiblePosts.includes(post)) eligiblePosts.push(post);
+          matchedQualLabels.add(q.name);
+        }
+      });
     }
   } else if (job.qualification) {
-    // synthesise a virtual post from root-level data.
+    // synthesise a virtual post
     const virtualPost: Post = {
       name: job.title,
       totalVacancy: job.totalVacancy,
@@ -64,22 +85,29 @@ function getMatchedPostsForJob(candidate: CandidateProfile, job: JobPost): Post[
       qualificationNote: null,
     };
 
-    if (evaluatePost(candidate, virtualPost)) {
-      eligiblePosts.push(virtualPost);
-    }
+    candidate.qualifications.forEach(q => {
+      if (evaluatePost(q, virtualPost)) {
+        if (!eligiblePosts.includes(virtualPost)) eligiblePosts.push(virtualPost);
+        matchedQualLabels.add(q.name);
+      }
+    });
   }
 
-  return eligiblePosts;
+  // Convert Set to string like "12th" or "10th, 12th"
+  // Sort by level ID to ensure consistent order (e.g. 10th then 12th)
+  const matchedOn = Array.from(matchedQualLabels).join(', ');
+
+  return { matchedPosts: eligiblePosts, matchedOn };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  CORE EVALUATOR — SIMPLE INTERSECTION MODE
+//  CORE EVALUATOR — CHECKS IF A SPECIFIC QUALIFICATION MATCHES A POST
 // ─────────────────────────────────────────────────────────────────────────────
-function evaluatePost(candidate: CandidateProfile, post: Post): boolean {
-  const cCourse = (candidate.qualification || '').trim().toLowerCase();
-  const cBranch = (candidate.branch || '').trim().toLowerCase();
+function evaluatePost(qEntry: QualificationEntry, post: Post): boolean {
+  const cCourse = (qEntry.name || '').trim().toLowerCase();
+  const cBranch = (qEntry.branch || '').trim().toLowerCase();
 
-  // 1. PRIMARY MATCH: check educationRequirementForMatch array if it exists
+  // 1. PRIMARY MATCH: check educationRequirementForMatch array
   if (post.educationRequirementForMatch && (post.educationRequirementForMatch as any).length > 0) {
     return (post.educationRequirementForMatch as any).some((req: any) => {
       const matchCourse = (req.qualification || '').trim().toLowerCase() === cCourse;
@@ -90,7 +118,7 @@ function evaluatePost(candidate: CandidateProfile, post: Post): boolean {
     });
   }
 
-  // 2. FALLBACK MATCH: check simple qualification format
+  // 2. FALLBACK MATCH: check simple qualification object structure
   const qual = post.qualification as any;
   if (!qual || !qual.course) return false;
 

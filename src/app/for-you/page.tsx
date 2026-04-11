@@ -33,12 +33,12 @@ export default function ForYouPage() {
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data)) {
-          if (!profile || !profile.level) {
+          if (!profile || !profile.qualifications || profile.qualifications.length === 0) {
             setJobs([]); // Clean slate if profile is incomplete
             return;
           }
           const matched = getEligibleJobs(profile, data);
-          setJobs(matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts })));
+          setJobs(matched.map(m => ({ ...m.job, matchedPosts: m.matchedPosts, matchedOn: m.matchedOn })));
         }
       } catch (e) {
         console.error(e);

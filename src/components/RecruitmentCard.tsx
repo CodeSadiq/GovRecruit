@@ -33,7 +33,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched }) => 
               <div className="flex items-center gap-1 bg-navy text-white px-1.5 py-0.5 md:px-3 md:py-1 rounded-full border border-white/10">
                 <span className="w-1 h-1 rounded-full bg-blue-300 animate-pulse"></span>
                 <span className="text-[8px] md:text-[11px] font-serif font-bold uppercase tracking-wider">
-                  Matched {job.matchedPosts?.length || 1} post
+                  Matched on {job.matchedOn || 'Profile'}
                 </span>
               </div>
             ) : (
