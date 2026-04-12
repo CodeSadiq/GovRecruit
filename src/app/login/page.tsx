@@ -180,6 +180,27 @@ export default function LoginPage() {
                 <span>Continue with Google</span>
               </button>
 
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoading(true);
+                  setTimeout(() => {
+                    localStorage.setItem('govrecruit_auth', JSON.stringify({
+                      fullName: 'Anonymous Guest',
+                      email: 'guest@govrecruit.local',
+                      isGuest: true
+                    }));
+                    window.dispatchEvent(new Event('govrecruit_auth_change'));
+                    router.push('/');
+                    setIsLoading(false);
+                  }, 800);
+                }}
+                className="w-full bg-transparent text-gray-400 hover:text-navy py-3 px-8 font-black text-[9px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 mt-2 group/guest"
+              >
+                <span>Continue as a guest</span>
+                <span className="opacity-0 group-hover/guest:opacity-100 transition-opacity">➜</span>
+              </button>
+
             </form>
 
             {/* BOTTOM LINK */}

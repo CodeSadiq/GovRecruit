@@ -9,8 +9,8 @@ interface RecruitmentCardProps {
 }
 
 const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched }) => {
-  const lastDateVal = job.lastDate || job.importantDates?.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
-  const isFallback = !lastDateVal?.includes('202');
+  const lastDateVal = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
+  const isFallback = !lastDateVal?.toString().includes('202');
 
   return (
     <Link

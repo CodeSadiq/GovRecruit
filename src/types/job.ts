@@ -29,7 +29,8 @@ export interface Post {
   categoryWiseVacancy: CategoryVacancy;
   appearingEligible: boolean;
   appearingConditions: string | null;
-  qualificationNote: string | null;
+  ageLimit: AgeLimit;
+  salary: Salary;
 }
 
 export interface AgeRelaxation {
@@ -61,9 +62,10 @@ export interface ApplicationFee {
 }
 
 export interface ImportantDates {
+  notificationType: string | null;
   notificationRelease: string | null;
-  startDate: string | null;
-  lastDate: string | null;
+  applicationStartDate: string | null;
+  applicationLastDate: string | null;
   feePaymentLastDate: string | null;
   correctionWindowLastDate: string | null;
   admitCardDate: string | null;
@@ -71,6 +73,12 @@ export interface ImportantDates {
   resultDate: string | null;
   interviewDate: string | null;
   documentVerificationDate: string | null;
+  officialWebsite: string | null;
+  applyOnline: string | null;
+  applyLink: string | null;
+  notificationPdfLink: string | null;
+  checkResult: string | null;
+  customDates?: Array<{ label: string; date: string }>;
 }
 
 export interface DisplayStatus {
@@ -103,30 +111,22 @@ export interface JobPost {
   postNames: string[];
   posts: Post[];
   totalVacancy: number | null;
-  categoryWiseVacancyTotal: CategoryVacancy;
-  qualification: Qualification;
-  ageLimit: AgeLimit;
   categoryEligibility: string[];
   pwdEligible: boolean;
   femaleOnly: boolean;
   exServicemanQuota: boolean;
   location: string[];
-  salary: Salary;
   applicationFee: ApplicationFee;
   importantDates: ImportantDates;
   applicationProcess: string[];
   selectionProcess: string[];
   description: string;
   shortInfo: string | null;
-  officialWebsite: string | null;
-  applyLink: string | null;
-  notificationPdfLink: string | null;
   source: string;
   tags: string[];
   createdAt: string;
   updatedAt: string;
   emoji?: string;
   urgency?: string;
-  notificationType?: string;
   displayStatus?: DisplayStatus;
 }

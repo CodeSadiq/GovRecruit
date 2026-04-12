@@ -87,16 +87,22 @@ const JobSchema = new mongoose.Schema({
     paymentMode: [String]
   },
   importantDates: {
+    notificationType: String,
     notificationRelease: String,
-    startDate: String,
-    lastDate: String,
+    applicationStartDate: String,
+    applicationLastDate: String,
     feePaymentLastDate: String,
     correctionWindowLastDate: String,
     admitCardDate: String,
     examDate: String,
     resultDate: String,
     interviewDate: String,
-    documentVerificationDate: String
+    documentVerificationDate: String,
+    officialWebsite: String,
+    applyOnline: String,
+    applyLink: String,
+    notificationPdfLink: String,
+    checkResult: String
   },
   applicationProcess: [String],
   selectionProcess: [String],

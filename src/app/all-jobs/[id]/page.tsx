@@ -604,15 +604,15 @@ const RELAX_LABELS: Record<string, string> = {
 
 const DATE_ROWS: { label: string; key: string; highlight?: boolean }[] = [
   { label: "Notification Released", key: "notificationRelease" },
-  { label: "Application Opens", key: "startDate" },
-  { label: "Application Closes", key: "lastDate", highlight: true },
+  { label: "Application Start Date", key: "applicationStartDate" },
+  { label: "Application Last Date", key: "applicationLastDate", highlight: true },
   { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
-  { label: "Correction Window Closes", key: "correctionWindowLastDate" },
+  { label: "Correction Window Last Date", key: "correctionWindowLastDate" },
   { label: "Admit Card Released", key: "admitCardDate" },
   { label: "Examination Date", key: "examDate", highlight: true },
   { label: "Result Announced", key: "resultDate" },
   { label: "Interview Date", key: "interviewDate" },
-  { label: "Document Verification Date", key: "documentVerificationDate" },
+  { label: "DV Date", key: "documentVerificationDate" },
 ];
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -931,14 +931,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <div className="jd-hero-cell">
               <div className="jd-hero-label">Application Start Date</div>
               <div className="jd-hero-value" style={{ fontSize: 19 }}>
-                {dates.startDate ? fmtDate(dates.startDate) : "—"}
+                {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "—"}
               </div>
               <div className="jd-hero-sub">Application opens</div>
             </div>
             <div className="jd-hero-cell">
-              <div className="jd-hero-label">Last Date</div>
+              <div className="jd-hero-label">Application Last Date</div>
               <div className="jd-hero-value" style={{ fontSize: 19 }}>
-                {dates.lastDate ? fmtDate(dates.lastDate) : "—"}
+                {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
               </div>
               <div className="jd-hero-sub">Application deadline</div>
             </div>
@@ -962,8 +962,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               {job.department && <tr><td className="label">Department</td><td>{job.department}</td></tr>}
               <tr><td className="label">Govt. Type</td><td>{job.type || "—"}</td></tr>
               <tr><td className="label">Job Location</td><td>{job.location?.join(", ") || "All India"}</td></tr>
-              {job.notificationType && (
-                <tr><td className="label">Notification Type</td><td>{job.notificationType}</td></tr>
+              {dates.notificationType && (
+                <tr><td className="label">Notification Type</td><td>{dates.notificationType}</td></tr>
               )}
               {/* Salary shown in overview only if all posts share the same salary */}
               {allSameSalary && heroSal.payLevel && (
@@ -990,13 +990,13 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               {job.pwdEligible && <tr><td className="label">PwBD Eligible</td><td style={{ color: "var(--green)", fontWeight: 600 }}>Yes</td></tr>}
               {job.femaleOnly && <tr><td className="label">Female Only</td><td style={{ color: "var(--crimson)", fontWeight: 600 }}>Yes</td></tr>}
               {job.exServicemanQuota && <tr><td className="label">Ex-Serviceman Quota</td><td style={{ fontWeight: 600 }}>Yes</td></tr>}
-              {job.officialWebsite && (
+              {dates.officialWebsite && (
                 <tr>
                   <td className="label">Official Website</td>
                   <td>
-                    <a href={job.officialWebsite} target="_blank" rel="noreferrer"
+                    <a href={dates.officialWebsite} target="_blank" rel="noreferrer"
                       style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
-                      {job.officialWebsite} <IconExternalLink />
+                      {dates.officialWebsite} <IconExternalLink />
                     </a>
                   </td>
                 </tr>
@@ -1178,47 +1178,97 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               </tr>
             </thead>
             <tbody>
-              {DATE_ROWS.map((row) => {
-                const val = (dates as any)[row.key];
+              {(() => {
+                const standardKeys = [
+                  "notificationRelease", "applicationStartDate", "applicationLastDate", 
+                  "feePaymentLastDate", "correctionWindowLastDate", "admitCardDate", 
+                  "examDate", "resultDate", "interviewDate", "documentVerificationDate",
+                  "notificationType", "officialWebsite", "applyOnline", "applyLink", 
+                  "notificationPdfLink", "checkResult"
+                ];
+
+                const tableRows: { label: string; key: string; val: any; highlight?: boolean }[] = [];
+
+                // 1. Standard keys (if present)
+                const standardDefs = [
+                  { label: "Notification Released", key: "notificationRelease" },
+                  { label: "Application Start Date", key: "applicationStartDate" },
+                  { label: "Application Last Date", key: "applicationLastDate", highlight: true },
+                  { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
+                  { label: "Correction Window Last Date", key: "correctionWindowLastDate" },
+                  { label: "Admit Card Released", key: "admitCardDate" },
+                  { label: "Examination Date", key: "examDate", highlight: true },
+                  { label: "Result Announced", key: "resultDate" },
+                  { label: "Interview Date", key: "interviewDate" },
+                  { label: "DV Date", key: "documentVerificationDate" },
+                  { label: "Notification Type", key: "notificationType" },
+                  { label: "Official Website", key: "officialWebsite" },
+                  { label: "Apply Online", key: "applyOnline" },
+                  { label: "Apply Link", key: "applyLink" },
+                  { label: "Notification Pdf Link", key: "notificationPdfLink" },
+                  { label: "Check Result", key: "checkResult" },
+                ];
+
+                standardDefs.forEach(def => {
+                  const val = (dates as any)[def.key];
+                  if (val !== undefined && val !== null) {
+                    tableRows.push({ ...def, val });
+                  }
+                });
+
+                // 2. Extra keys (Dates and Links)
+                const excludeKeys = [...standardKeys, "customDates", "_id"];
+                Object.keys(dates).forEach(key => {
+                  if (!excludeKeys.includes(key)) {
+                    const prettify = (str: string) => str.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
+                    tableRows.push({ label: prettify(key), key, val: (dates as any)[key] });
+                  }
+                });
+
                 return (
-                  <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
-                    <td className="label">{row.label}</td>
-                    <td className="mono bold">
-                      {val
-                        ? fmtDate(val)
-                        : <span style={{ color: "var(--ink-muted)", fontWeight: 400, fontStyle: "italic" }}>Not available</span>
-                      }
-                    </td>
-                  </tr>
+                  <>
+                    {tableRows.map((row) => (
+                      <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
+                        <td className="label">{row.label}</td>
+                        <td className="mono bold">
+                          {(() => {
+                            const val = typeof row.val === 'string' ? row.val.trim() : row.val;
+                            if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
+                              const href = val.startsWith('www.') ? `https://${val}` : val;
+                              return (
+                                <a href={href} target="_blank" rel="noreferrer"
+                                  style={{ color: "#2563eb", textDecoration: "underline", fontSize: "13px", wordBreak: "break-all", fontWeight: 600 }}>
+                                  {val}
+                                </a>
+                              );
+                            }
+                            // Date check: format if it looks like a date, otherwise show as is
+                            const d = new Date(val);
+                            if (val && !isNaN(d.getTime())) {
+                              return fmtDate(val);
+                            }
+                            return val || "—";
+                          })()}
+                        </td>
+                      </tr>
+                    ))}
+                    {/* 3. Custom Milestones */}
+                    {((dates as any).customDates || []).map((cd: any, idx: number) => (
+                      <tr key={`custom-${idx}`}>
+                        <td className="label">{cd.label}</td>
+                        <td className="mono bold">{cd.date ? fmtDate(cd.date) : "—"}</td>
+                      </tr>
+                    ))}
+                  </>
                 );
-              })}
-              {/* Custom Milestones */}
-              {((dates as any).customDates || []).map((cd: any, idx: number) => (
-                <tr key={`custom-${idx}`}>
-                  <td className="label">{cd.label}</td>
-                  <td className="mono bold">
-                    {cd.date ? fmtDate(cd.date) : <span style={{ color: "var(--ink-muted)", fontWeight: 400, fontStyle: "italic" }}>—</span>}
-                  </td>
-                </tr>
-              ))}
-              {job.applyLink && (
-                <tr>
-                  <td className="label">Apply Portal</td>
-                  <td>
-                    <a href={job.applyLink} target="_blank" rel="noreferrer"
-                      style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13 }}>
-                      {job.applyLink} <IconExternalLink />
-                    </a>
-                  </td>
-                </tr>
-              )}
+              })()}
             </tbody>
           </table>
 
           {/* ── APPLY CTA ── */}
-          {job.applyLink && (
-            <a href={job.applyLink} target="_blank" rel="noreferrer" className="jd-apply">
-              Apply Now at {job.officialWebsite || "Official Portal"} <IconExternalLink />
+          {dates.applyLink && (
+            <a href={dates.applyLink} target="_blank" rel="noreferrer" className="jd-apply">
+              Apply Now at {dates.officialWebsite || "Official Portal"} <IconExternalLink />
             </a>
           )}
 

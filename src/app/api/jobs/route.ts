@@ -5,9 +5,18 @@ import Job from '@/models/Job';
 import fs from 'fs';
 import path from 'path';
 
-export async function GET() {
+export async function GET(request: Request) {
   await dbConnect();
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (id) {
+      const job = await Job.findOne({ id }).lean();
+      if (!job) return NextResponse.json({ success: false, error: "Job not found" }, { status: 404 });
+      return NextResponse.json(job);
+    }
+
     // Get DB Jobs - Strictly Database Source
     const allJobs = await Job.find({}).sort({ updatedAt: -1, createdAt: -1 }).lean();
 

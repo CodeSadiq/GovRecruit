@@ -298,7 +298,7 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
         {post.prerequisite?.length > 0 && <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>}
         {post.appearingEligible && (
           <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--ink-light)" }}>
-            <span style={{ fontWeight: 600, color: "var(--green)" }}><IconCheckGreen /> Appearing eligible</span>
+            <span style={{ fontWeight: 600, color: "var(--green)" }}>Appearing eligible</span>
             {post.appearingConditions ? ` — ${post.appearingConditions}` : ""}
           </div>
         )}
@@ -340,7 +340,7 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
       {post.prerequisite?.length > 0 && <div className="qual-prereq">⚠ {post.prerequisite.join("; ")}</div>}
       {post.appearingEligible && (
         <div style={{ marginTop: "6px", fontSize: "11px", color: "var(--ink-light)" }}>
-          <span style={{ fontWeight: 600, color: "var(--green)" }}><IconCheckGreen /> Appearing eligible</span>
+          <span style={{ fontWeight: 600, color: "var(--green)" }}>Appearing eligible</span>
           {post.appearingConditions ? ` — ${post.appearingConditions}` : ""}
         </div>
       )}
@@ -413,23 +413,49 @@ function CatVacCell({ post, job }: { post: any; job: any }) {
   );
 }
 
-const Editable = ({ editable, value, onUpdate, path, type = 'text' }: any) => {
-  if (!editable) return <span>{value}</span>;
+const Editable = ({ editable, value, onUpdate, path, type = 'text', placeholder }: any) => {
+  const [localValue, setLocalValue] = React.useState(value || "");
+
+  // Initial sync from parent
+  React.useEffect(() => {
+    setLocalValue(value || "");
+  }, [value]);
+
+  if (!editable) return <span>{value || "—"}</span>;
+
+  const handleBlur = () => {
+    if (localValue !== value) {
+      onUpdate(path, localValue);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setLocalValue(e.target.value);
+  };
+
   if (type === 'textarea') {
     return (
       <textarea
-        value={value || ""}
-        onChange={(e) => onUpdate(path, e.target.value)}
+        value={localValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder={placeholder}
         className="jd-edit-field w-full min-h-[100px] bg-blue-50/50 border-blue-200"
         style={{ fontSize: '14px', lineHeight: '1.6', padding: '10px' }}
       />
     );
   }
+
   return (
     <input
-      value={value || ""}
-      onChange={(e) => onUpdate(path, e.target.value)}
+      value={localValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      placeholder={placeholder}
       className="jd-edit-field"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') handleBlur();
+      }}
     />
   );
 };
@@ -454,12 +480,21 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
     val: v as number
   }));
 
-  const timelineRows = [
+  const standardKeys = [
+    "notificationRelease", "applicationStartDate", "applicationLastDate",
+    "feePaymentLastDate", "correctionWindowLastDate", "admitCardDate",
+    "examDate", "resultDate", "interviewDate", "documentVerificationDate"
+  ];
+
+  const timelineRows: { label: string; key: string; highlight?: boolean }[] = [];
+
+  // Only add standard keys if they exist in the data
+  const standardDefs = [
     { label: "Notification Released", key: "notificationRelease" },
-    { label: "Application Opens", key: "startDate" },
-    { label: "Application Closes", key: "lastDate", highlight: true },
+    { label: "Application Start Date", key: "applicationStartDate" },
+    { label: "Application Last Date", key: "applicationLastDate", highlight: true },
     { label: "Fee Payment Last Date", key: "feePaymentLastDate", highlight: true },
-    { label: "Correction Window Closes", key: "correctionWindowLastDate" },
+    { label: "Correction Window Last Date", key: "correctionWindowLastDate" },
     { label: "Admit Card Released", key: "admitCardDate" },
     { label: "Examination Date", key: "examDate", highlight: true },
     { label: "Result Announced", key: "resultDate" },
@@ -467,7 +502,27 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
     { label: "DV Date", key: "documentVerificationDate" },
   ];
 
+  standardDefs.forEach(def => {
+    if (dates[def.key as keyof typeof dates] !== undefined) {
+      timelineRows.push(def);
+    }
+  });
+
+  // Dynamically add any other keys found in importantDates (Dates and Links)
+  const excludeKeys = [...standardKeys, "customDates", "_id"];
+  Object.keys(dates).forEach(key => {
+    if (!excludeKeys.includes(key)) {
+      const prettify = (str: string) => str.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
+      timelineRows.push({ label: prettify(key), key });
+    }
+  });
+
   const rawPosts: any[] = (job.posts || []).length > 0 ? job.posts : [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }];
+
+  // Salary derivation
+  const salaryValues = rawPosts.map((p) => `${p.salary?.payLevel || ''}|${p.salary?.min || ''}|${p.salary?.max || ''}`);
+  const allSameSalary = salaryValues.every((v) => v === salaryValues[0]);
+  const heroSal = rawPosts[0]?.salary || job.salary || {};
 
   return (
     <div className="jd">
@@ -496,16 +551,16 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
             <div className="jd-hero-sub">Posts to be filled</div>
           </div>
           <div className="jd-hero-cell">
-            <div className="jd-hero-label">Start Date</div>
+            <div className="jd-hero-label">Application Start Date</div>
             <div className="jd-hero-value" style={{ fontSize: 20 }}>
-              {dates.startDate ? fmtDate(dates.startDate) : "TBA"}
+              {dates.applicationStartDate ? fmtDate(dates.applicationStartDate) : "TBA"}
             </div>
             <div className="jd-hero-sub">Application opens</div>
           </div>
           <div className="jd-hero-cell">
-            <div className="jd-hero-label">Last Date</div>
+            <div className="jd-hero-label">Application Last Date</div>
             <div className="jd-hero-value" style={{ fontSize: 19 }}>
-              {dates.lastDate ? fmtDate(dates.lastDate) : "—"}
+              {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
             </div>
             <div className="jd-hero-sub">Application deadline</div>
           </div>
@@ -524,7 +579,6 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
           </div>
         )}
 
-        {/* OVERVIEW */}
         <div className="jd-section">
           <span className="jd-section-icon"><IconBriefcase /></span>
           <span className="jd-section-title">Recruitment Overview</span>
@@ -532,14 +586,17 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
         <table className="jd-table">
           <tbody>
             <tr><td className="label">Organisation</td><td><Editable editable={editable} path="organization" value={job.organization} onUpdate={onUpdate} /></td></tr>
+            {(job.department || editable) && (
+              <tr><td className="label">Department</td><td><Editable editable={editable} path="department" value={job.department} onUpdate={onUpdate} /></td></tr>
+            )}
             <tr><td className="label">Govt. Type</td><td><Editable editable={editable} path="type" value={job.type} onUpdate={onUpdate} /></td></tr>
             <tr>
-              <td className="label">Location</td>
+              <td className="label">Job Location</td>
               <td>
                 <Editable
                   editable={editable}
                   path="location"
-                  value={Array.isArray(job.location) ? job.location.join(", ") : (job.location || "")}
+                  value={Array.isArray(job.location) ? job.location.join(", ") : (job.location || "All India")}
                   onUpdate={(path: string, val: string) => {
                     const arr = val.split(",").map(s => s.trim()).filter(Boolean);
                     onUpdate(path, arr);
@@ -547,12 +604,100 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
                 />
               </td>
             </tr>
-            {(job.salary?.min || job.salary?.max) && (
+            {(dates.notificationType || editable) && (
+              <tr><td className="label">Notification Type</td><td><Editable editable={editable} path="importantDates.notificationType" value={dates.notificationType} onUpdate={onUpdate} /></td></tr>
+            )}
+
+            {/* Salary shown in overview if consistent across posts */}
+            {allSameSalary && (heroSal.payLevel || heroSal.min || heroSal.max) && (
+              <>
+                {heroSal.payLevel && <tr><td className="label">Pay Level</td><td className="bold">Level {heroSal.payLevel}</td></tr>}
+                {(heroSal.min || heroSal.max) && (
+                  <tr>
+                    <td className="label">Salary</td>
+                    <td className="bold">
+                      {heroSal.min ? fmtMoney(heroSal.min) : ""}
+                      {heroSal.min && heroSal.max ? " – " : ""}
+                      {heroSal.max ? fmtMoney(heroSal.max) : ""}
+                      {" INR"}
+                    </td>
+                  </tr>
+                )}
+              </>
+            )}
+
+            {/* Eligibility Flags */}
+            {(job.categoryEligibility?.length > 0 || editable) && (
               <tr>
-                <td className="label">Salary</td>
-                <td className="bold">
-                  {job.salary?.min ? fmtMoney(job.salary.min) : ""}
-                  {job.salary?.max ? ` – ${fmtMoney(job.salary.max)}` : ""}
+                <td className="label">Category Eligibility</td>
+                <td>
+                  <Editable
+                    editable={editable}
+                    path="categoryEligibility"
+                    value={Array.isArray(job.categoryEligibility) ? job.categoryEligibility.join(", ") : (job.categoryEligibility || "")}
+                    onUpdate={(path: string, val: string) => {
+                      const arr = val.split(",").map(s => s.trim()).filter(Boolean);
+                      onUpdate(path, arr);
+                    }}
+                  />
+                </td>
+              </tr>
+            )}
+            <tr>
+              <td className="label">PwBD Eligible</td>
+              <td>
+                {editable ? (
+                  <button onClick={() => onUpdate('pwdEligible', !job.pwdEligible)} className={`text-[10px] font-bold px-2 py-1 rounded ${job.pwdEligible ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
+                    {job.pwdEligible ? 'YES' : 'NO'}
+                  </button>
+                ) : (
+                  job.pwdEligible ? <span style={{ color: "var(--green)", fontWeight: 600 }}>Yes</span> : "No"
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td className="label">Female Only</td>
+              <td>
+                {editable ? (
+                  <button onClick={() => onUpdate('femaleOnly', !job.femaleOnly)} className={`text-[10px] font-bold px-2 py-1 rounded ${job.femaleOnly ? 'bg-crimson/10 text-crimson' : 'bg-gray-100 text-gray-400'}`}>
+                    {job.femaleOnly ? 'YES' : 'NO'}
+                  </button>
+                ) : (
+                  job.femaleOnly ? <span style={{ color: "var(--crimson)", fontWeight: 600 }}>Yes</span> : "No"
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td className="label">Ex-Serviceman Quota</td>
+              <td>
+                {editable ? (
+                  <button onClick={() => onUpdate('exServicemanQuota', !job.exServicemanQuota)} className={`text-[10px] font-bold px-2 py-1 rounded ${job.exServicemanQuota ? 'bg-navy/10 text-navy' : 'bg-gray-100 text-gray-400'}`}>
+                    {job.exServicemanQuota ? 'YES' : 'NO'}
+                  </button>
+                ) : (
+                  job.exServicemanQuota ? <span style={{ fontWeight: 600 }}>Yes</span> : "No"
+                )}
+              </td>
+            </tr>
+
+            {/* Links in Overview */}
+            {dates.officialWebsite && (
+              <tr>
+                <td className="label">Official Website</td>
+                <td>
+                  <a href={dates.officialWebsite} target="_blank" rel="noreferrer" style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    {dates.officialWebsite} <IconExternalLink />
+                  </a>
+                </td>
+              </tr>
+            )}
+            {dates.notificationPdfLink && (
+              <tr>
+                <td className="label">PDF Notification</td>
+                <td>
+                  <a href={dates.notificationPdfLink} target="_blank" rel="noreferrer" style={{ color: "#1e40af", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    Official PDF <IconExternalLink />
+                  </a>
                 </td>
               </tr>
             )}
@@ -696,16 +841,56 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
                   <td className={val ? "bold" : "red bold"}>
                     {editable ? (
                       <>
-                        <Editable 
-                          editable={true}
-                          path={`importantDates.${row.key}`}
-                          value={val || ""}
-                          onUpdate={onUpdate}
-                        />
-                        <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>YYYY-MM-DD</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ flex: 1 }}>
+                            <Editable
+                              editable={true}
+                              path={`importantDates.${row.key}`}
+                              value={val || ""}
+                              onUpdate={onUpdate}
+                            />
+                          </div>
+                          <button
+                            onClick={() => onUpdate(`importantDates.${row.key}`, undefined)}
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              borderRadius: '50%',
+                              background: '#fee2e2',
+                              color: '#ef4444',
+                              border: '1px solid #fecaca',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '16px',
+                              cursor: 'pointer',
+                              flexShrink: 0
+                            }}
+                            title="Remove row"
+                          >
+                            ×
+                          </button>
+                        </div>
+                        <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>Date or Link</div>
                       </>
                     ) : (
-                      val ? fmtDate(val as string) : "Not available"
+                      (() => {
+                        const raw = dates[row.key as keyof typeof dates];
+                        if (!raw) return "Not available";
+                        const val = typeof raw === 'string' ? raw.trim() : raw;
+
+                        if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
+                          const href = val.startsWith('www.') ? `https://${val}` : val;
+                          return (
+                            <a href={href} target="_blank" rel="noreferrer" style={{ color: "#2563eb", textDecoration: "underline", fontWeight: 600 }}>
+                              {val}
+                            </a>
+                          );
+                        }
+                        const d = new Date(val as string);
+                        if (!isNaN(d.getTime())) return fmtDate(val as string);
+                        return val;
+                      })()
                     )}
                   </td>
                 </tr>
@@ -715,26 +900,67 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
             {(dates.customDates || []).map((cd: any, idx: number) => (
               <tr key={`custom-${idx}`}>
                 <td className="label">
-                  <Editable 
+                  <Editable
                     editable={editable}
                     path={`importantDates.customDates.${idx}.label`}
                     value={cd.label}
                     onUpdate={onUpdate}
                   />
                 </td>
-                <td className="bold">
+                <td className="bold" style={{ position: 'relative' }}>
                   {editable ? (
                     <>
-                      <Editable 
-                        editable={true}
-                        path={`importantDates.customDates.${idx}.date`}
-                        value={cd.date || ""}
-                        onUpdate={onUpdate}
-                      />
-                      <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>YYYY-MM-DD</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ flex: 1 }}>
+                          <Editable
+                            editable={true}
+                            path={`importantDates.customDates.${idx}.date`}
+                            value={cd.date || ""}
+                            onUpdate={onUpdate}
+                          />
+                        </div>
+                        <button
+                          onClick={() => {
+                            const current = [...(dates.customDates || [])];
+                            current.splice(idx, 1);
+                            onUpdate('importantDates.customDates', current);
+                          }}
+                          style={{
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            background: '#fee2e2',
+                            color: '#ef4444',
+                            border: '1px solid #fecaca',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '16px',
+                            cursor: 'pointer',
+                            flexShrink: 0
+                          }}
+                          title="Remove row"
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>Date or Link</div>
                     </>
                   ) : (
-                    cd.date ? fmtDate(cd.date) : "—"
+                    (() => {
+                      const val = cd.date;
+                      if (!val) return "—";
+                      if (typeof val === 'string' && val.startsWith('http')) {
+                        return (
+                          <a href={val} target="_blank" rel="noreferrer" style={{ color: "var(--blue)", textDecoration: "underline" }}>
+                            {val}
+                          </a>
+                        );
+                      }
+                      const d = new Date(val as string);
+                      if (!isNaN(d.getTime())) return fmtDate(val as string);
+                      return val;
+                    })()
                   )}
                 </td>
               </tr>

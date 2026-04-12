@@ -101,7 +101,7 @@ export default function Navbar() {
                   <div className="flex items-center gap-2 md:gap-3">
                     <span className="opacity-50 group-hover:opacity-100 transition-opacity"><IconUser /></span>
                     <span className="hidden md:inline text-[15px] font-serif font-bold whitespace-nowrap">
-                      {userProfile?.fullName || 'Candidate'}
+                      {userProfile?.email === 'guest@govrecruit.local' ? 'Guest' : (userProfile?.fullName || 'Candidate')}
                     </span>
                   </div>
                   <span className={`text-[8px] md:text-[10px] transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`}>▼</span>
@@ -183,7 +183,7 @@ export default function Navbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <h4 className="text-white text-[20px] font-serif font-bold leading-tight group-hover:text-blue-400 transition-colors">
-                        {userProfile?.fullName || 'Candidate'}
+                        {userProfile?.email === 'guest@govrecruit.local' ? 'Guest' : (userProfile?.fullName || 'Candidate')}
                       </h4>
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] text-white/40 font-bold uppercase tracking-widest group-hover:text-white/70 transition-colors">

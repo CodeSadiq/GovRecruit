@@ -82,7 +82,8 @@ function getMatchedPostsForJob(candidate: CandidateProfile, job: JobPost): { mat
       categoryWiseVacancy: job.categoryWiseVacancyTotal,
       appearingEligible: false,
       appearingConditions: null,
-      qualificationNote: null,
+      ageLimit: (job as any).ageLimit || { min: null, max: null, relaxation: {} },
+      salary: (job as any).salary || { payLevel: null, min: null, max: null, currency: 'INR' },
     };
 
     candidate.qualifications.forEach(q => {
