@@ -55,9 +55,39 @@ export default function Home() {
     fetchJobs();
   }, []);
 
+  const isFuzzyMatch = (target: any, query: string) => {
+    const t = String(target || "").toLowerCase();
+    const q = query.toLowerCase();
+    if (t.includes(q)) return true;
+    if (q.length < 3) return false;
+
+    const levDist = (s1: string, s2: string) => {
+      const d: number[][] = [];
+      for (let i = 0; i <= s1.length; i++) d[i] = [i];
+      for (let j = 0; j <= s2.length; j++) d[0][j] = j;
+      for (let i = 1; i <= s1.length; i++) {
+        for (let j = 1; j <= s2.length; j++) {
+          const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+        }
+      }
+      return d[s1.length][s2.length];
+    };
+
+    const words = t.split(/[\s,]+/);
+    const threshold = q.length > 5 ? 2 : 1;
+    return words.some(word => levDist(word, q) <= threshold);
+  };
+
   const filteredJobs = dbJobs.filter(job => {
-    const matchesSearch = (job.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (job.organization || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const matchesSearch = queryTerms.length === 0 || queryTerms.every(term => 
+      isFuzzyMatch(job.title, term) ||
+      isFuzzyMatch(job.organization, term) ||
+      isFuzzyMatch(job.org, term) ||
+      (job.tags || []).some((t: string) => isFuzzyMatch(t, term)) ||
+      isFuzzyMatch(job.location, term)
+    );
     const matchesType = filterType === 'all' || job.type === filterType;
     return matchesSearch && matchesType;
   });
@@ -96,15 +126,23 @@ export default function Home() {
 
               {/* Pin top-right search (Tight corner) */}
               <div className="absolute top-2 right-2 md:top-6 md:right-8 z-30 hidden md:block">
-                <div className="flex items-center bg-white border-2 border-gray-100 rounded-xl px-2 h-8 md:h-12 gap-1.5 w-[130px] focus-within:w-[190px] md:focus-within:w-[280px] md:w-[280px] transition-all focus-within:border-navy group shadow-sm">
-                  <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-[0.6] md:scale-90"><IconSearch /></span>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (searchQuery.trim()) {
+                      router.push(`/all-jobs?q=${encodeURIComponent(searchQuery.trim())}`);
+                    }
+                  }}
+                  className="flex items-center bg-white border-2 border-gray-100 rounded-xl px-3 md:px-4 h-9 md:h-14 gap-2 w-[160px] focus-within:w-[220px] md:w-[320px] md:focus-within:w-[380px] transition-all focus-within:border-navy group shadow-lg shadow-navy/5"
+                >
+                  <span className="text-gray-300 group-focus-within:text-navy transition-colors scale-75 md:scale-100"><IconSearch /></span>
                   <input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border-none outline-none text-[10px] md:text-sm text-navy flex-1 bg-transparent placeholder:text-gray-200 font-bold uppercase tracking-tight"
-                    placeholder="Search All Jobs"
+                    className="border-none outline-none text-[11px] md:text-sm text-navy flex-1 bg-transparent placeholder:text-gray-200 font-bold uppercase tracking-tight"
+                    placeholder="Search Index..."
                   />
-                </div>
+                </form>
               </div>
 
               {/* 🏛 Institutional Header Block (Laptop & Mobile) */}
@@ -128,8 +166,8 @@ export default function Home() {
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
-                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-2 md:px-0">
+                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-1 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
+                  <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-4 md:px-0">
                     <div className="flex items-center gap-4">
                       <h2 className="text-[12px] md:text-2xl font-sans md:font-serif font-semibold text-navy/40 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
                         Recruitment For You
@@ -142,7 +180,10 @@ export default function Home() {
                     {recommendedJobs.length === 0 ? (
                       <div className="flex-1 py-16 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm rounded-2xl">
                         <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
-                          No recruitments currently match your specific qualification level and branch.
+                          {(!userProfile?.qualifications || userProfile.qualifications.length === 0)
+                            ? "Set your qualification details to see eligible gov jobs."
+                            : "No recruitments currently match your specific qualification level and branch."
+                          }
                         </p>
                         {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
                           <Link
@@ -168,8 +209,8 @@ export default function Home() {
                     onClick={() => setIsAutoPlaying(false)}
                     className="relative overflow-hidden flex-1 flex flex-col cursor-pointer"
                   >
-                    <div className="p-6 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between mb-6 h-8 min-h-[32px]">
+                    <div className="p-4 flex-1 flex flex-col">
+                      <div className="flex items-center justify-between mb-4 h-8 min-h-[32px]">
                         <div className="flex-1 flex items-center gap-3 min-w-0 pr-4">
                           <div className="p-1.5 md:p-2 bg-navy/5 text-navy rounded-lg flex-shrink-0">
                             <IconBell />
@@ -206,7 +247,7 @@ export default function Home() {
                           <Link
                             href="#"
                             key={i}
-                            className="group block py-5 first:pt-0 last:pb-0 border-b border-gray-200 last:border-0 transition-all hover:bg-navy/5 -mx-4 px-4"
+                            className="group block py-3.5 first:pt-0 last:pb-0 border-b border-gray-200 last:border-0 transition-all hover:bg-navy/5 -mx-4 px-4"
                           >
                             <div className="text-[13px] md:text-[14px] font-serif font-bold text-[#344163] leading-tight group-hover:text-navy transition-colors mb-2 line-clamp-2">
                               {n.text}
@@ -220,7 +261,7 @@ export default function Home() {
                       </div>
 
                       {/* SEGMENTED SLIDING INDICATOR */}
-                      <div className="mt-8 flex gap-1.5 h-1 w-full px-2">
+                      <div className="mt-4 flex gap-1.5 h-1 w-full px-2">
                         {categories.map((_, idx) => (
                           <div key={idx} className="flex-1 bg-navy/[0.05] rounded-full overflow-hidden relative">
                             {idx === currentCatIndex && (
@@ -237,7 +278,7 @@ export default function Home() {
                       </div>
 
                       {/* ENHANCED VIEW ALL BUTTON */}
-                      <div className="mt-10">
+                      <div className="mt-3">
                         <Link
                           href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
                           className="flex items-center justify-center gap-2 w-full py-4 bg-navy/5 text-navy text-[12px] font-serif font-black uppercase tracking-widest rounded-xl hover:bg-navy hover:text-white transition-all group/btn"
@@ -280,7 +321,7 @@ export default function Home() {
                 <div className="py-40 text-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">No recruitment records match this filter</div>
               ) : (
                 filteredJobs.map((job, idx) => (
-                  <RecruitmentCard key={idx} job={job} />
+                  <RecruitmentCard key={idx} job={job} highlighted={!!searchQuery} />
                 ))
               )}
             </div>

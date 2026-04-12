@@ -20,35 +20,54 @@ export default function ProfilePage() {
     if (!isAuth) return;
     const authData = JSON.parse(isAuth);
 
-    try {
-      const res = await fetch(`/api/profile?email=${authData.email}`);
-      if (res.ok) {
-        const remoteUser = await res.json();
-        if (remoteUser.profile) {
-          const profile = remoteUser.profile;
-          setUserProfile((prev: any) => ({ ...prev, ...profile }));
-          
-          if (profile.qualifications && Array.isArray(profile.qualifications)) {
-            const initialState: Record<number, { qual: string, branch: string }> = {};
-            profile.qualifications.forEach((q: any) => {
-              initialState[q.level] = { qual: q.name, branch: q.branch };
-            });
-            setSelectedLevels(initialState);
-          }
+    // Initial load from localStorage (essential for guest persistence)
+    const savedLocal = localStorage.getItem('govrecruit_profile');
+    if (savedLocal) {
+      try {
+        const profile = JSON.parse(savedLocal);
+        if (profile.qualifications && Array.isArray(profile.qualifications)) {
+          const initialState: Record<number, { qual: string, branch: string }> = {};
+          profile.qualifications.forEach((q: any) => {
+            initialState[q.level] = { qual: q.name, branch: q.branch || '' };
+          });
+          setSelectedLevels(initialState);
           setCompleted(true);
-
-          localStorage.setItem('govrecruit_profile', JSON.stringify({
-            ...profile,
-            fullName: authData.fullName,
-            email: authData.email
-          }));
         }
-      }
-    } catch (e) {
-      console.error('Profile fetch failed:', e);
-    } finally {
-      setIsLoaded(true);
+      } catch (e) { console.error('Local profile parse error:', e); }
     }
+
+    // Fetch remote profile for verified users only
+    if (authData.email && authData.email !== 'guest@govrecruit.local') {
+      try {
+        const res = await fetch(`/api/profile?email=${authData.email}`);
+        if (res.ok) {
+          const remoteUser = await res.json();
+          if (remoteUser.profile) {
+            const profile = remoteUser.profile;
+            setUserProfile((prev: any) => ({ ...prev, ...profile }));
+            
+            if (profile.qualifications && Array.isArray(profile.qualifications)) {
+              const initialState: Record<number, { qual: string, branch: string }> = {};
+              profile.qualifications.forEach((q: any) => {
+                initialState[q.level] = { qual: q.name, branch: q.branch || '' };
+              });
+              setSelectedLevels(initialState);
+              setCompleted(true);
+            }
+
+            localStorage.setItem('govrecruit_profile', JSON.stringify({
+              ...profile,
+              fullName: authData.fullName,
+              email: authData.email
+            }));
+          }
+        }
+      } catch (e) {
+        console.error('Remote profile fetch failed:', e);
+      }
+    }
+    
+    setIsLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -253,6 +272,17 @@ export default function ProfilePage() {
                            if(confirm('Are you sure you want to reset all qualifications? This cannot be undone.')) {
                              setIsSaving(true);
                              try {
+                               // ── GUEST HANDLING: Clear local only ──
+                               if (userProfile.email === 'guest@govrecruit.local') {
+                                 setSelectedLevels({});
+                                 setCompleted(false);
+                                 localStorage.removeItem('govrecruit_profile');
+                                 window.dispatchEvent(new Event('govrecruit_auth_change'));
+                                 alert('Guest qualifications reset successfully! ✅');
+                                 setIsSaving(false);
+                                 return;
+                               }
+
                                const res = await fetch('/api/profile', {
                                  method: 'POST',
                                  headers: { 'Content-Type': 'application/json' },
@@ -262,6 +292,7 @@ export default function ProfilePage() {
                                  setSelectedLevels({});
                                  setCompleted(false);
                                  localStorage.removeItem('govrecruit_profile');
+                                 window.dispatchEvent(new Event('govrecruit_auth_change'));
                                  alert('Qualifications reset successful! ✅');
                                } else {
                                   throw new Error('Reset failed');

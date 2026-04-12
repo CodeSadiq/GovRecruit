@@ -2,23 +2,32 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { NOTIFICATIONS } from '@/lib/data';
 
-import Navbar from '@/components/Navbar';
+
 import RecruitmentCard from '@/components/RecruitmentCard';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
-const IconBell = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
+const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 
 export default function JobsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('q') || '';
+
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [filterType, setFilterType] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (initialQuery) {
+      setSearchQuery(initialQuery);
+    }
+  }, [initialQuery]);
 
   useEffect(() => {
     // Load profile for matching
@@ -47,7 +56,7 @@ export default function JobsPage() {
     if (!userProfile || !userProfile.qualifications || userProfile.qualifications.length === 0 || dbJobs.length === 0) {
       return dbJobs.map(j => ({ ...j, isMatched: false }));
     }
-    
+
     // Get matched list to identify which ones are eligible
     const matched = getEligibleJobs(userProfile, dbJobs);
     const matchedMap = new Map(matched.map(m => [m.job._id || m.job.id, m]));
@@ -55,20 +64,50 @@ export default function JobsPage() {
     return dbJobs.map(job => {
       const matchData = matchedMap.get(job._id || job.id);
       if (matchData) {
-        return { 
-          ...job, 
-          isMatched: true, 
+        return {
+          ...job,
+          isMatched: true,
           matchedPosts: matchData.matchedPosts,
-          matchScore: matchData.matchScore 
+          matchScore: matchData.matchScore
         };
       }
       return { ...job, isMatched: false };
     });
   }, [userProfile, dbJobs]);
 
+  const isFuzzyMatch = (target: any, query: string) => {
+    const t = String(target || "").toLowerCase();
+    const q = query.toLowerCase();
+    if (t.includes(q)) return true;
+    if (q.length < 3) return false;
+
+    const levDist = (s1: string, s2: string) => {
+      const d: number[][] = [];
+      for (let i = 0; i <= s1.length; i++) d[i] = [i];
+      for (let j = 0; j <= s2.length; j++) d[0][j] = j;
+      for (let i = 1; i <= s1.length; i++) {
+        for (let j = 1; j <= s2.length; j++) {
+          const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+        }
+      }
+      return d[s1.length][s2.length];
+    };
+
+    const words = t.split(/[\s,]+/);
+    const threshold = q.length > 5 ? 2 : 1;
+    return words.some(word => levDist(word, q) <= threshold);
+  };
+
   const filteredJobs = jobsWithMatching.filter(job => {
-    const matchesSearch = (job.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (job.organization || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const queryTerms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const matchesSearch = queryTerms.length === 0 || queryTerms.every(term => 
+      isFuzzyMatch(job.title, term) ||
+      isFuzzyMatch(job.organization, term) ||
+      isFuzzyMatch(job.org, term) ||
+      (job.tags || []).some((t: string) => isFuzzyMatch(t, term)) ||
+      isFuzzyMatch(job.location, term)
+    );
     const matchesType = filterType === 'all' || job.type?.toLowerCase() === filterType.toLowerCase();
     return matchesSearch && matchesType;
   });
@@ -77,6 +116,12 @@ export default function JobsPage() {
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
       <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-12 py-6 md:py-12 animate-in fade-in duration-500">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-8 md:mb-12 no-underline"
+        >
+          <IconArrowLeft /> Back to Dashboard
+        </Link>
         <header className="mb-14 border-b-4 border-navy pb-10 flex flex-col md:flex-row md:items-end justify-between gap-8 px-4 md:px-0">
           <div>
             <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
@@ -104,7 +149,7 @@ export default function JobsPage() {
                 <div className="py-40 text-center text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">No recruitment records match this filter</div>
               ) : (
                 filteredJobs.map((job, idx) => (
-                  <RecruitmentCard key={idx} job={job} isMatched={job.isMatched} />
+                  <RecruitmentCard key={idx} job={job} isMatched={job.isMatched} highlighted={!!searchQuery} />
                 ))
               )}
             </div>

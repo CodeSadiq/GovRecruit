@@ -52,6 +52,13 @@ export default function ForYouPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 py-6 md:py-12 w-full animate-in fade-in duration-700">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-8 md:mb-12 no-underline"
+        >
+          <IconArrowLeft /> Back to Dashboard
+        </Link>
+
         <header className="mb-14 border-b-4 border-[#1a3a8f] pb-10 px-4 md:px-0">
           <h1 className="text-2xl md:text-5xl font-serif font-bold tracking-tight text-[#1a3a8f] leading-tight">Recruitment for You</h1>
           <p className="text-[10px] md:text-gray-500 font-bold uppercase tracking-widest mt-4">Showing official verified government openings matched to your profile.</p>
@@ -75,7 +82,10 @@ export default function ForYouPage() {
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
             <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
-              No recruitments currently match your specific qualification level and branch.
+              {(!userProfile?.qualifications || userProfile.qualifications.length === 0) 
+                ? "Set your qualification details to see eligible gov jobs."
+                : "No recruitments currently match your specific qualification level and branch."
+              }
             </p>
             {(!userProfile?.qualifications || userProfile.qualifications.length === 0) && (
               <Link

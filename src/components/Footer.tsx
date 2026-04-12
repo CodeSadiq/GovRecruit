@@ -13,7 +13,6 @@ const Footer: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <strong className="text-white text-[14px] font-black uppercase tracking-[0.3em]">Rojgar Match</strong>
-            <span className="text-white/40 text-[10px] font-bold uppercase tracking-[0.3em] mt-1.5">Real-time Recruitment Matching</span>
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">

@@ -195,10 +195,13 @@ export default function LoginPage() {
                     setIsLoading(false);
                   }, 800);
                 }}
-                className="w-full bg-transparent text-gray-400 hover:text-navy py-3 px-8 font-black text-[9px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 mt-2 group/guest"
+                className="w-full bg-navy/[0.03] border-2 border-navy/[0.05] hover:bg-navy/[0.06] hover:border-navy/[0.1] text-navy/60 hover:text-navy py-4 px-8 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 rounded-2xl mt-4 active:scale-[0.95] group/guest"
               >
+                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm group-hover/guest:bg-navy group-hover/guest:text-white transition-all">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
                 <span>Continue as a guest</span>
-                <span className="opacity-0 group-hover/guest:opacity-100 transition-opacity">➜</span>
+                <span className="group-hover/guest:translate-x-1 transition-transform">➜</span>
               </button>
 
             </form>

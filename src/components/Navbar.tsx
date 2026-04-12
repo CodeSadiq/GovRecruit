@@ -22,9 +22,13 @@ export default function Navbar() {
     const checkAuth = () => {
       const auth = localStorage.getItem('govrecruit_auth');
       setIsLoggedIn(!!auth);
+      
       const savedProfile = localStorage.getItem('govrecruit_profile');
       if (savedProfile) {
         try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error('Profile sync error:', e); }
+      } else if (auth) {
+        // Fallback to basic auth data if profile isn't set yet
+        try { setUserProfile(JSON.parse(auth)); } catch (e) { setUserProfile(null); }
       } else {
         setUserProfile(null);
       }
@@ -64,7 +68,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-[#0D244D] h-[60px] flex items-center px-2 md:px-12 sticky top-0 z-[100] shadow-sm transform-gpu transition-none">
+      <nav className="bg-[#0D244D] h-[60px] flex items-center px-6 md:px-12 sticky top-0 z-[100] shadow-sm transform-gpu transition-none">
 
         {/* 🏛 Institutional Brand */}
         <Link href="/" className="flex items-center gap-2 no-underline mr-auto group transition-none">

@@ -6,16 +6,21 @@ import Link from 'next/link';
 interface RecruitmentCardProps {
   job: any;
   isMatched?: boolean;
+  highlighted?: boolean;
 }
 
-const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched }) => {
+const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highlighted }) => {
   const lastDateVal = job.importantDates?.applicationLastDate || job.importantDates?.lastDate || job.lastDate || job.notificationType || (job as any).displayStatus?.notificationType || "DETAILS AWAITED";
   const isFallback = !lastDateVal?.toString().includes('202');
 
   return (
     <Link
       href={`/all-jobs/${job.id || job._id}`}
-      className="group bg-white border-2 border-gray-200 p-4 md:p-8 flex flex-col md:flex-row md:items-center gap-1 md:gap-10 transition-all hover:border-navy rounded-xl shadow-none md:shadow-sm no-underline relative overflow-hidden"
+      className={`group p-4 md:p-8 flex flex-col md:flex-row md:items-center gap-1 md:gap-10 transition-all rounded-xl no-underline relative overflow-hidden ${
+        highlighted 
+          ? 'bg-navy/[0.02] border-2 border-navy shadow-lg ring-1 ring-navy/10' 
+          : 'bg-white border-2 border-gray-200 md:shadow-sm'
+      } hover:border-navy`}
     >
       <div className="w-full flex-1">
         <div className="flex items-start justify-between gap-4 mb-0.5 md:mb-4">
@@ -60,7 +65,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched }) => 
             {isFallback && lastDateVal === "DETAILS AWAITED" ? "PENDING" : lastDateVal}
           </div>
         </div>
-        
+
         <div className="bg-gray-50 text-navy/20 p-2.5 rounded-full flex-shrink-0">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </div>

@@ -77,6 +77,20 @@ export default function QualificationForm() {
     const el = document.createElement("style");
     el.textContent = styles;
     document.head.appendChild(el);
+
+    // Load existing profile from localStorage
+    const savedProfile = localStorage.getItem('govrecruit_profile');
+    if (savedProfile) {
+      try {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed.qualifications) {
+          setRegistry(parsed.qualifications);
+        }
+      } catch (e) {
+        console.error('Error loading saved profile:', e);
+      }
+    }
+
     return () => { document.head.removeChild(el); };
   }, []);
 
@@ -100,7 +114,16 @@ export default function QualificationForm() {
   }
 
   function saveProfile() {
-    localStorage.setItem('govrecruit_profile', JSON.stringify({ qualifications: registry }));
+    const existing = localStorage.getItem('govrecruit_profile');
+    let profile: any = { qualifications: registry };
+    if (existing) {
+      try {
+        const parsed = JSON.parse(existing);
+        profile = { ...parsed, qualifications: registry };
+      } catch (e) {}
+    }
+
+    localStorage.setItem('govrecruit_profile', JSON.stringify(profile));
     window.dispatchEvent(new Event('govrecruit_auth_change'));
     alert("Full Registry Saved! Every level will now be matched separately. ✅");
     window.location.href = '/';

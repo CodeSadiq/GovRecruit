@@ -45,26 +45,30 @@ export default function CategoryPage() {
         </header>
 
         {data.length > 0 ? (
-          <div className="space-y-0 translate-y-[-20px]">
+          <div className="flex flex-col gap-3">
             {data.map((item, idx) => (
               <div
                 key={idx}
-                className="flex flex-col md:flex-row md:items-center justify-between py-6 md:py-8 border-b-2 border-navy/5 hover:bg-white/40 transition-all group gap-4 px-2"
+                className="bg-white border border-gray-300 rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6"
               >
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 md:gap-3 mb-1.5 md:mb-2 text-nowrap">
-                    <span className="w-1 md:w-1.5 h-1 md:h-1.5 bg-navy/20 rounded-full group-hover:bg-navy transition-colors"></span>
-                    <div className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-navy/40">{item.time}</div>
+                  {/* 🛡 Status row */}
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{item.time}</span>
+                    </div>
                   </div>
-                  <h3 className="text-sm md:text-xl font-bold text-navy leading-tight line-clamp-2 md:line-clamp-none">
+
+                  <h3 className="text-base md:text-lg font-bold text-navy">
                     {item.text}
                   </h3>
                 </div>
 
-                <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6 pt-2 md:pt-0 border-t border-navy/5 md:border-t-0 mt-2 md:mt-0">
-                  <div className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-[#2563EB] bg-[#2563EB]/5 px-2 md:px-3 py-1 rounded">Official Notification</div>
-                  <button className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-navy hover:text-white bg-white/40 border-2 border-navy/5 hover:bg-navy px-4 md:px-6 py-2.5 md:py-3 transition-all rounded-lg whitespace-nowrap">
-                    Check Details
+                {/* 🔘 Action */}
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                  <button className="flex-1 md:flex-none text-[10px] font-bold uppercase tracking-widest text-white bg-navy px-8 py-3 rounded-lg">
+                    View Details
                   </button>
                 </div>
               </div>
