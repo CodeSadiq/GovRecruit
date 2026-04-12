@@ -43,11 +43,40 @@ export default function AdminPage() {
     }
   };
 
-  const filteredJobs = publishedJobs.filter(job =>
-    (job.title || '').toLowerCase().includes(adminSearchQuery.toLowerCase()) ||
-    (job.organization || '').toLowerCase().includes(adminSearchQuery.toLowerCase()) ||
-    (job.id || '').toLowerCase().includes(adminSearchQuery.toLowerCase())
-  );
+  // ── FUZZY MATCHING LOGIC ──────────────────────
+  const isFuzzyMatch = (target: any, searchQuery: string) => {
+    const t = String(target || "").toLowerCase();
+    const q = searchQuery.toLowerCase();
+    if (t.includes(q)) return true;
+    if (q.length < 3) return false;
+
+    const levDist = (s1: string, s2: string) => {
+      const d: number[][] = [];
+      for (let i = 0; i <= s1.length; i++) d[i] = [i];
+      for (let j = 0; j <= s2.length; j++) d[0][j] = j;
+      for (let i = 1; i <= s1.length; i++) {
+        for (let j = 1; j <= s2.length; j++) {
+          const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+        }
+      }
+      return d[s1.length][s2.length];
+    };
+
+    const words = t.split(/[\s,]+/);
+    const threshold = q.length > 5 ? 2 : 1;
+    return words.some(word => levDist(word, q) <= threshold);
+  };
+
+  const filteredJobs = publishedJobs.filter(job => {
+    const queryTerms = adminSearchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    return queryTerms.length === 0 || queryTerms.every(term => 
+      isFuzzyMatch(job.title, term) ||
+      isFuzzyMatch(job.organization || job.org, term) ||
+      isFuzzyMatch(job.id, term) ||
+      (job.tags || []).some((t: string) => isFuzzyMatch(t, term))
+    );
+  });
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] p-6 lg:p-14 font-sans selection:bg-navy selection:text-white">
@@ -96,62 +125,47 @@ export default function AdminPage() {
           </div>
 
           <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm">
-            <table className="w-full border-collapse text-left">
-              <thead>
-                <tr className="bg-gray-50 border-b-2 border-gray-100">
-                  <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-navy/40">ID / UUID</th>
-                  <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-navy/40">Recruitment Title</th>
-                  <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-navy/40">Status</th>
-                  <th className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-navy/40 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y-2 divide-gray-50">
-                {isLoadingJobs ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-20 text-center text-[10px] font-black text-navy/10 uppercase tracking-widest animate-pulse">
-                      Accessing National Registry...
-                    </td>
-                  </tr>
-                ) : filteredJobs.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-20 text-center text-[10px] font-black text-navy/10 uppercase tracking-widest">
-                      No matching recruitment records found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredJobs.map((job) => (
-                    <tr key={job.id} className="hover:bg-gray-50 transition-all group">
-                      <td className="px-6 py-6">
-                        <code className="text-[10px] font-black text-navy/30 select-all">{job.id}</code>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="text-[13px] font-serif font-bold text-navy leading-tight">{job.title}</div>
-                        <div className="text-[9px] font-black text-navy/20 uppercase tracking-widest mt-1">{job.organization || job.org || 'No Organization'}</div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <span className="px-3 py-1 bg-green-50 text-green-600 text-[9px] font-black uppercase tracking-widest rounded-lg border border-green-100">
-                          PUBLISHED
-                        </span>
-                      </td>
-                      <td className="px-6 py-6 text-right space-x-2">
-                        <Link
-                          href={`/admin/editor?id=${job.id}`}
-                          className="px-4 py-2 bg-navy/5 text-navy text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-navy hover:text-white transition-all border border-navy/5 no-underline inline-block"
-                        >
-                          Edit
-                        </Link>
-                        <button
-                          onClick={() => handleDeleteJob(job.id)}
-                          className="px-4 py-2 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-red-500 hover:text-white transition-all border border-red-100"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          <div className="space-y-4">
+            {isLoadingJobs ? (
+              <div className="py-20 text-center text-[10px] font-black text-navy/10 uppercase tracking-widest animate-pulse bg-white border-2 border-gray-100 rounded-3xl">
+                Accessing National Registry...
+              </div>
+            ) : filteredJobs.length === 0 ? (
+              <div className="py-20 text-center text-[10px] font-black text-navy/10 uppercase tracking-widest bg-white border-2 border-gray-100 rounded-3xl">
+                No matching recruitment records found
+              </div>
+            ) : (
+              filteredJobs.map((job) => (
+                <div key={job.id} className={`p-5 md:p-8 rounded-[28px] flex flex-col md:flex-row md:items-center justify-between gap-6 transition-colors duration-300 group relative border-[1.5px] ${adminSearchQuery ? 'bg-navy/[0.03] border-navy' : 'bg-white border-gray-200'}`}>
+                  <div className="flex-1 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="px-3 py-1 bg-green-50 text-green-600 text-[9px] font-black uppercase tracking-widest rounded-md border border-green-100 flex items-center gap-2 shrink-0">
+                        <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse"></span>
+                        Published
+                      </span>
+                      <code className="text-[9px] font-black text-navy/60 uppercase tracking-widest bg-navy/5 px-2 py-1 rounded border border-navy/10">{job.id}</code>
+                    </div>
+                    <h3 className="text-lg md:text-2xl font-serif font-bold text-navy leading-tight group-hover:text-navy transition-colors">{job.title}</h3>
+                  </div>
+
+                  <div className="flex items-center gap-3 pt-4 md:pt-0 border-t md:border-t-0 border-gray-50">
+                    <Link
+                      href={`/admin/editor?id=${job.id}`}
+                      className="flex-1 md:flex-none px-6 py-3 bg-navy text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-navy/90 transition-all shadow-lg shadow-navy/10 no-underline text-center"
+                    >
+                      Update
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteJob(job.id)}
+                      className="flex-1 md:flex-none px-6 py-3 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-100"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
           </div>
         </div>
       </div>

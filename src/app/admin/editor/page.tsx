@@ -165,7 +165,19 @@ function EditorContent() {
     <div className="fixed top-[60px] inset-0 bg-[#F8FAFC] flex flex-col font-sans z-[900]">
       {/* FIXED EDITOR HEADER (Now locally static because parent is fixed) */}
       <header className="h-[50px] md:h-[60px] bg-white border-b-2 border-gray-100 flex items-center justify-between px-4 md:px-8 shrink-0 shadow-sm relative z-[1000]">
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-6">
+          <Link
+            href="/admin"
+            className="flex items-center gap-2 text-navy/40 hover:text-navy transition-colors group no-underline"
+          >
+            <div className="p-1.5 md:p-2 bg-gray-50 group-hover:bg-navy group-hover:text-white rounded-lg transition-all border border-gray-100 group-hover:border-navy">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </div>
+            <span className="hidden md:inline text-[10px] font-black uppercase tracking-widest">Back</span>
+          </Link>
           <h2 className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-navy">Recruitment Editor</h2>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
