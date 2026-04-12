@@ -15,7 +15,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched }) => 
   return (
     <Link
       href={`/all-jobs/${job.id || job._id}`}
-      className="group bg-white border border-gray-100 p-4 md:p-8 flex flex-col md:flex-row md:items-center gap-1 md:gap-10 transition-all hover:border-navy rounded-2xl md:rounded-3xl shadow-none md:shadow-sm no-underline relative overflow-hidden"
+      className="group bg-white border-2 border-gray-200 p-4 md:p-8 flex flex-col md:flex-row md:items-center gap-1 md:gap-10 transition-all hover:border-navy rounded-xl shadow-none md:shadow-sm no-underline relative overflow-hidden"
     >
       <div className="w-full flex-1">
         <div className="flex items-start justify-between gap-4 mb-0.5 md:mb-4">

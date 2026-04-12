@@ -6,6 +6,12 @@ import Job from "@/models/Job";
 import { JobPost } from "@/types/job";
 import { fmtDate, fmtMoney } from "@/lib/helpers";
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  userScalable: true,
+};
+
 // ── ICONS ────────────────────────────────────────────────────────────────────
 const IconInfo = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
@@ -186,7 +192,7 @@ const styles = `
     display: flex;
     align-items: center;
     gap: 10px;
-    margin: 36px 0 12px;
+    margin: 60px 0 12px;
     padding-bottom: 8px;
     border-bottom: 2px solid var(--navy);
   }
@@ -861,12 +867,12 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const dates = job.importantDates || {};
 
   // Normalise posts array
-    const rawPosts: any[] =
-      (job.posts || []).length > 0
-        ? job.posts
-        : (job.qualification as any)
-          ? [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }]
-          : [];
+  const rawPosts: any[] =
+    (job.posts || []).length > 0
+      ? job.posts
+      : (job.qualification as any)
+        ? [{ name: "General Cadre", qualification: job.qualification, totalVacancy: job.totalVacancy }]
+        : [];
 
   // Hero: derive age + salary from posts (new schema — per-post only)
   const heroAge = deriveAgeLimitFromPosts(rawPosts);
@@ -999,6 +1005,42 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           </table>
 
           {/* ══════════════════════════════════════════════════════════════════
+              APPLICATION FEE
+          ══════════════════════════════════════════════════════════════════ */}
+          {Object.keys(feeMap).length > 0 && (
+            <>
+              <div className="jd-section">
+                <span className="jd-section-icon"><IconCreditCard /></span>
+                <span className="jd-section-title">Application Fee</span>
+              </div>
+              <table className="jd-table">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Fee Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(feeMap).map(([fee, cats]) => (
+                    <tr key={fee}>
+                      <td>{cats.join(", ")}</td>
+                      <td className={Number(fee) === 0 ? "green bold" : "red bold"}>
+                        {Number(fee) === 0 ? "Exempt — ₹0" : `₹${Number(fee).toLocaleString("en-IN")}`}
+                      </td>
+                    </tr>
+                  ))}
+                  {af.paymentMode?.length > 0 && (
+                    <tr>
+                      <td className="label">Payment Modes</td>
+                      <td style={{ fontSize: 13 }}>{af.paymentMode.join(", ")}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </>
+          )}
+
+          {/* ══════════════════════════════════════════════════════════════════
               POST-WISE VACANCY TABLE
               Columns: Post | Vacancies | Category-wise | Age | Salary | Qualification
           ══════════════════════════════════════════════════════════════════ */}
@@ -1061,42 +1103,6 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               </tbody>
             </table>
           </div>
-
-          {/* ══════════════════════════════════════════════════════════════════
-              APPLICATION FEE
-          ══════════════════════════════════════════════════════════════════ */}
-          {Object.keys(feeMap).length > 0 && (
-            <>
-              <div className="jd-section">
-                <span className="jd-section-icon"><IconCreditCard /></span>
-                <span className="jd-section-title">Application Fee</span>
-              </div>
-              <table className="jd-table">
-                <thead>
-                  <tr>
-                    <th>Category</th>
-                    <th>Fee Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(feeMap).map(([fee, cats]) => (
-                    <tr key={fee}>
-                      <td>{cats.join(", ")}</td>
-                      <td className={Number(fee) === 0 ? "green bold" : "red bold"}>
-                        {Number(fee) === 0 ? "Exempt — ₹0" : `₹${Number(fee).toLocaleString("en-IN")}`}
-                      </td>
-                    </tr>
-                  ))}
-                  {af.paymentMode?.length > 0 && (
-                    <tr>
-                      <td className="label">Payment Modes</td>
-                      <td style={{ fontSize: 13 }}>{af.paymentMode.join(", ")}</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </>
-          )}
 
           {/* ══════════════════════════════════════════════════════════════════
               RECRUITMENT PROCEDURES (Selection & Application)
@@ -1180,7 +1186,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     <td className="mono bold">
                       {val
                         ? fmtDate(val)
-                        : <span style={{ color: "var(--ink-muted)", fontWeight: 400, fontStyle: "italic" }}>Not announced</span>
+                        : <span style={{ color: "var(--ink-muted)", fontWeight: 400, fontStyle: "italic" }}>Not available</span>
                       }
                     </td>
                   </tr>

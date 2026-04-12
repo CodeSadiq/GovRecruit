@@ -172,7 +172,7 @@ const styles = `
     display: flex;
     align-items: center;
     gap: 10px;
-    margin: 36px 0 12px;
+    margin: 60px 0 12px;
     padding-bottom: 8px;
     border-bottom: 2px solid var(--navy);
   }
@@ -559,6 +559,23 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
           </tbody>
         </table>
 
+        {/* FEE */}
+        <div className="jd-section">
+          <span className="jd-section-icon"><IconCreditCard /></span>
+          <span className="jd-section-title">Application Fee</span>
+        </div>
+        <table className="jd-table">
+          <thead><tr><th>Category</th><th className="center">Fee Amount</th></tr></thead>
+          <tbody>
+            {Object.entries(feeMap).map(([amount, cats]) => (
+              <tr key={amount}>
+                <td className="label">{cats.join(", ")}</td>
+                <td className="center bold">{amount === "0" ? "Free / Exempted" : fmtMoney(parseInt(amount))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
         {/* VACANCIES */}
         <div className="jd-section">
           <span className="jd-section-icon"><IconUsers /></span>
@@ -610,23 +627,6 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
             </tbody>
           </table>
         </div>
-
-        {/* FEE */}
-        <div className="jd-section">
-          <span className="jd-section-icon"><IconCreditCard /></span>
-          <span className="jd-section-title">Application Fee</span>
-        </div>
-        <table className="jd-table">
-          <thead><tr><th>Category</th><th className="center">Fee Amount</th></tr></thead>
-          <tbody>
-            {Object.entries(feeMap).map(([amount, cats]) => (
-              <tr key={amount}>
-                <td className="label">{cats.join(", ")}</td>
-                <td className="center bold">{amount === "0" ? "Free / Exempted" : fmtMoney(parseInt(amount))}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
 
         {/* RECRUITMENT PROCEDURES */}
         {(() => {
@@ -705,7 +705,7 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
                         <div style={{ fontSize: '9px', opacity: 0.5, marginTop: 4 }}>YYYY-MM-DD</div>
                       </>
                     ) : (
-                      val ? fmtDate(val as string) : "Not announced"
+                      val ? fmtDate(val as string) : "Not available"
                     )}
                   </td>
                 </tr>

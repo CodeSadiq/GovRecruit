@@ -36,3 +36,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });
   }
 }
+
+export async function DELETE(request: Request) {
+  await dbConnect();
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) return NextResponse.json({ success: false, error: "ID is required" }, { status: 400 });
+
+    const deletedJob = await Job.findOneAndDelete({ id: id });
+    if (!deletedJob) return NextResponse.json({ success: false, error: "Job not found" }, { status: 404 });
+
+    return NextResponse.json({ success: true, message: "Job deleted successfully" });
+  } catch (error: any) {
+    console.error("DELETE FAILED:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

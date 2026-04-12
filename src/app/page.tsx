@@ -128,7 +128,7 @@ export default function Home() {
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
-                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-100 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col md:rounded-3xl">
+                <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
                   <header className="flex items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-2 md:px-0">
                     <div className="flex items-center gap-4">
                       <h2 className="text-[12px] md:text-2xl font-sans md:font-serif font-semibold text-navy/40 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
@@ -163,7 +163,7 @@ export default function Home() {
               </section>
 
               <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-32 md:mt-0 px-0 md:px-0">
-                <div className="bg-white border border-gray-100 p-2.5 md:p-4 rounded-2xl md:rounded-3xl shadow-sm overflow-hidden flex flex-col h-full">
+                <div className="bg-white border-2 border-gray-200 p-2.5 md:p-4 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
                   <div
                     onClick={() => setIsAutoPlaying(false)}
                     className="relative overflow-hidden flex-1 flex flex-col cursor-pointer"
@@ -178,7 +178,6 @@ export default function Home() {
                             <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-[#0D244D] animate-in fade-in slide-in-from-left duration-300 truncate">
                               {activeCategory}
                             </h3>
-                            <div className="text-[8px] font-bold text-navy/30 uppercase tracking-[0.2em] mt-0.5 truncate">Live Bulletin</div>
                           </div>
                         </div>
 
@@ -202,49 +201,58 @@ export default function Home() {
                         </div>
                       </div>
 
-                      <div key={activeCategory} className="space-y-5 animate-in fade-in slide-in-from-right-8 duration-700 flex-1">
+                      <div key={activeCategory} className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-right-8 duration-700">
                         {activeItems.map((n: any, i: number) => (
                           <Link
                             href="#"
                             key={i}
-                            className="group block border-l-2 border-transparent hover:border-navy hover:pl-4 transition-all"
+                            className="group block py-5 first:pt-0 last:pb-0 border-b border-gray-200 last:border-0 transition-all hover:bg-navy/5 -mx-4 px-4"
                           >
-                            <div className="text-[14px] md:text-[15px] font-serif font-bold text-[#344163] leading-snug group-hover:text-navy transition-colors mb-1">
+                            <div className="text-[13px] md:text-[14px] font-serif font-bold text-[#344163] leading-tight group-hover:text-navy transition-colors mb-2 line-clamp-2">
                               {n.text}
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="w-1 h-1 bg-green-500 rounded-full group-hover:animate-ping"></span>
-                              <div className="text-[8px] font-black uppercase tracking-widest text-navy/20">{n.time}</div>
+                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full group-hover:animate-pulse"></span>
+                              <div className="text-[8px] font-black uppercase tracking-widest text-navy/30 group-hover:text-navy/50">{n.time}</div>
                             </div>
                           </Link>
                         ))}
                       </div>
 
-                      {/* DOT TRACKER & VIEW ALL */}
-                      <div className="mt-8 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          {categories.map((_, idx) => (
-                            <button
-                              key={idx}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setCurrentCatIndex(idx);
-                                setIsAutoPlaying(false);
-                              }}
-                              className={`h-1 rounded-full transition-all duration-500 border-none p-0 cursor-pointer ${idx === currentCatIndex ? 'bg-navy w-6' : 'bg-gray-200 w-2 hover:bg-gray-300'}`}
-                            />
-                          ))}
-                        </div>
+                      {/* SEGMENTED SLIDING INDICATOR */}
+                      <div className="mt-8 flex gap-1.5 h-1 w-full px-2">
+                        {categories.map((_, idx) => (
+                          <div key={idx} className="flex-1 bg-navy/[0.05] rounded-full overflow-hidden relative">
+                            {idx === currentCatIndex && (
+                              <div
+                                className="absolute inset-0 bg-navy/30 rounded-full origin-left"
+                                style={{
+                                  animation: isAutoPlaying ? 'slideProgress 5s linear forwards' : 'none'
+                                }}
+                              />
+                            )}
+                            {idx < currentCatIndex && <div className="absolute inset-0 bg-navy/10 rounded-full" />}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* ENHANCED VIEW ALL BUTTON */}
+                      <div className="mt-10">
                         <Link
                           href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
-                          className="text-[12px] font-serif font-bold text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline"
+                          className="flex items-center justify-center gap-2 w-full py-4 bg-navy/5 text-navy text-[12px] font-serif font-black uppercase tracking-widest rounded-xl hover:bg-navy hover:text-white transition-all group/btn"
                         >
-                          View All ›
+                          View All {activeCategory}
+                          <svg className="group-hover/btn:translate-x-1 transition-transform" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                         </Link>
                       </div>
                     </div>
 
                     <style jsx>{`
+                      @keyframes slideProgress {
+                        from { transform: scaleX(0); }
+                        to { transform: scaleX(1); }
+                      }
                       @keyframes progress {
                         from { transform: translateX(-100%); }
                         to { transform: translateX(0); }
@@ -281,16 +289,36 @@ export default function Home() {
 
         {/* VIEW: NOTIFICATIONS */}
         {activeTab === 'notifications' && (
-          <div className="max-w-[800px] mx-auto p-4 md:p-20">
-            <div className="bg-white border-2 border-gray-100 p-8 md:p-12 rounded-3xl shadow-sm">
-              <h2 className="text-2xl font-serif font-bold text-navy mb-8">Live Notifications</h2>
-              <div className="space-y-6">
+          <div className="max-w-[800px] mx-auto p-4 md:p-12 md:pt-20">
+            <div className="bg-white border-2 border-gray-100 p-6 md:p-12 rounded-3xl shadow-sm">
+              <div className="flex items-center gap-4 mb-10 border-b-2 border-gray-100 pb-8">
+                <div className="p-3 bg-navy text-white rounded-2xl">
+                  <IconBell />
+                </div>
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-serif font-bold text-navy">Live Bulletin</h2>
+                  <p className="text-[10px] md:text-xs text-navy/40 font-bold uppercase tracking-widest mt-1">Official Institutional Announcements</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col">
                 {NOTIFICATIONS.map((n, i) => (
-                  <div key={i} className="flex gap-4 pb-6 border-b border-gray-50 last:border-0 last:pb-0">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0"></div>
-                    <div>
-                      <p className="text-[15px] font-serif font-bold text-navy leading-snug">{n.text}</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase mt-2">{n.time} • OFFICIAL BULLETIN</p>
+                  <div key={i} className="group py-10 first:pt-0 last:pb-0 border-b-2 border-gray-100 last:border-0 hover:bg-navy/5 -mx-6 px-6 transition-all">
+                    <div className="flex items-start gap-4">
+                      <div className="shrink-0 mt-1.5">
+                        <span className={`block w-2.5 h-2.5 rounded-full ${n.dot === 'dot-green' ? 'bg-green-500' : n.dot === 'dot-amber' ? 'bg-amber-500' : 'bg-navy'}`}></span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-navy/30">{n.time}</span>
+                        </div>
+                        <h3 className="text-lg md:text-xl font-serif font-bold text-[#344163] leading-snug group-hover:text-navy transition-colors line-clamp-2">
+                          {n.text}
+                        </h3>
+                        <p className="text-[13px] md:text-[15px] text-navy/60 font-medium mt-3 leading-relaxed line-clamp-2">
+                          {n.desc}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ))}
