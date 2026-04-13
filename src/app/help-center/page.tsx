@@ -18,28 +18,39 @@ export default function HelpCenterPage() {
         {/* ── HELP CENTER ── */}
         <section className="animate-in fade-in slide-in-from-bottom-8 duration-700">
           <h1 className="text-4xl md:text-6xl font-serif font-bold text-navy mb-10 leading-tight">Help Center</h1>
-          <div className="bg-gray-50 p-10 md:p-16 rounded-[40px] border border-gray-100">
-            <h2 className="text-3xl font-serif font-bold mb-6">Institutional Support</h2>
-            <p className="text-navy/60 leading-relaxed mb-10 max-w-[500px]">
-              Our support team is available for technical assistance, reporting data inaccuracies, or answering 
-              questions about our matching logic.
+          
+          <div className="prose prose-slate max-w-[650px] text-navy/60 space-y-12">
+            <p className="text-lg">
+              Our support team is dedicated to assisting with technical verification, data synchronization issues, 
+              or any questions regarding the recruitment matching protocol.
             </p>
             
-            <div className="space-y-8">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-navy/30 mb-2">Institutional Email</p>
-                <a href="mailto:sadiq.imam404@gmail.com" className="text-lg md:text-2xl text-navy font-black no-underline border-b-2 border-transparent hover:border-navy transition-all pb-1 break-all">
-                  sadiq.imam404@gmail.com
-                </a>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-4">
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-navy/30">Institutional Support</p>
+                <div className="flex flex-col gap-1">
+                  <a href="mailto:sadiq.imam404@gmail.com" className="text-lg font-bold text-navy no-underline hover:text-blue-600 transition-colors">
+                    sadiq.imam404@gmail.com
+                  </a>
+                  <p className="text-[11px] font-medium italic">Standard response time: 24-48 hours</p>
+                </div>
               </div>
 
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-navy/30 mb-2">Direct Helpline</p>
-                <a href="tel:+918951214641" className="text-xl md:text-2xl text-navy font-black tracking-widest no-underline border-b-2 border-transparent hover:border-navy transition-all pb-1">
-                  +91-8951214641
-                </a>
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-navy/30">Direct Verification line</p>
+                <div className="flex flex-col gap-1">
+                  <a href="tel:+918951214641" className="text-lg font-bold text-navy no-underline hover:text-blue-600 transition-colors tracking-widest">
+                    +91 8951214641
+                  </a>
+                  <p className="text-[11px] font-medium italic">Available Mon-Fri, 10:00 - 18:00 IST</p>
+                </div>
               </div>
             </div>
+
+            <p className="pt-8 border-t border-gray-100">
+              For security reasons, please do not share your browser's local storage keys or detailed profile JSON 
+              payloads in clear text via email. Our team will never ask for your private authentication tokens.
+            </p>
           </div>
         </section>
       </main>

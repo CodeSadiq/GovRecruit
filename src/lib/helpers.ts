@@ -38,3 +38,21 @@ export const LEVEL_LABEL: Record<number, string> = {
   5: "Post Graduate (Master's Degree)",
   6: "PhD / Doctorate",
 };
+
+export function getTimeAgo(date: string | Date | null): string {
+  if (!date) return 'RECENT';
+  const now = new Date();
+  const past = new Date(date);
+  const diffInMs = now.getTime() - past.getTime();
+  const diffInSecs = Math.floor(diffInMs / 1000);
+  
+  if (diffInSecs < 60) return 'RECENT';
+  const diffInMins = Math.floor(diffInSecs / 60);
+  if (diffInMins < 60) return `${diffInMins} MINS AGO`;
+  const diffInHours = Math.floor(diffInMins / 60);
+  if (diffInHours < 24) return `${diffInHours} ${diffInHours === 1 ? 'HOUR' : 'HOURS'} AGO`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) return `${diffInDays} ${diffInDays === 1 ? 'DAY' : 'DAYS'} AGO`;
+  const diffInMonths = Math.floor(diffInDays / 30);
+  return `${diffInMonths} ${diffInMonths === 1 ? 'MONTH' : 'MONTHS'} AGO`;
+}

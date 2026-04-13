@@ -40,9 +40,9 @@ export const saveBulletinToRegistry = (bulletin: any, category: string) => {
   // Update or Add
   const index = data.categories[category].findIndex((b: any) => b.id === bulletin.id);
   if (index >= 0) {
-    data.categories[category][index] = bulletin;
+    data.categories[category][index] = { ...bulletin, updatedAt: new Date().toISOString() };
   } else {
-    data.categories[category].unshift(bulletin);
+    data.categories[category].unshift({ ...bulletin, createdAt: new Date().toISOString() });
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));

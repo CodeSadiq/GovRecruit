@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import BackButton from '@/components/BackButton';
 
 import { QUAL_TREE, LEVEL_GROUPS, QualNode } from '@/lib/constants';
 
@@ -164,18 +165,22 @@ export default function ProfilePage() {
       <main className="flex-1 overflow-y-auto px-6 md:px-12 py-10">
         <div className="max-w-[1100px] mx-auto space-y-12 animate-in fade-in duration-700">
 
+          <div className="flex items-center justify-between mb-2">
+            <BackButton className="text-navy/40 hover:text-navy text-[10px] font-black uppercase tracking-[0.3em] font-sans" />
+          </div>
+
           <div className="bg-white border border-gray-200 rounded-[32px] p-8 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between gap-8 shadow-sm text-center md:text-left">
             <div className="flex flex-col items-center md:items-start gap-5">
               <div className="space-y-1">
                 {userProfile.email === 'guest@govrecruit.local' ? (
                    <>
-                    <h1 className="text-3xl md:text-4xl font-bold text-navy/40 tracking-tight">Anonymous Guest</h1>
-                    <p className="text-gray-300 text-sm md:text-base font-medium">Logged in as a Guest</p>
+                    <h1 className="text-3xl md:text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
+                    <p className="text-gray-500 text-sm md:text-base font-medium">Logged in as a Guest</p>
                    </>
                 ) : (
                   <>
                     <h1 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{userProfile.fullName || 'Citizen Profile'}</h1>
-                    <p className="text-gray-400 text-sm md:text-base font-medium">{userProfile.email}</p>
+                    <p className="text-gray-600 text-sm md:text-base font-medium">{userProfile.email}</p>
                   </>
                 )}
               </div>
@@ -203,7 +208,7 @@ export default function ProfilePage() {
             <section className="bg-white border border-gray-200 rounded-xl p-6 md:p-10 shadow-sm space-y-8">
               <div className="space-y-2">
                 <h2 className="text-xl font-bold text-navy">Set Qualification</h2>
-                <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold">Update your qualifications to see eligible jobs.</p>
+                <p className="text-xs text-navy/60 uppercase tracking-widest font-bold leading-relaxed">Update your qualifications level wise to see eligible jobs. If you haven't qualified in any then leave it on no records</p>
               </div>
 
               <div className="space-y-8">
@@ -215,7 +220,7 @@ export default function ProfilePage() {
                   return (
                     <div key={group.id} className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8 border-b border-gray-100 last:border-0 last:pb-0">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{group.label}</label>
+                        <label className="text-[11px] font-bold text-navy/70 uppercase tracking-widest">{group.label}</label>
                         <select
                           value={levelState.qual}
                           onChange={(e) => handleLevelQualChange(group.id, e.target.value)}
@@ -233,7 +238,7 @@ export default function ProfilePage() {
 
                       {currentQual && currentQual.branches.length > 0 && (
                         <div className="space-y-2">
-                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                          <label className="text-[11px] font-bold text-navy/70 uppercase tracking-widest">
                             {group.id <= 2 ? "Academic Stream" :
                               group.id === 3 ? "Trade Branch" :
                                 "Professional Branch"}

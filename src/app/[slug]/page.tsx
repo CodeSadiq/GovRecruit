@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { getRegistryData } from '@/lib/data-service';
+import { getTimeAgo } from '@/lib/helpers';
 
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
@@ -61,7 +62,9 @@ export default function CategoryPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full shrink-0"></span>
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400 truncate">{item.time}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400 truncate">
+                      {item.createdAt ? getTimeAgo(item.createdAt) : item.time}
+                    </span>
                   </div>
 
                   <h3 className="text-[14px] md:text-lg font-bold text-navy leading-snug line-clamp-2">

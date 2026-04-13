@@ -4,6 +4,7 @@ import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getRegistryData } from '@/lib/data-service';
+import { getTimeAgo } from '@/lib/helpers';
 
 const IconArrowLeft = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 const IconCheckGreen = () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>;
@@ -170,7 +171,9 @@ export default function BulletinViewer() {
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <div className="flex items-center gap-2">
                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                   <span className="text-[10px] font-black text-navy/40 uppercase tracking-[0.1em] font-mono whitespace-nowrap">Published {notification.time}</span>
+                   <span className="text-[10px] font-black text-navy/40 uppercase tracking-[0.1em] font-mono whitespace-nowrap">
+                     Published {notification.createdAt ? getTimeAgo(notification.createdAt) : notification.time}
+                   </span>
                 </div>
                 <span className="hidden md:block w-1 h-3 bg-gray-200"></span>
                 <span className="text-[10px] font-black text-navy/40 uppercase tracking-[0.1em] font-mono whitespace-nowrap">

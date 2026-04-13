@@ -1,11 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 import { NOTIFICATIONS } from '@/lib/data';
+import { getRegistryData } from '@/lib/data-service';
+import { getTimeAgo } from '@/lib/helpers';
 
 export default function BulletinRegistryPage() {
+  const [registry, setRegistry] = useState<any>(null);
+
+  useEffect(() => {
+    setRegistry(getRegistryData());
+  }, []);
+
+  const bulletinList = React.useMemo(() => {
+    if (!registry) return NOTIFICATIONS;
+    return registry.notifications || NOTIFICATIONS;
+  }, [registry]);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5">
       <main className="flex-1 max-w-[1440px] mx-auto w-full p-6 md:p-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -15,9 +27,11 @@ export default function BulletinRegistryPage() {
         </header>
 
         <div className="space-y-12">
-          {NOTIFICATIONS.map((n, i) => (
+          {bulletinList.map((n: any, i: number) => (
             <div key={i} className="border-b border-gray-200 pb-12 last:border-0 last:pb-0 group">
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-4">{n.time}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-4">
+                {n.createdAt ? getTimeAgo(n.createdAt) : n.time}
+              </span>
               <h4 className="text-[18px] font-bold text-navy mb-3 leading-snug group-hover:text-[#2563EB] transition-colors">{n.text}</h4>
               <p className="text-[14px] text-gray-600 font-medium leading-relaxed mb-6">{n.desc}</p>
               <Link 
@@ -42,4 +56,3 @@ export default function BulletinRegistryPage() {
     </div>
   );
 }
-

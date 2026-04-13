@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { JOBS as STATIC_JOBS, NOTIFICATIONS, CATEGORY_DATA } from '@/lib/data';
 import { getRegistryData } from '@/lib/data-service';
 import JobDetailModal from '@/components/JobDetailModal';
@@ -8,10 +8,13 @@ import RecruitmentCard from '@/components/RecruitmentCard';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
+import { getTimeAgo } from '@/lib/helpers';
 
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconBell = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
+
+const CATEGORIES = ['All Jobs', 'Important', 'Syllabus', 'Admission', 'Result', 'Admit Card'];
 
 export default function Home() {
   const router = useRouter();
@@ -22,18 +25,22 @@ export default function Home() {
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const categories = ['All Jobs', 'Important', 'Syllabus', 'Admission', 'Result', 'Admit Card'];
   const [currentCatIndex, setCurrentCatIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Auto-rotate logic
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Auto-rotate logic: Resets whenever currentCatIndex changes to ensure a full 12s per category
   useEffect(() => {
     if (!isAutoPlaying) return;
-    const interval = setInterval(() => {
-      setCurrentCatIndex((prev) => (prev + 1) % categories.length);
-    }, 5000); // 5 second rotation
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, categories.length]);
+    const timer = setTimeout(() => {
+      setCurrentCatIndex((prev) => (prev + 1) % CATEGORIES.length);
+    }, 12000);
+    return () => clearTimeout(timer);
+  }, [currentCatIndex, isAutoPlaying]);
 
   const [registry, setRegistry] = useState<any>(null);
 
@@ -57,8 +64,23 @@ export default function Home() {
     fetchJobs();
   }, []);
 
-  const activeCategory = categories[currentCatIndex];
-  const activeItems = (registry ? registry.categories[activeCategory] : (CATEGORY_DATA as any)[activeCategory]) || [];
+
+
+  const activeCategory = CATEGORIES[currentCatIndex];
+  const activeItems = useMemo(() => {
+    if (activeCategory === 'All Jobs') {
+      return dbJobs.slice(0, 30).map((job) => ({
+        id: job.id || job._id,
+        text: job.title,
+        time: getTimeAgo(job.createdAt || job.updatedAt),
+        isJob: true
+      }));
+    }
+    return (registry ? (registry.categories[activeCategory] || []) : (CATEGORY_DATA as any)[activeCategory] || []).map((b: any) => ({
+      ...b,
+      time: b.createdAt ? getTimeAgo(b.createdAt) : b.time
+    }));
+  }, [activeCategory, registry, dbJobs]);
 
   const isFuzzyMatch = (target: any, query: string) => {
     const t = String(target || "").toLowerCase();
@@ -231,51 +253,87 @@ export default function Home() {
 
                         <div className="flex items-center gap-3 flex-shrink-0">
                           <div className="flex gap-3 flex-shrink-0">
-                            <button
-                              onClick={() => setCurrentCatIndex((prev) => (prev - 1 + categories.length) % categories.length)}
-                              className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy hover:bg-navy hover:text-white transition-all border-none cursor-pointer active:scale-90 shadow-sm"
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentCatIndex((prev) => (prev - 1 + CATEGORIES.length) % CATEGORIES.length);
+                              }}
+                              className="w-10 h-10 md:w-14 md:h-14 flex items-center justify-center cursor-pointer group/nav -m-2 md:-m-3 z-50"
                               title="Previous"
                             >
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-                            </button>
-                            <button
-                              onClick={() => setCurrentCatIndex((prev) => (prev + 1) % categories.length)}
-                              className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy hover:bg-navy hover:text-white transition-all border-none cursor-pointer active:scale-90 shadow-sm"
+                              <div className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy group-hover/nav:bg-navy group-hover/nav:text-white transition-all shadow-sm active:scale-95">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                              </div>
+                            </div>
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentCatIndex((prev) => (prev + 1) % CATEGORIES.length);
+                              }}
+                              className="w-10 h-10 md:w-14 md:h-14 flex items-center justify-center cursor-pointer group/nav -m-2 md:-m-3 z-50"
                               title="Next"
                             >
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
-                            </button>
+                              <div className="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-navy/5 text-navy group-hover/nav:bg-navy group-hover/nav:text-white transition-all shadow-sm active:scale-95">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <div key={activeCategory} className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-right-8 duration-700">
-                        {activeItems.map((n: any, i: number) => (
-                          <Link
-                            href={`/bulletin/${n.id}`}
-                            key={i}
-                            className="group block py-4 first:pt-1 last:pb-0 border-b border-gray-100 last:border-0 transition-all hover:bg-navy/[0.02] -mx-4 px-4 no-underline"
-                          >
-                            <div className="text-[13px] md:text-[15px] font-medium text-[#344163] leading-snug group-hover:text-navy transition-colors mb-2.5 line-clamp-2">
-                              {n.text}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="w-1 h-1 bg-green-500 rounded-full group-hover:animate-pulse"></span>
-                              <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
-                            </div>
-                          </Link>
-                        ))}
+                      <div className="relative mt-2 overflow-hidden marquee-viewer">
+                        {/* THE MARQUEE TRACK */}
+                        <div className="marquee-track flex flex-col group/marquee">
+                          {/* Primary List */}
+                          <div className="flex flex-col">
+                            {activeItems.map((n: any, i: number) => (
+                              <Link
+                                href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
+                                key={`p-${i}`}
+                                className="group block py-4 border-b border-gray-100 last:border-0 transition-all hover:bg-navy/[0.02] px-1 no-underline"
+                              >
+                                <div className="text-[13px] md:text-[14px] font-medium text-[#344163] leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
+                                  {n.text}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className={`w-1 h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
+                                  <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                          {/* Duplicate List for Seamless Loop */}
+                          <div className="flex flex-col" aria-hidden="true">
+                            {activeItems.map((n: any, i: number) => (
+                              <Link
+                                href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
+                                key={`d-${i}`}
+                                className="group block py-4 border-b border-gray-100 last:border-0 transition-all hover:bg-navy/[0.02] px-1 no-underline"
+                              >
+                                <div className="text-[13px] md:text-[14px] font-medium text-[#344163] leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
+                                  {n.text}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className={`w-1 h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
+                                  <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
                       </div>
 
                       {/* SEGMENTED SLIDING INDICATOR */}
                       <div className="mt-4 flex gap-1.5 h-1 w-full px-2">
-                        {categories.map((_, idx) => (
+                        {CATEGORIES.map((_, idx) => (
                           <div key={idx} className="flex-1 bg-navy/[0.05] rounded-full overflow-hidden relative">
                             {idx === currentCatIndex && (
                               <div
+                                key={currentCatIndex}
                                 className="absolute inset-0 bg-navy/30 rounded-full origin-left"
                                 style={{
-                                  animation: isAutoPlaying ? 'slideProgress 5s linear forwards' : 'none'
+                                  animation: (isAutoPlaying && isMounted) ? 'slideProgress 12s linear forwards' : 'none',
+                                  transformOrigin: 'left'
                                 }}
                               />
                             )}
@@ -301,9 +359,20 @@ export default function Home() {
                         from { transform: scaleX(0); }
                         to { transform: scaleX(1); }
                       }
-                      @keyframes progress {
-                        from { transform: translateX(-100%); }
-                        to { transform: translateX(0); }
+                      .marquee-viewer {
+                        height: 420px; /* Precise height to fit 7-8 recruitment items */
+                        position: relative;
+                        transform: translateZ(0); /* Hardware acceleration */
+                      }
+                      .marquee-track {
+                        animation: marquee-vertical 35s linear infinite;
+                      }
+                      .marquee-track:hover {
+                        animation-play-state: paused;
+                      }
+                      @keyframes marquee-vertical {
+                        from { transform: translateY(0); }
+                        to { transform: translateY(-50%); }
                       }
                     `}</style>
                   </div>
