@@ -68,14 +68,75 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async (credential: string) => {
     setIsLoading(true);
-    setTimeout(() => {
-      localStorage.setItem('rojgarmatch_auth', 'true');
+    setError('');
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential }),
+      });
+
+      if (!res.ok) throw new Error('Google authentication failed');
+
+      const userData = await res.json();
+
+      // Success: Save session
+      localStorage.setItem('rojgarmatch_auth', JSON.stringify({
+        fullName: userData.fullName,
+        email: userData.email,
+        avatar: userData.avatar
+      }));
+
+      if (userData.profile) {
+        localStorage.setItem('rojgarmatch_profile', JSON.stringify({
+          ...userData.profile,
+          fullName: userData.fullName,
+          email: userData.email
+        }));
+      }
+
       window.dispatchEvent(new Event('rojgarmatch_auth_change'));
       router.push('/');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  React.useEffect(() => {
+    // Initialize Google One Tap / Login
+    const initializeGoogle = () => {
+      if (typeof window !== 'undefined' && (window as any).google) {
+        (window as any).google.accounts.id.initialize({
+          client_id: "962213572826-d6j12qircjvf1eritlm468cqsbkeufvt.apps.googleusercontent.com",
+          callback: (response: any) => handleGoogleLogin(response.credential),
+        });
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = initializeGoogle;
+    document.head.appendChild(script);
+
+    return () => {
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, []);
+
+  const triggerGooglePrompt = () => {
+    if ((window as any).google) {
+      (window as any).google.accounts.id.prompt();
+      // Also try to render or trigger standard flow
+      // For simplicity in this UI, we can just use the prompt or a custom button
+    }
   };
 
   return (
@@ -205,7 +266,7 @@ export default function LoginPage() {
               {/* SOCIAL LOGIN */}
               <button
                 type="button"
-                onClick={handleGoogleLogin}
+                onClick={triggerGooglePrompt}
                 className="w-full bg-white border-2 border-gray-100 hover:border-gray-200 text-navy py-3 md:py-4 px-8 font-black text-xs uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-4 rounded-2xl hover:bg-gray-50 active:scale-[0.98] mt-2"
               >
                 <IconGoogle />

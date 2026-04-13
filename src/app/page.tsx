@@ -248,6 +248,7 @@ export default function Home() {
                 <div className="bg-white border-2 border-gray-200 p-2.5 md:p-4 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
                   <div
                     onClick={() => setIsAutoPlaying(false)}
+                    onMouseEnter={() => setIsAutoPlaying(false)}
                     className="relative overflow-hidden flex-1 flex flex-col cursor-pointer"
                   >
                     <div className="p-4 flex-1 flex flex-col">
@@ -293,7 +294,7 @@ export default function Home() {
                         </div>
                       </div>
 
-                      <div className="relative mt-2 overflow-hidden marquee-viewer">
+                      <div className="relative mt-2 overflow-hidden marquee-viewer overflow-y-auto hide-scrollbar">
                         {/* THE MARQUEE TRACK */}
                         <div className="marquee-track flex flex-col group/marquee">
                           {/* Primary List */}
@@ -365,31 +366,35 @@ export default function Home() {
                         </Link>
                       </div>
                     </div>
-
-                    <style jsx>{`
-                      @keyframes slideProgress {
-                        from { transform: scaleX(0); }
-                        to { transform: scaleX(1); }
-                      }
-                      .marquee-viewer {
-                        height: 420px; /* Precise height to fit 7-8 recruitment items */
-                        position: relative;
-                        transform: translateZ(0); /* Hardware acceleration */
-                      }
-                      .marquee-track {
-                        animation: marquee-vertical 35s linear infinite;
-                      }
-                      .marquee-track:hover {
-                        animation-play-state: paused;
-                      }
-                      @keyframes marquee-vertical {
-                        from { transform: translateY(0); }
-                        to { transform: translateY(-50%); }
-                      }
-                    `}</style>
                   </div>
                 </div>
               </aside>
+
+              <style jsx>{`
+                @keyframes slideProgress {
+                  from { transform: scaleX(0); }
+                  to { transform: scaleX(1); }
+                }
+                .marquee-viewer {
+                  height: 420px;
+                  position: relative;
+                  scrollbar-width: none;
+                  -ms-overflow-style: none;
+                }
+                .marquee-viewer::-webkit-scrollbar {
+                  display: none;
+                }
+                .marquee-track {
+                  animation: marquee-vertical ${activeItems.length * 5}s linear infinite;
+                }
+                .marquee-track:hover {
+                  animation-play-state: paused;
+                }
+                @keyframes marquee-vertical {
+                  from { transform: translateY(0); }
+                  to { transform: translateY(-50%); }
+                }
+              `}</style>
             </div>
           </>
         )}

@@ -32,7 +32,7 @@ export default function ProfilePage() {
             initialState[q.level] = { qual: q.name, branch: q.branch || '' };
           });
           setSelectedLevels(initialState);
-          setCompleted(true);
+          setCompleted(profile.qualifications.length > 0);
         }
       } catch (e) { console.error('Local profile parse error:', e); }
     }
@@ -53,7 +53,7 @@ export default function ProfilePage() {
                 initialState[q.level] = { qual: q.name, branch: q.branch || '' };
               });
               setSelectedLevels(initialState);
-              setCompleted(true);
+              setCompleted(profile.qualifications.length > 0);
             }
 
             localStorage.setItem('rojgarmatch_profile', JSON.stringify({
@@ -122,7 +122,7 @@ export default function ProfilePage() {
         const fullProfile = { ...userProfile, ...profileData };
         localStorage.setItem('rojgarmatch_profile', JSON.stringify(fullProfile));
         window.dispatchEvent(new Event('rojgarmatch_auth_change'));
-        setCompleted(true);
+        setCompleted(qualifications.length > 0);
         alert('Guest profile updated for this session! ✅');
         setIsSaving(false);
         return;

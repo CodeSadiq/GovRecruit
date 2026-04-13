@@ -5,6 +5,8 @@ const UserSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  googleId: String,
+  avatar: String,
   profile: mongoose.Schema.Types.Mixed,
 }, { timestamps: true });
 

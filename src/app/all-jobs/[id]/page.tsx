@@ -11,6 +11,8 @@ import BackButton from "@/components/BackButton";
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  minimumScale: 0.5,
+  maximumScale: 5,
   userScalable: true,
 };
 
@@ -563,17 +565,28 @@ const styles = `
   .tbl-scroll { overflow-x: auto; }
 
   @media (max-width: 600px) {
-    .jd { font-size: 18px; }
-    .jd-wrap { padding: 0 24px 80px; }
-    .jd-hero { grid-template-columns: 1fr; }
-    .jd-hero-value { font-size: 26px !important; }
-    .jd-table { font-size: 15px; }
-    .jd-table td { padding: 10px 12px; font-size: 15px; word-break: break-word; }
-    .jd-table td.label { width: 140px; min-width: 140px; }
-    .jd-apply { font-size: 18px; padding: 20px; margin-top: 32px; word-break: break-all; }
-    .qual-course-pill { font-size: 12px; }
-    .qual-branch-line, .qual-extra { font-size: 11px; }
-    .cat-vac-grid { grid-template-columns: repeat(3, 1fr); }
+    .jd { font-size: 11px; padding-top: 2px; }
+    .jd-wrap { padding: 0 16px 100px; }
+    .jd-masthead { padding: 6px 0 4px; border-bottom: 1px solid var(--border); }
+    .jd-hero { grid-template-columns: 1fr; margin: 4px 0; gap: 0; }
+    .jd-hero-cell { padding: 4px 6px; border: 1px solid var(--border); margin-bottom: -1px; }
+    .jd-hero-label { font-size: 6px; margin-bottom: 1px; }
+    .jd-hero-value { font-size: 13px !important; }
+    .jd-lede { font-size: 10px; margin: 4px 0; padding-left: 6px; line-height: 1.4; border-left-width: 2px; }
+    .jd-section { margin: 24px 0 8px; padding-bottom: 2px; border-bottom-width: 1px; }
+    .jd-section-title { font-size: 11px; }
+    .jd-table { font-size: 10px; }
+    .jd-table th { padding: 3px 5px; font-size: 8px; }
+    .jd-table td { padding: 3px 5px; font-size: 10px; }
+    .jd-table td.label { width: 70px; min-width: 70px; font-size: 9px; }
+    .jd-apply { font-size: 12px; padding: 8px; margin-top: 10px; }
+    .qual-course-pill { font-size: 9px; padding: 0px 4px; }
+    .qual-branch-line, .qual-extra { font-size: 8px; margin-top: 1px; }
+    .cat-vac-grid { min-width: 60px; gap: 2px; }
+    .qual-cell { padding: 3px 5px; min-width: 120px; }
+    .jd-title { font-size: 14px; margin-bottom: 2px; font-weight: 900; }
+    .jd-advert { font-size: 7px; margin-bottom: 2px; }
+    .jd-eyebrow { margin-bottom: 2px; font-size: 6px; }
   }
 `;
 
