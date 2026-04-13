@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import BackButton from '@/components/BackButton';
+import { GlobalLoading, Spinner } from '@/components/LoadingState';
 
 import { QUAL_TREE, LEVEL_GROUPS, QualNode } from '@/lib/constants';
 
@@ -162,16 +163,12 @@ export default function ProfilePage() {
     router.push('/login');
   };
 
-  if (!isLoaded) return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-navy/20 border-t-navy rounded-full animate-spin"></div>
-    </div>
-  );
+  if (!isLoaded) return <GlobalLoading />;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/10 overflow-hidden">
 
-      <main className="flex-1 overflow-y-auto px-6 md:px-12 pt-4 pb-10 md:py-10">
+      <main className="flex-1 overflow-y-auto px-6 md:px-12 pt-1 pb-10 md:py-3">
         <div className="max-w-[1100px] mx-auto space-y-6 md:space-y-12 animate-in fade-in duration-700">
 
           <div className="flex items-center justify-between mb-2">

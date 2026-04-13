@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 import { getTimeAgo } from '@/lib/helpers';
+import { CardSkeleton } from '@/components/LoadingState';
 
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconBell = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>;
@@ -218,7 +219,11 @@ export default function Home() {
                   </header>
 
                   <div className="space-y-6 flex-1 flex flex-col">
-                    {recommendedJobs.length === 0 ? (
+                    {isLoading ? (
+                      <div className="space-y-6">
+                        {[1, 2, 3].map(i => <CardSkeleton key={i} />)}
+                      </div>
+                    ) : recommendedJobs.length === 0 ? (
                       <div className="flex-1 py-16 px-6 bg-white border-2 border-gray-100 flex flex-col items-center justify-center text-center shadow-sm rounded-2xl">
                         <p className="text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
                           {(!userProfile?.qualifications || userProfile.qualifications.length === 0)

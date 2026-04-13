@@ -8,6 +8,7 @@ import { NOTIFICATIONS } from '@/lib/data';
 
 import RecruitmentCard from '@/components/RecruitmentCard';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
+import { CardSkeleton, GlobalLoading } from '@/components/LoadingState';
 
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
@@ -115,7 +116,7 @@ function JobsPageContent() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
-      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-12 py-3 md:py-6 animate-in fade-in duration-500">
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-12 py-1 md:py-3 animate-in fade-in duration-500">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-4 md:mb-6 no-underline"
@@ -141,7 +142,9 @@ function JobsPageContent() {
         {/* JOB LISTING */}
         <section className="space-y-12 h-full">
           {isLoading ? (
-            <div className="py-20 text-center opacity-40 font-black uppercase tracking-widest text-[10px]">Registry Synchronizing...</div>
+            <div className="flex flex-col gap-6">
+              {[1, 2, 3, 4, 5].map(i => <CardSkeleton key={i} />)}
+            </div>
           ) : (
             <div className="flex flex-col gap-6">
               {filteredJobs.length === 0 ? (
@@ -161,11 +164,7 @@ function JobsPageContent() {
 
 export default function JobsPage() {
   return (
-    <Suspense fallback={
-       <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
-          <div className="text-[10px] font-black uppercase tracking-widest text-navy/20 animate-pulse">Syncing Index...</div>
-       </div>
-    }>
+    <Suspense fallback={<GlobalLoading />}>
       <JobsPageContent />
     </Suspense>
   );

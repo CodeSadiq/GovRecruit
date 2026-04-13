@@ -72,18 +72,18 @@ const styles = `
     --amber:      #78350f;
 
     font-family: var(--sans);
-    font-size: 18px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.5;
     color: var(--ink);
     background: var(--paper);
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
-    padding-top: 60px;
+    padding-top: 20px;
   }
 
   @media (max-width: 768px) {
-    .jd { padding-top: 20px; }
-    .jd-wrap { padding: 0 20px 60px; }
+    .jd { padding-top: 5px; }
+    .jd-wrap { padding: 0 16px 60px; }
   }
 
   .jd * { box-sizing: border-box; margin: 0; padding: 0; }

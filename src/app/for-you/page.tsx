@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 import Navbar from '@/components/Navbar';
 import RecruitmentCard from '@/components/RecruitmentCard';
+import { CardSkeleton } from '@/components/LoadingState';
 
 // ─── SVG ICONS ───────────────────────────────────
 const IconBuilding = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22"></line><line x1="15" y1="22" x2="15" y2="22"></line></svg>;
@@ -51,7 +52,7 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 py-3 md:py-6 w-full animate-in fade-in duration-700">
+      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 py-1 md:py-3 w-full animate-in fade-in duration-700">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-4 md:mb-6 no-underline"
@@ -65,10 +66,8 @@ export default function ForYouPage() {
         </header>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="bg-gray-100 rounded-2xl h-[240px]"></div>
-            ))}
+          <div className="flex flex-col gap-6">
+            {[1, 2, 3, 4].map(i => <CardSkeleton key={i} />)}
           </div>
         ) : jobs.length > 0 ? (
           <div className="flex flex-col gap-6">
