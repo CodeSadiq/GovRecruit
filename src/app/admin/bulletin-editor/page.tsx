@@ -28,25 +28,7 @@ export default function BulletinEditorPage() {
       .catch(e => console.error('Job sync failed:', e));
   }, []);
 
-  // Initialize with a default template if not editing
-  useEffect(() => {
-    if (!editId && !bulletinJson) {
-      const defaultJson = { 
-        id: "new-protocol-" + Math.random().toString(36).substr(2, 9), 
-        text: "New Institutional Announcement", 
-        desc: "Insert the primary briefing content here. This manifest is synchronized with the national registry.", 
-        time: "JUST NOW", 
-        category: bulletinCategory, 
-        tags: ["institutional", "update"], 
-        priority: 2, 
-        links: [], 
-        routedTo: null, 
-        createdAt: new Date().toISOString(), 
-        updatedAt: new Date().toISOString() 
-      };
-      setBulletinJson(JSON.stringify(defaultJson, null, 2));
-    }
-  }, [editId, bulletinCategory]);
+
 
   // Load existing data if editing
   useEffect(() => {
@@ -76,7 +58,7 @@ export default function BulletinEditorPage() {
       saveBulletinToRegistry(previewData, bulletinCategory);
       setIsPublishing(false);
       alert('Institutional Manifest Synchronized Successfully.');
-      router.push('/admin');
+      router.push('/admin?tab=bulletin');
     }, 1200);
   };
 
@@ -152,10 +134,10 @@ export default function BulletinEditorPage() {
         <div className="flex flex-col md:flex-row items-end justify-between gap-4 pb-4 border-b border-gray-100">
           <div className="space-y-2 text-left">
             <button 
-              onClick={() => router.back()}
-              className="inline-flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-navy/30 hover:text-navy no-underline bg-transparent border-none cursor-pointer p-0"
+              onClick={() => router.push('/admin?tab=bulletin')}
+              className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-navy/30 hover:text-navy no-underline bg-transparent border-none cursor-pointer p-0"
             >
-              ← Registry
+              ← back
             </button>
             <h1 className="text-xl lg:text-2xl font-black text-navy uppercase leading-none tracking-tighter">
               Bulletin Publisher
@@ -188,10 +170,7 @@ export default function BulletinEditorPage() {
                    <div className="flex items-center justify-between">
                       <span className="text-[8px] font-black text-navy/30 uppercase tracking-[0.2em] block">Manifest Payload (JSON)</span>
                       <button 
-                        onClick={() => {
-                           const defaultJson = { id: "new-protocol", text: "Title", desc: "Brief description", time: "RECENT", category: bulletinCategory, tags: [], priority: 2, links: [], routedTo: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-                           setBulletinJson(JSON.stringify(defaultJson, null, 2));
-                        }}
+                        onClick={() => setBulletinJson('')}
                         className="text-[8px] font-black uppercase text-navy/40 hover:text-navy transition-all underline underline-offset-4 decoration-navy/10"
                       >
                          Reset
@@ -251,7 +230,7 @@ export default function BulletinEditorPage() {
                        </header>
 
                        {/* 📄 Formatted Briefing Body Preview */}
-                       <div className="border-l-4 border-navy pl-6 space-y-6">
+                       <div className="space-y-6">
                           <div 
                             contentEditable={isEditMode}
                             suppressContentEditableWarning
@@ -333,13 +312,15 @@ export default function BulletinEditorPage() {
                        <footer className="pt-4 space-y-4">
                           <div className="flex flex-col md:flex-row items-center gap-4">
                              <div className="flex flex-col items-center md:items-start gap-1 w-fit">
-                                <Link 
-                                   href={previewData.routedTo || "/all-jobs"}
-                                   target="_blank"
-                                   className={`inline-flex items-center gap-2 px-8 py-3 bg-navy text-white text-[9px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-navy/5 transition-all no-underline ${isEditMode ? 'hover:bg-slate-800' : 'opacity-40 cursor-default'}`}
-                                >
-                                   view Details ➜
-                                </Link>
+                                {previewData.routedTo && (
+                                   <Link 
+                                      href={previewData.routedTo}
+                                      target="_blank"
+                                      className={`inline-flex items-center gap-2 px-8 py-3 bg-navy text-white text-[9px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg shadow-navy/5 transition-all no-underline ${isEditMode ? 'hover:bg-slate-800' : 'opacity-40 cursor-default'}`}
+                                   >
+                                      view Details ➜
+                                   </Link>
+                                )}
                                 {previewData.routedTo && isEditMode && (
                                    <div className="flex items-center gap-2 mt-1 -ml-2 md:ml-4 animate-in fade-in duration-300">
                                       <div className="text-[7px] font-black text-green-500 uppercase tracking-widest italic px-2 py-0.5 bg-green-50 rounded border border-green-100 items-center gap-1.5 flex">

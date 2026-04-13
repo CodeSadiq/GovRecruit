@@ -135,7 +135,7 @@ export default function BulletinViewer() {
 
         {/* 📄 Formatted Briefing */}
         <div className="max-w-[700px] mr-auto">
-          <div className="border-l-4 border-navy pl-8 space-y-6">
+          <div className="space-y-6">
              <div className="jd-content">
                 {notification.desc}
              </div>
@@ -160,9 +160,11 @@ export default function BulletinViewer() {
           </div>
 
           <div className="pt-8 space-y-8">
-             <Link href={notification.routedTo || "/all-jobs"} className="px-10 py-3.5 bg-navy text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-full no-underline hover:bg-slate-800 transition-all text-center inline-block shadow-lg shadow-navy/20">
-               view Details ➜
-             </Link>
+             {notification.routedTo && (
+                <Link href={notification.routedTo} className="px-10 py-3.5 bg-navy text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-full no-underline hover:bg-slate-800 transition-all text-center inline-block shadow-lg shadow-navy/20">
+                  view Details ➜
+                </Link>
+             )}
 
             <div className="space-y-4 pt-8 border-t border-gray-100">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">

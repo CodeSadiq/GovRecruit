@@ -119,7 +119,7 @@ export default function Home() {
         {activeTab === 'for-you' && (
           <>
             {/* HERO: UPPER TEXT ALIGNMENT (SKY-TEXT / BASE-BUILDING) */}
-            <div className="w-full bg-[#FAFAFA] relative h-[160px] md:h-[300px] flex items-center overflow-hidden border-b-2 border-gray-100">
+            <div className="w-full bg-[#FAFAFA] relative h-[160px] md:h-[220px] flex items-center overflow-hidden border-b-2 border-gray-100">
               {/* Background Layer (Anchored at Bottom for upper-text space) */}
               <div
                 className="absolute inset-0 bg-cover bg-bottom lg:bg-[right_-150px_center] bg-[url('/mobilehero.png')] lg:bg-[url('/herobg1.png')] z-0 transition-opacity duration-1000"
@@ -153,7 +153,7 @@ export default function Home() {
               </div>
 
               {/* 🏛 Institutional Header Block (Laptop & Mobile) */}
-              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-8 md:py-16">
+              <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 pt-3 pb-8 md:py-10">
                 <div className="max-w-[800px] text-left space-y-2 md:space-y-6">
                   <h1 className="text-xl md:text-6xl font-serif font-bold text-navy leading-tight drop-shadow-sm">
                     Government Jobs For You
@@ -223,7 +223,7 @@ export default function Home() {
                             <IconBell />
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <h3 className="text-[10px] md:text-[12px] font-black uppercase tracking-widest text-[#0D244D] animate-in fade-in slide-in-from-left duration-300 truncate">
+                            <h3 className="text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-[#0D244D] opacity-80 animate-in fade-in slide-in-from-left duration-300 truncate">
                               {activeCategory}
                             </h3>
                           </div>
@@ -254,14 +254,14 @@ export default function Home() {
                           <Link
                             href={`/bulletin/${n.id}`}
                             key={i}
-                            className="group block py-3.5 first:pt-0 last:pb-0 border-b border-gray-200 last:border-0 transition-all hover:bg-navy/5 -mx-4 px-4 no-underline"
+                            className="group block py-4 first:pt-1 last:pb-0 border-b border-gray-100 last:border-0 transition-all hover:bg-navy/[0.02] -mx-4 px-4 no-underline"
                           >
-                            <div className="text-[13px] md:text-[14px] font-serif font-bold text-[#344163] leading-tight group-hover:text-navy transition-colors mb-2 line-clamp-2">
+                            <div className="text-[13px] md:text-[15px] font-medium text-[#344163] leading-snug group-hover:text-navy transition-colors mb-2.5 line-clamp-2">
                               {n.text}
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full group-hover:animate-pulse"></span>
-                              <div className="text-[8px] font-black uppercase tracking-widest text-navy/30 group-hover:text-navy/50">{n.time}</div>
+                              <span className="w-1 h-1 bg-green-500 rounded-full group-hover:animate-pulse"></span>
+                              <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
                             </div>
                           </Link>
                         ))}
@@ -288,7 +288,7 @@ export default function Home() {
                       <div className="mt-3">
                         <Link
                           href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
-                          className="flex items-center justify-center gap-2 w-full py-4 bg-navy/5 text-navy text-[12px] font-serif font-black uppercase tracking-widest rounded-xl hover:bg-navy hover:text-white transition-all group/btn"
+                          className="flex items-center justify-center gap-2 w-full py-4 bg-navy/5 text-navy text-[12px] font-bold uppercase tracking-widest rounded-xl hover:bg-navy hover:text-white transition-all group/btn"
                         >
                           View All {activeCategory}
                           <svg className="group-hover/btn:translate-x-1 transition-transform" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { NOTIFICATIONS, CATEGORY_DATA } from '@/lib/data';
 import { getRegistryData } from '@/lib/data-service';
@@ -81,7 +82,14 @@ export default function AdminPage() {
   });
 
 
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<'recruitment' | 'bulletin'>('recruitment');
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'bulletin') setActiveTab('bulletin');
+    else if (tab === 'recruitment') setActiveTab('recruitment');
+  }, [searchParams]);
   const [bulletinSearch, setBulletinSearch] = useState('');
   const [dynamicRegistry, setDynamicRegistry] = useState<any>(null);
 

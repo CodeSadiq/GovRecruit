@@ -130,7 +130,7 @@ function EditorContent() {
         setSuccess(true);
         setTimeout(() => {
           setSuccess(false);
-          router.push('/admin');
+          router.push('/admin?tab=recruitment');
         }, 1500);
       } else {
         const errorData = await res.json();
@@ -167,7 +167,7 @@ function EditorContent() {
       <header className="h-[50px] md:h-[60px] bg-white border-b-2 border-gray-100 flex items-center justify-between px-4 md:px-8 shrink-0 shadow-sm relative z-[1000]">
         <div className="flex items-center gap-2 md:gap-6">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push('/admin?tab=recruitment')}
             className="flex items-center gap-2 text-navy/40 hover:text-navy transition-colors group no-underline bg-transparent border-none cursor-pointer p-0"
           >
             <div className="p-1.5 md:p-2 bg-gray-50 group-hover:bg-navy group-hover:text-white rounded-lg transition-all border border-gray-100 group-hover:border-navy">

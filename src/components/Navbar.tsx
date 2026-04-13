@@ -22,7 +22,7 @@ export default function Navbar() {
     const checkAuth = () => {
       const auth = localStorage.getItem('govrecruit_auth');
       setIsLoggedIn(!!auth);
-      
+
       const savedProfile = localStorage.getItem('govrecruit_profile');
       if (savedProfile) {
         try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error('Profile sync error:', e); }
@@ -161,7 +161,7 @@ export default function Navbar() {
               <button onClick={() => setIsMobileMenuOpen(false)} className="text-white/60 hover:text-white"><IconX /></button>
             </div>
             <div className="flex flex-col p-6 space-y-10 overflow-y-auto flex-1 pb-12">
-              
+
               {/* 👤 Personnel Access (Top of Drawer) */}
               <div className="flex flex-col gap-6">
                 {!isLoggedIn ? (
@@ -238,7 +238,7 @@ export default function Navbar() {
                     className="w-full text-left bg-transparent border-none p-0 flex items-center gap-4 p-4 rounded-xl hover:bg-red-500/5 transition-all group cursor-pointer"
                   >
                     <div className="text-red-400/30 group-hover:text-red-400 transition-colors flex-shrink-0">
-                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                     </div>
                     <div className="flex flex-col">
                       <span className="text-red-400 text-lg font-serif font-bold group-hover:text-red-300 transition-colors">Logout</span>

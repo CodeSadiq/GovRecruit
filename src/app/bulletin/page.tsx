@@ -16,7 +16,7 @@ export default function BulletinRegistryPage() {
 
         <div className="space-y-12">
           {NOTIFICATIONS.map((n, i) => (
-            <div key={i} className="border-b border-gray-100 pb-12 last:border-0 last:pb-0 group">
+            <div key={i} className="border-b border-gray-200 pb-12 last:border-0 last:pb-0 group">
               <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-4">{n.time}</span>
               <h4 className="text-[18px] font-bold text-navy mb-3 leading-snug group-hover:text-[#2563EB] transition-colors">{n.text}</h4>
               <p className="text-[14px] text-gray-600 font-medium leading-relaxed mb-6">{n.desc}</p>
