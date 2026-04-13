@@ -48,7 +48,7 @@ export default function SignupPage() {
       }
 
       // Success: Auto-login
-      localStorage.setItem('govrecruit_auth', JSON.stringify({ fullName, email }));
+      localStorage.setItem('rojgarmatch_auth', JSON.stringify({ fullName, email }));
       router.push('/');
     } catch (err: any) {
       setError(err.message);
@@ -60,7 +60,7 @@ export default function SignupPage() {
   const handleGoogleSignup = () => {
     setIsLoading(true);
     setTimeout(() => {
-       localStorage.setItem('govrecruit_auth', 'true');
+       localStorage.setItem('rojgarmatch_auth', 'true');
        router.push('/');
        setIsLoading(false);
     }, 1000);
@@ -207,7 +207,7 @@ export default function SignupPage() {
 
         {/* FOOTER */}
         <p className="mt-6 text-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">
-          GovRecruit Registration Protocol Active
+          RojgarMatch Verification Protocol — Baseline Manifest Version 2.0.4
         </p>
 
       </main>

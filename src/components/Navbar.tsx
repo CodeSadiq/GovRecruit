@@ -20,10 +20,10 @@ export default function Navbar() {
   // Sync auth state
   useEffect(() => {
     const checkAuth = () => {
-      const auth = localStorage.getItem('govrecruit_auth');
+      const auth = localStorage.getItem('rojgarmatch_auth');
       setIsLoggedIn(!!auth);
 
-      const savedProfile = localStorage.getItem('govrecruit_profile');
+      const savedProfile = localStorage.getItem('rojgarmatch_profile');
       if (savedProfile) {
         try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error('Profile sync error:', e); }
       } else if (auth) {
@@ -37,16 +37,16 @@ export default function Navbar() {
     checkAuth();
     // Re-check on storage and custom events
     window.addEventListener('storage', checkAuth);
-    window.addEventListener('govrecruit_auth_change', checkAuth);
+    window.addEventListener('rojgarmatch_auth_change', checkAuth);
     return () => {
       window.removeEventListener('storage', checkAuth);
-      window.removeEventListener('govrecruit_auth_change', checkAuth);
+      window.removeEventListener('rojgarmatch_auth_change', checkAuth);
     };
   }, [pathname]);
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem('govrecruit_auth');
-    localStorage.removeItem('govrecruit_profile');
+    localStorage.removeItem('rojgarmatch_auth');
+    localStorage.removeItem('rojgarmatch_profile');
     setIsLoggedIn(false);
     setUserProfile(null);
     setIsMobileMenuOpen(false);
@@ -105,7 +105,7 @@ export default function Navbar() {
                   <div className="flex items-center gap-2 md:gap-3">
                     <span className="opacity-50 group-hover:opacity-100 transition-opacity"><IconUser /></span>
                     <span className="hidden md:inline text-[15px] font-serif font-bold whitespace-nowrap">
-                      {userProfile?.email === 'guest@govrecruit.local' ? 'Guest' : (userProfile?.fullName || 'Candidate')}
+                      {userProfile?.email === 'guest@rojgarmatch.local' ? 'Guest' : (userProfile?.fullName || 'Candidate')}
                     </span>
                   </div>
                   <span className={`text-[8px] md:text-[10px] transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`}>▼</span>
@@ -187,7 +187,7 @@ export default function Navbar() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <h4 className="text-white text-[20px] font-serif font-bold leading-tight group-hover:text-blue-400 transition-colors">
-                        {userProfile?.email === 'guest@govrecruit.local' ? 'Guest' : (userProfile?.fullName || 'Candidate')}
+                        {userProfile?.email === 'guest@rojgarmatch.local' ? 'Guest' : (userProfile?.fullName || 'Candidate')}
                       </h4>
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] text-white/40 font-bold uppercase tracking-widest group-hover:text-white/70 transition-colors">

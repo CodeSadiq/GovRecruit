@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { NOTIFICATIONS, CATEGORY_DATA } from '@/lib/data';
 import { getRegistryData } from '@/lib/data-service';
 
-export default function AdminPage() {
+function AdminPageContent() {
   const [publishedJobs, setPublishedJobs] = useState<any[]>([]);
   const [adminSearchQuery, setAdminSearchQuery] = useState('');
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
@@ -93,23 +93,43 @@ export default function AdminPage() {
   const [bulletinSearch, setBulletinSearch] = useState('');
   const [dynamicRegistry, setDynamicRegistry] = useState<any>(null);
 
+  const fetchBulletins = async () => {
+    const data = await getRegistryData();
+    setDynamicRegistry(data);
+  };
+
   useEffect(() => {
-    setDynamicRegistry(getRegistryData());
+    fetchBulletins();
   }, []);
+
+  const handleDeleteBulletin = async (id: string) => {
+    if (!window.confirm('Decommission this bulletin manifest permanently?')) return;
+    try {
+      const res = await fetch(`/api/bulletins?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchBulletins();
+      } else {
+        const d = await res.json();
+        alert('Decommissioning failed: ' + (d.error || 'Unknown error'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network error during decommissioning');
+    }
+  };
 
   // BULLETIN DATA LOGIC (Archival Manifests only)
   const allBulletins = dynamicRegistry ? [
-    ...(dynamicRegistry.categories['Important'] || []).map((n: any) => ({ ...n, category: 'IMPORTANT' })),
-    ...(dynamicRegistry.categories['Admission'] || []).map((n: any) => ({ ...n, category: 'ADMISSION' })),
-    ...(dynamicRegistry.categories['Syllabus'] || []).map((n: any) => ({ ...n, category: 'SYLLABUS' })),
-    ...(dynamicRegistry.categories['Result'] || []).map((n: any) => ({ ...n, category: 'RESULT' })),
-    ...(dynamicRegistry.categories['Admit Card'] || []).map((n: any) => ({ ...n, category: 'ADMIT CARD' })),
+    ...(dynamicRegistry.notifications || []).map((n: any) => ({ ...n, category: 'IMPORTANT' })),
+    ...Object.entries(dynamicRegistry.categories).flatMap(([cat, list]: [string, any]) => 
+      list.map((item: any) => ({ ...item, category: cat.toUpperCase() }))
+    )
   ] : [];
 
   const filteredBulletins = allBulletins.filter(b => 
     b.text.toLowerCase().includes(bulletinSearch.toLowerCase()) || 
     b.id.toLowerCase().includes(bulletinSearch.toLowerCase())
-  );
+  ).sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
   return (
     <div className="min-h-screen bg-[#fafafa] p-6 lg:p-10 font-sans selection:bg-navy selection:text-white">
@@ -229,7 +249,7 @@ export default function AdminPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <Link href={`/admin/bulletin-editor?id=${b.id}`} className="px-5 py-2 bg-navy text-white text-[9px] font-black uppercase tracking-widest rounded-lg no-underline hover:bg-slate-800">Edit</Link>
-                      <button onClick={() => alert('Record decommissioning requested.')} className="px-5 py-2 text-red-500 text-[9px] font-black uppercase tracking-widest hover:text-red-700 bg-transparent border-none">Delete</button>
+                      <button onClick={() => handleDeleteBulletin(b.id)} className="px-5 py-2 text-red-500 text-[9px] font-black uppercase tracking-widest hover:text-red-700 bg-transparent border-none">Delete</button>
                     </div>
                   </div>
                 ))
@@ -239,5 +259,17 @@ export default function AdminPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFDFD]">
+        <div className="text-[10px] font-black uppercase tracking-widest text-navy/20 animate-pulse">Establishing Secure Command Session...</div>
+      </div>
+    }>
+      <AdminPageContent />
+    </Suspense>
   );
 }

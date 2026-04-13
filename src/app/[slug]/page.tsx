@@ -16,7 +16,11 @@ export default function CategoryPage() {
   const [registry, setRegistry] = React.useState<any>(null);
 
   React.useEffect(() => {
-    setRegistry(getRegistryData());
+    async function loadData() {
+      const data = await getRegistryData();
+      setRegistry(data);
+    }
+    loadData();
   }, []);
 
   // Map slug back to category name
@@ -30,7 +34,14 @@ export default function CategoryPage() {
   };
 
   const categoryName = categoryMap[slug] || 'Notifications';
-  const data = registry ? (registry.categories[categoryName] || []) : [];
+
+  const data = React.useMemo(() => {
+    if (!registry) return [];
+    if (categoryName === 'Important') {
+      return registry.notifications || [];
+    }
+    return (registry.categories && registry.categories[categoryName]) || [];
+  }, [registry, categoryName]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
@@ -53,7 +64,7 @@ export default function CategoryPage() {
 
         {data.length > 0 ? (
           <div className="flex flex-col gap-3">
-            {data.map((item, idx) => (
+            {data.map((item: any, idx: number) => (
               <Link
                 key={idx}
                 href={`/bulletin/${item.id}`}

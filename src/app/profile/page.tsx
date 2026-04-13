@@ -17,12 +17,12 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchProfile = React.useCallback(async () => {
-    const isAuth = localStorage.getItem('govrecruit_auth');
+    const isAuth = localStorage.getItem('rojgarmatch_auth');
     if (!isAuth) return;
     const authData = JSON.parse(isAuth);
 
     // Initial load from localStorage (essential for guest persistence)
-    const savedLocal = localStorage.getItem('govrecruit_profile');
+    const savedLocal = localStorage.getItem('rojgarmatch_profile');
     if (savedLocal) {
       try {
         const profile = JSON.parse(savedLocal);
@@ -38,7 +38,7 @@ export default function ProfilePage() {
     }
 
     // Fetch remote profile for verified users only
-    if (authData.email && authData.email !== 'guest@govrecruit.local') {
+    if (authData.email && authData.email !== 'guest@rojgarmatch.local') {
       try {
         const res = await fetch(`/api/profile?email=${authData.email}`);
         if (res.ok) {
@@ -56,7 +56,7 @@ export default function ProfilePage() {
               setCompleted(true);
             }
 
-            localStorage.setItem('govrecruit_profile', JSON.stringify({
+            localStorage.setItem('rojgarmatch_profile', JSON.stringify({
               ...profile,
               fullName: authData.fullName,
               email: authData.email
@@ -72,7 +72,7 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('govrecruit_auth');
+    const isAuth = localStorage.getItem('rojgarmatch_auth');
     if (!isAuth) {
       router.push('/login');
       return;
@@ -118,10 +118,10 @@ export default function ProfilePage() {
       };
 
       // ── GUEST HANDLING: Skip DB save ──
-      if (userProfile.email === 'guest@govrecruit.local') {
+      if (userProfile.email === 'guest@rojgarmatch.local') {
         const fullProfile = { ...userProfile, ...profileData };
-        localStorage.setItem('govrecruit_profile', JSON.stringify(fullProfile));
-        window.dispatchEvent(new Event('govrecruit_auth_change'));
+        localStorage.setItem('rojgarmatch_profile', JSON.stringify(fullProfile));
+        window.dispatchEvent(new Event('rojgarmatch_auth_change'));
         setCompleted(true);
         alert('Guest profile updated for this session! ✅');
         setIsSaving(false);
@@ -148,8 +148,8 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('govrecruit_auth');
-    localStorage.removeItem('govrecruit_profile');
+    localStorage.removeItem('rojgarmatch_auth');
+    localStorage.removeItem('rojgarmatch_profile');
     router.push('/login');
   };
 
@@ -172,7 +172,7 @@ export default function ProfilePage() {
           <div className="bg-white border border-gray-200 rounded-[32px] p-8 md:p-10 flex flex-col md:flex-row items-center md:items-center justify-between gap-8 shadow-sm text-center md:text-left">
             <div className="flex flex-col items-center md:items-start gap-5">
               <div className="space-y-1">
-                {userProfile.email === 'guest@govrecruit.local' ? (
+                {userProfile.email === 'guest@rojgarmatch.local' ? (
                    <>
                     <h1 className="text-3xl md:text-4xl font-bold text-navy/60 tracking-tight">Anonymous Guest</h1>
                     <p className="text-gray-500 text-sm md:text-base font-medium">Logged in as a Guest</p>
@@ -277,11 +277,11 @@ export default function ProfilePage() {
                         if (confirm('Are you sure you want to reset all qualifications? This cannot be undone.')) {
                           setIsSaving(true);
                           try {
-                            if (userProfile.email === 'guest@govrecruit.local') {
+                            if (userProfile.email === 'guest@rojgarmatch.local') {
                               setSelectedLevels({});
                               setCompleted(false);
-                              localStorage.removeItem('govrecruit_profile');
-                              window.dispatchEvent(new Event('govrecruit_auth_change'));
+                              localStorage.removeItem('rojgarmatch_profile');
+                              window.dispatchEvent(new Event('rojgarmatch_auth_change'));
                               alert('Guest qualifications reset successfully! ✅');
                               setIsSaving(false);
                               return;
@@ -295,8 +295,8 @@ export default function ProfilePage() {
                             if (res.ok) {
                               setSelectedLevels({});
                               setCompleted(false);
-                              localStorage.removeItem('govrecruit_profile');
-                              window.dispatchEvent(new Event('govrecruit_auth_change'));
+                              localStorage.removeItem('rojgarmatch_profile');
+                              window.dispatchEvent(new Event('rojgarmatch_auth_change'));
                               alert('Qualifications reset successful! ✅');
                             } else {
                               throw new Error('Reset failed');

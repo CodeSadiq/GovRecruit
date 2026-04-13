@@ -11,6 +11,10 @@ async function testConnection() {
     const collections = await mongoose.connection.db.listCollections().toArray();
     console.log("Collections:", collections.map(c => c.name));
 
+    const bulletins = await mongoose.connection.db.collection('bulletins').find({}).toArray();
+    console.log("Bulletins found in DB:", bulletins.length);
+    console.log(JSON.stringify(bulletins, null, 2));
+
     await mongoose.disconnect();
   } catch (err) {
     console.error("Connection failed:", err);

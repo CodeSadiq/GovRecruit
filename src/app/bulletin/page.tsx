@@ -45,13 +45,13 @@ export default function BulletinRegistryPage() {
         </div>
         
         <p className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-24">
-          GovRecruit Verification Protocol — Baseline Manifest Version 2.0.4
+          RojgarMatch Verification Protocol — Baseline Manifest Version 2.0.4
         </p>
       </main>
 
       {/* SIMPLE FOOTER */}
       <footer className="bg-white border-t border-gray-100 py-10 px-6 md:px-12 mt-auto text-center">
-        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">© 2026 GovRecruit Institutional Manifest</p>
+        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">© 2026 RojgarMatch Institutional Manifest</p>
       </footer>
     </div>
   );

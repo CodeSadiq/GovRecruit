@@ -18,7 +18,7 @@ export default function ForYouPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedProfile = localStorage.getItem('govrecruit_profile');
+    const savedProfile = localStorage.getItem('rojgarmatch_profile');
     let profile: CandidateProfile | null = null;
     if (savedProfile) {
       try {

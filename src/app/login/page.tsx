@@ -44,14 +44,14 @@ export default function LoginPage() {
       const userData = await res.json();
 
       // Success: Save session
-      localStorage.setItem('govrecruit_auth', JSON.stringify({
+      localStorage.setItem('rojgarmatch_auth', JSON.stringify({
         fullName: userData.fullName,
         email: userData.email
       }));
 
       // Restore profile if it exists on the server
       if (userData.profile) {
-        localStorage.setItem('govrecruit_profile', JSON.stringify({
+        localStorage.setItem('rojgarmatch_profile', JSON.stringify({
           ...userData.profile,
           fullName: userData.fullName,
           email: userData.email
@@ -59,7 +59,7 @@ export default function LoginPage() {
       }
 
       // Signal Navbar for immediate update
-      window.dispatchEvent(new Event('govrecruit_auth_change'));
+      window.dispatchEvent(new Event('rojgarmatch_auth_change'));
       router.push('/');
     } catch (err: any) {
       setError(err.message);
@@ -71,8 +71,8 @@ export default function LoginPage() {
   const handleGoogleLogin = () => {
     setIsLoading(true);
     setTimeout(() => {
-      localStorage.setItem('govrecruit_auth', 'true');
-      window.dispatchEvent(new Event('govrecruit_auth_change'));
+      localStorage.setItem('rojgarmatch_auth', 'true');
+      window.dispatchEvent(new Event('rojgarmatch_auth_change'));
       router.push('/');
       setIsLoading(false);
     }, 1000);
@@ -185,12 +185,12 @@ export default function LoginPage() {
                 onClick={() => {
                   setIsLoading(true);
                   setTimeout(() => {
-                    localStorage.setItem('govrecruit_auth', JSON.stringify({
+                    localStorage.setItem('rojgarmatch_auth', JSON.stringify({
                       fullName: 'Anonymous Guest',
-                      email: 'guest@govrecruit.local',
+                      email: 'guest@rojgarmatch.local',
                       isGuest: true
                     }));
-                    window.dispatchEvent(new Event('govrecruit_auth_change'));
+                    window.dispatchEvent(new Event('rojgarmatch_auth_change'));
                     router.push('/');
                     setIsLoading(false);
                   }, 800);
@@ -219,7 +219,7 @@ export default function LoginPage() {
 
           {/* FOOTER */}
           <p className="mt-6 text-center text-[9px] font-black uppercase tracking-[0.3em] text-gray-300">
-            GovRecruit Verification Protocol Active
+            RojgarMatch Verification Protocol Active
           </p>
 
         </main>

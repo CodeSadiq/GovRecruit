@@ -79,7 +79,7 @@ function getMatchedPostsForJob(candidate: CandidateProfile, job: JobPost): { mat
       qualification: job.qualification,
       educationRequirementForMatch: [],
       prerequisite: [],
-      categoryWiseVacancy: job.categoryWiseVacancyTotal,
+      categoryWiseVacancy: (job.categoryWiseVacancyTotal as any) || { general: null, ews: null, obc: null, sc: null, st: null, pwd: null },
       appearingEligible: false,
       appearingConditions: null,
       ageLimit: (job as any).ageLimit || { min: null, max: null, relaxation: {} },
@@ -112,9 +112,9 @@ function evaluatePost(qEntry: QualificationEntry, post: Post): boolean {
   if (post.educationRequirementForMatch && (post.educationRequirementForMatch as any).length > 0) {
     return (post.educationRequirementForMatch as any).some((req: any) => {
       const matchCourse = (req.qualification || '').trim().toLowerCase() === cCourse;
-      const matchBranch = !req.branches || 
-                          req.branches.length === 0 || 
-                          req.branches.some((b: string) => b.toLowerCase() === cBranch);
+      const matchBranch = !req.branches ||
+        req.branches.length === 0 ||
+        req.branches.some((b: string) => b.toLowerCase() === cBranch);
       return matchCourse && matchBranch;
     });
   }

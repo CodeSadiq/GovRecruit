@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { NOTIFICATIONS } from '@/lib/data';
@@ -12,7 +12,7 @@ import { getEligibleJobs, CandidateProfile } from '@/lib/matching';
 const IconSearch = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 
-export default function JobsPage() {
+function JobsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
@@ -31,7 +31,7 @@ export default function JobsPage() {
 
   useEffect(() => {
     // Load profile for matching
-    const savedProfile = localStorage.getItem('govrecruit_profile');
+    const savedProfile = localStorage.getItem('rojgarmatch_profile');
     if (savedProfile) {
       try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error(e); }
     }
@@ -157,5 +157,17 @@ export default function JobsPage() {
         </section>
       </main>
     </div>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <Suspense fallback={
+       <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+          <div className="text-[10px] font-black uppercase tracking-widest text-navy/20 animate-pulse">Syncing Index...</div>
+       </div>
+    }>
+      <JobsPageContent />
+    </Suspense>
   );
 }

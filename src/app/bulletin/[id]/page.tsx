@@ -17,7 +17,11 @@ export default function BulletinViewer() {
   const [registry, setRegistry] = React.useState<any>(null);
 
   React.useEffect(() => {
-    setRegistry(getRegistryData());
+    async function loadRegistry() {
+      const data = await getRegistryData();
+      setRegistry(data);
+    }
+    loadRegistry();
   }, []);
 
   // Find the bulletin in either primary NOTIFICATIONS or CATEGORY_DATA

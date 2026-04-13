@@ -45,10 +45,14 @@ export default function Home() {
   const [registry, setRegistry] = useState<any>(null);
 
   useEffect(() => {
-    setRegistry(getRegistryData());
+    async function loadMetadata() {
+      const registryData = await getRegistryData();
+      setRegistry(registryData);
+    }
+    loadMetadata();
 
     // Lead user profile
-    const savedProfile = localStorage.getItem('govrecruit_profile');
+    const savedProfile = localStorage.getItem('rojgarmatch_profile');
     if (savedProfile) {
       try { setUserProfile(JSON.parse(savedProfile)); } catch (e) { console.error(e); }
     }
@@ -76,7 +80,15 @@ export default function Home() {
         isJob: true
       }));
     }
-    return (registry ? (registry.categories[activeCategory] || []) : (CATEGORY_DATA as any)[activeCategory] || []).map((b: any) => ({
+
+    let list = [];
+    if (activeCategory === 'Important') {
+      list = registry ? (registry.notifications || []) : NOTIFICATIONS;
+    } else {
+      list = registry ? (registry.categories[activeCategory] || []) : ((CATEGORY_DATA as any)[activeCategory] || []);
+    }
+
+    return list.map((b: any) => ({
       ...b,
       time: b.createdAt ? getTimeAgo(b.createdAt) : b.time
     }));
@@ -419,7 +431,7 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col">
-                {NOTIFICATIONS.map((n, i) => (
+                {(registry?.notifications || NOTIFICATIONS).map((n: any, i: number) => (
                   <div key={i} className="group py-10 first:pt-0 last:pb-0 border-b-2 border-gray-100 last:border-0 hover:bg-navy/5 -mx-6 px-6 transition-all">
                     <div className="flex items-start gap-4">
                       <div className="shrink-0 mt-1.5">
@@ -427,7 +439,7 @@ export default function Home() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-navy/30">{n.time}</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-navy/30">{n.createdAt ? getTimeAgo(n.createdAt) : n.time}</span>
                         </div>
                         <h3 className="text-lg md:text-xl font-serif font-bold text-[#344163] leading-snug group-hover:text-navy transition-colors line-clamp-2">
                           {n.text}

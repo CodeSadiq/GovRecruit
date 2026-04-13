@@ -1,49 +1,63 @@
 
-// 🏛 Institutional Data Persistence Service (Mock)
-// This service simulates a backend by synchronizing manifests with the browser's localStorage.
+// 🏛 Institutional Data Persistence Service
+// This service synchronizes manifests with the MongoDB backend.
 
 import { CATEGORY_DATA, NOTIFICATIONS } from './data';
 
-const STORAGE_KEY = 'govrecruit_manifest_store';
-
-export const getRegistryData = () => {
+export const getRegistryData = async () => {
+  // If we are server-side, we can't fetch from internal API easily without full URL
+  // But this is usually called from client-side useEffect.
   if (typeof window === 'undefined') return { notifications: NOTIFICATIONS, categories: CATEGORY_DATA };
-  
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) return { notifications: NOTIFICATIONS, categories: CATEGORY_DATA };
-  
+
   try {
-    const dynamicData = JSON.parse(stored);
-    
-    // Merge static and dynamic data
-    const mergedNotifications = [...(dynamicData.notifications || [])];
-    const mergedCategories = { ...CATEGORY_DATA };
-    
-    Object.keys(dynamicData.categories || {}).forEach(cat => {
-      mergedCategories[cat] = [...(mergedCategories[cat] || []), ...(dynamicData.categories[cat] || [])];
+    const res = await fetch('/api/bulletins');
+    if (!res.ok) throw new Error('Network response was not ok');
+    const bulletins = await res.json();
+
+    if (!Array.isArray(bulletins)) return { notifications: NOTIFICATIONS, categories: CATEGORY_DATA };
+
+    // Initialize with static data
+    const categories: any = { ...CATEGORY_DATA };
+    const mergedNotifications = [...NOTIFICATIONS];
+
+    // Merge DB data
+    bulletins.forEach((b: any) => {
+      if (b.category === 'Important') {
+        // Add to notifications if not already there (static fallback)
+        if (!mergedNotifications.some(n => n.id === b.id)) {
+          mergedNotifications.unshift(b);
+        }
+      } else {
+        if (!categories[b.category]) categories[b.category] = [];
+        if (!categories[b.category].some((item: any) => item.id === b.id)) {
+          categories[b.category].unshift(b);
+        }
+      }
     });
 
-    return { notifications: mergedNotifications, categories: mergedCategories };
+    return { notifications: mergedNotifications, categories };
   } catch (e) {
+    console.error('Registry sync failed, falling back to static data:', e);
     return { notifications: NOTIFICATIONS, categories: CATEGORY_DATA };
   }
 };
 
-export const saveBulletinToRegistry = (bulletin: any, category: string) => {
+export const saveBulletinToRegistry = async (bulletin: any, category: string) => {
   if (typeof window === 'undefined') return;
 
-  const stored = localStorage.getItem(STORAGE_KEY);
-  let data = stored ? JSON.parse(stored) : { notifications: [], categories: {} };
-
-  if (!data.categories[category]) data.categories[category] = [];
+  const payload = { ...bulletin, category, updatedAt: new Date().toISOString() };
   
-  // Update or Add
-  const index = data.categories[category].findIndex((b: any) => b.id === bulletin.id);
-  if (index >= 0) {
-    data.categories[category][index] = { ...bulletin, updatedAt: new Date().toISOString() };
-  } else {
-    data.categories[category].unshift({ ...bulletin, createdAt: new Date().toISOString() });
+  try {
+    const res = await fetch('/api/bulletins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    
+    if (!res.ok) throw new Error('Failed to save bulletin');
+    return await res.json();
+  } catch (e) {
+    console.error('Save to Registry failed:', e);
+    throw e;
   }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };

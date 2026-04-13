@@ -78,6 +78,7 @@ export interface ImportantDates {
   applyLink: string | null;
   notificationPdfLink: string | null;
   checkResult: string | null;
+  lastDate?: string | null;
   customDates?: Array<{ label: string; date: string }>;
 }
 
@@ -111,6 +112,10 @@ export interface JobPost {
   postNames: string[];
   posts: Post[];
   totalVacancy: number | null;
+  categoryWiseVacancyTotal?: CategoryVacancy;
+  qualification?: Qualification | any;
+  ageLimit?: AgeLimit;
+  salary?: Salary | any;
   categoryEligibility: string[];
   pwdEligible: boolean;
   femaleOnly: boolean;
@@ -120,6 +125,7 @@ export interface JobPost {
   importantDates: ImportantDates;
   applicationProcess: string[];
   selectionProcess: string[];
+  selectionProcessNote?: string;
   description: string;
   shortInfo: string | null;
   source: string;
@@ -129,4 +135,6 @@ export interface JobPost {
   emoji?: string;
   urgency?: string;
   displayStatus?: DisplayStatus;
+  notificationType?: string;
+  active?: boolean;
 }

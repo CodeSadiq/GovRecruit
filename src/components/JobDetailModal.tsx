@@ -5,63 +5,63 @@ import { JobPost, Post } from '@/types/job';
 
 // ── QUALIFICATION HELPERS ───────────────────────────────────────────────────
 function qualLabel(q: any): string {
-    if (!q) return "Not specified";
-    if (typeof q === "string") return q;
+  if (!q) return "Not specified";
+  if (typeof q === "string") return q;
 
-    if (q.course !== undefined) {
-        const courseStr = Array.isArray(q.course) ? q.course.join(" / ") : String(q.course);
-        const validBranches = Array.isArray(q.branch) ? q.branch.filter((b: string) => b && b.toLowerCase() !== "any") : [];
-        const branchStr = validBranches.length > 0 ? ` in ${validBranches.join(", ")}` : "";
-        const extra = q.extraQualificationText?.trim() || "";
-        return `${courseStr}${branchStr}${extra ? ` — ${extra}` : ""}`;
-    }
+  if (q.course !== undefined) {
+    const courseStr = Array.isArray(q.course) ? q.course.join(" / ") : String(q.course);
+    const validBranches = Array.isArray(q.branch) ? q.branch.filter((b: string) => b && b.toLowerCase() !== "any") : [];
+    const branchStr = validBranches.length > 0 ? ` in ${validBranches.join(", ")}` : "";
+    const extra = q.extraQualificationText?.trim() || "";
+    return `${courseStr}${branchStr}${extra ? ` — ${extra}` : ""}`;
+  }
 
-    if (q.name !== undefined) {
-        const branch = q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any") ? ` in ${q.branches.join(" / ")}` : "";
-        const extras: string[] = [];
-        if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
-        if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
-        if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
-        return `${q.name || "Degree"}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
-    }
-    return "Not specified";
+  if (q.name !== undefined) {
+    const branch = q.branches?.length && !(q.branches.length === 1 && q.branches[0] === "any") ? ` in ${q.branches.join(" / ")}` : "";
+    const extras: string[] = [];
+    if (q.streamRequired) extras.push(`Stream: ${q.streamRequired}`);
+    if (q.minMarksPercent) extras.push(`Min. ${q.minMarksPercent}% marks`);
+    if (q.minExperienceYears) extras.push(`${q.minExperienceYears} yr exp.`);
+    return `${q.name || "Degree"}${branch}${extras.length ? " — " + extras.join("; ") : ""}`;
+  }
+  return "Not specified";
 }
 
 function qualFingerprint(p: any): string {
-    const qual = p.qualification;
-    if (qual && !Array.isArray(qual) && qual.course !== undefined) {
-        const courseKey = (Array.isArray(qual.course) ? [...qual.course].sort() : [qual.course]).join(",");
-        const branchKey = (Array.isArray(qual.branch) ? [...qual.branch].sort() : []).join(",");
-        const extraKey = qual.extraQualificationText?.trim() || "";
-        return `course:${courseKey}|branch:${branchKey}|extra:${extraKey}|app:${p.appearingEligible ? p.appearingConditions || "yes" : "no"}`;
-    }
-    const quals: any[] = Array.isArray(qual) ? qual : (qual ? [qual] : []);
-    return quals.map(qualLabel).join(" | ") + "|app:" + (p.appearingEligible ? p.appearingConditions || "yes" : "no");
+  const qual = p.qualification;
+  if (qual && !Array.isArray(qual) && qual.course !== undefined) {
+    const courseKey = (Array.isArray(qual.course) ? [...qual.course].sort() : [qual.course]).join(",");
+    const branchKey = (Array.isArray(qual.branch) ? [...qual.branch].sort() : []).join(",");
+    const extraKey = qual.extraQualificationText?.trim() || "";
+    return `course:${courseKey}|branch:${branchKey}|extra:${extraKey}|app:${p.appearingEligible ? p.appearingConditions || "yes" : "no"}`;
+  }
+  const quals: any[] = Array.isArray(qual) ? qual : (qual ? [qual] : []);
+  return quals.map(qualLabel).join(" | ") + "|app:" + (p.appearingEligible ? p.appearingConditions || "yes" : "no");
 }
 
 interface QualGroup {
-    qualTexts: string[];
-    appearingNote: string | null;
-    posts: any[];
+  qualTexts: string[];
+  appearingNote: string | null;
+  posts: any[];
 }
 
 function groupPostsByQual(posts: any[]): QualGroup[] {
-    const map = new Map<string, QualGroup>();
-    for (const p of posts) {
-        const fp = qualFingerprint(p);
-        if (!map.has(fp)) {
-            const qual = p.qualification;
-            let qualTexts = (qual && !Array.isArray(qual) && qual.course !== undefined) ? [qualLabel(qual)] : (Array.isArray(qual) ? qual : (qual ? [qual] : [])).map(qualLabel).filter(Boolean);
-            if (qualTexts.length === 0) qualTexts = ["Not specified"];
-            map.set(fp, {
-                qualTexts,
-                appearingNote: p.appearingEligible ? (p.appearingConditions || "Appearing candidates eligible") : null,
-                posts: [],
-            });
-        }
-        map.get(fp)!.posts.push(p);
+  const map = new Map<string, QualGroup>();
+  for (const p of posts) {
+    const fp = qualFingerprint(p);
+    if (!map.has(fp)) {
+      const qual = p.qualification;
+      let qualTexts = (qual && !Array.isArray(qual) && qual.course !== undefined) ? [qualLabel(qual)] : (Array.isArray(qual) ? qual : (qual ? [qual] : [])).map(qualLabel).filter(Boolean);
+      if (qualTexts.length === 0) qualTexts = ["Not specified"];
+      map.set(fp, {
+        qualTexts,
+        appearingNote: p.appearingEligible ? (p.appearingConditions || "Appearing candidates eligible") : null,
+        posts: [],
+      });
     }
-    return Array.from(map.values());
+    map.get(fp)!.posts.push(p);
+  }
+  return Array.from(map.values());
 }
 
 interface JobDetailModalProps {
