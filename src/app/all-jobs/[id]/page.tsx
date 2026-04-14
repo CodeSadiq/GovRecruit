@@ -39,6 +39,9 @@ const IconCreditCard = () => (
 const IconArrow = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
 );
+const IconBack = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+);
 const IconExternalLink = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
 );
@@ -118,6 +121,7 @@ const styles = `
     height: 1px;
     background: var(--border);
   }
+  .jd-header-back { display: none; }
   .jd-title {
     font-family: var(--serif);
     font-size: clamp(24px, 4vw, 38px);
@@ -152,6 +156,8 @@ const styles = `
   }
 
   /* ── HERO STRIP ── */
+  .tr-highlight td { color: #D93025 !important; font-weight: 700; }
+  
   .jd-hero {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -567,27 +573,42 @@ const styles = `
 
   @media (max-width: 600px) {
     .jd { font-size: 11px; padding-top: 2px; }
-    .jd-wrap { padding: 0 16px 100px; }
-    .jd-masthead { padding: 6px 0 4px; border-bottom: 1px solid var(--border); }
-    .jd-hero { grid-template-columns: 1fr; margin: 4px 0; gap: 0; }
-    .jd-hero-cell { padding: 4px 6px; border: 1px solid var(--border); margin-bottom: -1px; }
-    .jd-hero-label { font-size: 6px; margin-bottom: 1px; }
-    .jd-hero-value { font-size: 13px !important; }
-    .jd-lede { font-size: 10px; margin: 4px 0; padding-left: 6px; line-height: 1.4; border-left-width: 2px; }
-    .jd-section { margin: 24px 0 8px; padding-bottom: 2px; border-bottom-width: 1px; }
-    .jd-section-title { font-size: 11px; }
-    .jd-table { font-size: 10px; }
-    .jd-table th { padding: 3px 5px; font-size: 8px; }
-    .jd-table td { padding: 3px 5px; font-size: 10px; }
-    .jd-table td.label { width: 70px; min-width: 70px; font-size: 9px; }
-    .jd-apply { font-size: 12px; padding: 8px; margin-top: 10px; }
+    .jd-wrap { padding: 0 12px 120px; }
+    .jd-masthead { padding: 12px 0 10px; border-bottom: 2px solid var(--border); }
+    
+    .jd-title { font-size: 18px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: center; display: flex; align-items: flex-start; justify-content: center; gap: 10px; }
+    .jd-header-back { display: flex; color: var(--navy); margin-top: 2px; flex-shrink: 0; }
+    .jd-advert { font-size: 9px; margin-bottom: 8px; text-align: center; }
+    .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: center; text-align: center; }
+
+    /* 2x2 Grid for Hero on Mobile */
+    .jd-hero { 
+      grid-template-columns: 1fr 1fr; 
+      margin: 12px 0; 
+      gap: 1px; 
+      border-bottom: 3px solid var(--navy);
+    }
+    .jd-hero-cell { padding: 12px 8px; }
+    .jd-hero-cell:last-child:nth-child(odd) { grid-column: span 2; }
+    .jd-hero-label { font-size: 8px; margin-bottom: 3px; }
+    .jd-hero-value { font-size: 20px !important; letter-spacing: -0.02em; }
+    .jd-hero-sub { font-size: 10px; opacity: 0.8; }
+
+    .jd-lede { font-size: 11px; margin: 12px 0; padding-left: 8px; line-height: 1.5; border-left-width: 3px; }
+    
+    .jd-section { margin: 24px 0 10px; padding-bottom: 4px; }
+    .jd-section-title { font-size: 13px; letter-spacing: 0.05em; }
+    
+    /* Micro-Table Layout */
+    .jd-table { font-size: 10px; table-layout: auto; }
+    .jd-table th { padding: 4px 6px; font-size: 9px; }
+    .jd-table td { padding: 5px 8px; font-size: 10.5px; line-height: 1.3; }
+    .jd-table td.label { width: 90px; min-width: 90px; font-size: 9.5px; }
+    
+    .jd-apply { font-size: 15px; padding: 14px; margin-top: 20px; border-radius: 12px; }
     .qual-course-pill { font-size: 9px; padding: 0px 4px; }
     .qual-branch-line, .qual-extra { font-size: 8px; margin-top: 1px; }
     .cat-vac-grid { min-width: 60px; gap: 2px; }
-    .qual-cell { padding: 3px 5px; min-width: 120px; }
-    .jd-title { font-size: 14px; margin-bottom: 2px; font-weight: 900; }
-    .jd-advert { font-size: 7px; margin-bottom: 2px; }
-    .jd-eyebrow { margin-bottom: 2px; font-size: 6px; }
   }
 `;
 
@@ -936,12 +957,21 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="jd">
         <div className="jd-wrap">
-          <BackButton className="text-[13px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all mb-16 md:mb-24 pt-20 md:pt-32" />
+          <div className="hidden md:block mt-6 mb-4 md:mb-8">
+            <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
+              <IconBack /> Back
+            </BackButton>
+          </div>
 
           {/* ── MASTHEAD ── */}
           <header className="jd-masthead">
             <div className="jd-eyebrow">Official Recruitment Notice</div>
-            <h1 className="jd-title">{job.title}</h1>
+            <h1 className="jd-title">
+              <BackButton className="jd-header-back">
+                <IconBack />
+              </BackButton>
+              <span>{job.title}</span>
+            </h1>
             {job.advertisementNumber && (
               <div className="jd-advert">Advt. No. {job.advertisementNumber}</div>
             )}
@@ -970,7 +1000,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             </div>
             <div className="jd-hero-cell">
               <div className="jd-hero-label">Application Last Date</div>
-              <div className="jd-hero-value" style={{ fontSize: 19 }}>
+              <div className="jd-hero-value" style={{ fontSize: 19, color: '#D93025', fontWeight: 'bold' }}>
                 {dates.applicationLastDate ? fmtDate(dates.applicationLastDate) : "—"}
               </div>
               <div className="jd-hero-sub">Application deadline</div>
