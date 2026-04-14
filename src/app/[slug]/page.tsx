@@ -45,21 +45,23 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto p-4 md:p-12 w-full animate-in fade-in duration-700">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-8 md:mb-12 no-underline"
-        >
-          <IconArrowLeft /> Back to Dashboard
-        </Link>
+      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 pt-4 md:pt-3 pb-1 md:pb-3 w-full animate-in fade-in duration-500">
+        <div className="hidden md:block mb-6 pt-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
+            <IconArrowLeft /> Back to Dashboard
+          </Link>
+        </div>
 
-        <header className="mb-8 md:mb-14 border-b-2 md:border-b-4 border-navy pb-6 md:pb-10">
-          <div className="mb-2 md:mb-4">
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-navy uppercase leading-tight">{categoryName}.</h1>
+        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
+          <div className="flex items-start gap-3">
+            <Link href="/" className="md:hidden mt-0.5 text-navy/60 hover:text-navy transition-colors flex-shrink-0">
+              <IconArrowLeft />
+            </Link>
+            <div>
+              <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">{categoryName}</h1>
+              <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-1.5 opacity-60">All verified government openings</p>
+            </div>
           </div>
-          <p className="text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest leading-relaxed">
-            Institutional Registry for {categoryName} announcements.
-          </p>
         </header>
 
         {data.length > 0 ? (
@@ -93,7 +95,7 @@ export default function CategoryPage() {
         ) : (
           <div className="bg-white border-2 border-gray-100 p-10 md:p-20 text-center rounded-2xl md:rounded-3xl flex flex-col items-center justify-center">
             <p className="text-sm md:text-[15px] font-medium text-gray-500 leading-relaxed max-w-[400px] text-center">
-              The {categoryName} registry is currently being synchronized. Please check back later.
+              No current announcements found in the {categoryName} registry.
             </p>
           </div>
         )}

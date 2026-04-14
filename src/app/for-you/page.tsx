@@ -52,17 +52,23 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 py-1 md:py-3 w-full animate-in fade-in duration-700">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-4 md:mb-6 no-underline"
-        >
-          <IconArrowLeft /> Back to Dashboard
-        </Link>
+      <main className="flex-1 max-w-[1440px] mx-auto px-4 md:px-12 pt-4 md:pt-3 pb-1 md:pb-3 w-full animate-in fade-in duration-500">
+        <div className="hidden md:block mb-6 pt-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
+            <IconArrowLeft /> Back to Dashboard
+          </Link>
+        </div>
 
-        <header className="mb-8 border-b-2 border-navy pb-5 px-4 md:px-0">
-          <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">Recruitment for You</h1>
-          <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-2 opacity-60">Official verified government openings matched to your profile.</p>
+        <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
+          <div className="flex items-start gap-3">
+            <Link href="/" className="md:hidden mt-0.5 text-navy/60 hover:text-navy transition-colors flex-shrink-0">
+              <IconArrowLeft />
+            </Link>
+            <div>
+              <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">Recruitments for You</h1>
+              <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-1.5 opacity-60">All verified government openings matched to your profile</p>
+            </div>
+          </div>
         </header>
 
         {isLoading ? (

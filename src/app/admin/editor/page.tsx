@@ -1,9 +1,115 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import RecruitmentPreview from '@/components/RecruitmentPreview';
 import Link from 'next/link';
+import { QUAL_TREE } from '@/lib/constants';
+
+function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path: string, value: any) => void }) {
+  const allRequirements = useMemo(() => {
+    if (!jobData) return [];
+    const found: any[] = [];
+    if (jobData.educationRequirementForMatch) {
+      found.push(...jobData.educationRequirementForMatch.map((r: any, idx: number) => ({ 
+        ...r, 
+        source: 'Root',
+        path: `educationRequirementForMatch.${idx}`
+      })));
+    }
+    if (jobData.posts) {
+      jobData.posts.forEach((p: any, postIdx: number) => {
+        if (p.educationRequirementForMatch) {
+          found.push(...p.educationRequirementForMatch.map((r: any, reqIdx: number) => ({ 
+            ...r, 
+            source: p.name?.substring(0, 15) || `Post ${postIdx + 1}`,
+            path: `posts.${postIdx}.educationRequirementForMatch.${reqIdx}`
+          })));
+        }
+      });
+    }
+    return found;
+  }, [jobData]);
+
+  const mismatches = useMemo(() => {
+    return allRequirements.filter(req => {
+      const qualNode = QUAL_TREE.find(q => q.name.toLowerCase() === req.qualification?.toLowerCase());
+      if (!qualNode) return true;
+      const branches = req.branches || [];
+      const allBranchesValid = branches.every((b: string) => qualNode.branches.some(qB => qB.value.toLowerCase() === b.toLowerCase() || qB.label.toLowerCase() === b.toLowerCase()));
+      return !allBranchesValid;
+    });
+  }, [allRequirements]);
+
+  if (allRequirements.length === 0) return null;
+
+  const handleRemoveBranch = (reqPath: string, branches: string[], branchToRemove: string) => {
+    const updatedBranches = branches.filter(b => b !== branchToRemove);
+    onUpdate(`${reqPath}.branches`, updatedBranches);
+  };
+
+  return (
+    <div className="flex flex-col gap-1.5 py-1">
+      <div className="flex items-center justify-between px-1 mb-1">
+        <h3 className="text-[9px] font-black uppercase tracking-[0.1em] text-navy/50">
+          Validation: {mismatches.length > 0 ? `${mismatches.length} Mismatch Found` : 'All Stable'}
+        </h3>
+      </div>
+      
+      <div className="flex flex-col gap-1">
+        {mismatches.length === 0 ? (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-100 text-[10px] font-bold text-green uppercase tracking-wide">
+            <div className="w-1.5 h-1.5 rounded-full bg-green"></div>
+            Logic Tree Fully Verified
+          </div>
+        ) : (
+          mismatches.map((req, idx) => {
+            const qualNode = QUAL_TREE.find(q => q.name.toLowerCase() === req.qualification?.toLowerCase());
+            const nameValid = !!qualNode;
+            const branches = req.branches || [];
+            
+            return (
+              <div key={idx} className="flex items-center gap-3 px-3 py-2 rounded-lg border bg-red-50/50 border-red-100 animate-in slide-in-from-left-1">
+                <div className="w-2 h-2 rounded-full flex-shrink-0 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                
+                <div className="min-w-[70px] text-[10px] font-black text-navy/40 truncate uppercase">{req.source}</div>
+                
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <span className={`text-[11px] font-bold truncate ${nameValid ? 'text-navy' : 'text-red-600 underline decoration-wavy'}`}>
+                    {req.qualification || '??'}
+                  </span>
+                  <span className="text-navy/20">/</span>
+                  <div className="flex gap-1 overflow-hidden">
+                    {branches.length === 0 ? (
+                      <span className="text-[9px] text-navy/30 italic">Any Branch</span>
+                    ) : (
+                      branches.map((b: string, bIdx: number) => {
+                        const isValid = qualNode?.branches.some(qB => qB.value.toLowerCase() === b.toLowerCase() || qB.label.toLowerCase() === b.toLowerCase());
+                        if (isValid) return null; // Only show invalid branches
+                        return (
+                          <span 
+                            key={bIdx} 
+                            onClick={() => handleRemoveBranch(req.path, branches, b)}
+                            className="text-[9px] px-1.5 py-0.5 rounded border whitespace-nowrap bg-red-100 border-red-200 text-red-700 font-bold hover:bg-red-200 cursor-pointer transition-colors"
+                            title="Click to remove branch from JSON"
+                          >
+                            {b} ✕
+                          </span>
+                        );
+                      }).filter(Boolean)
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-[8px] font-black text-red-600 uppercase tracking-tighter bg-red-100 px-1.5 py-0.5 rounded">Mismatch</div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
 
 function EditorContent() {
   const searchParams = useSearchParams();
@@ -218,8 +324,14 @@ function EditorContent() {
               placeholder='Paste Job JSON Meta-Data Here...'
             />
           </div>
+          
+          {/* Real-time Matcher Console */}
+          <div className="shrink-0 p-3 md:p-4 bg-gray-50 border-t border-gray-200 max-h-[200px] overflow-y-auto custom-scrollbar">
+            <QualTreeMatcher jobData={jobData} onUpdate={handleUpdate} />
+          </div>
+
           {error && (
-            <div className="absolute bottom-4 left-4 right-4 p-2.5 bg-red-500 text-white rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-2xl animate-in slide-in-from-bottom-2">
+            <div className="absolute bottom-[210px] left-4 right-4 p-2.5 bg-red-500 text-white rounded-lg text-[9px] font-bold uppercase tracking-widest shadow-2xl animate-in slide-in-from-bottom-2 z-[2000]">
               Schema Error: {error}
             </div>
           )}

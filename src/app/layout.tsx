@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   description: "AI-Based Government Recruitment Platform (Personalized Job Feed System)",
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 

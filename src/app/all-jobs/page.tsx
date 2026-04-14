@@ -116,17 +116,22 @@ function JobsPageContent() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-navy/5 selection:text-navy">
 
-      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-12 py-1 md:py-3 animate-in fade-in duration-500">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-navy transition-colors mb-4 md:mb-6 no-underline"
-        >
-          <IconArrowLeft /> Back to Dashboard
-        </Link>
+      <main className="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-12 pt-4 md:pt-3 pb-1 md:pb-3 animate-in fade-in duration-500">
+        <div className="hidden md:block mb-6 pt-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
+            <IconArrowLeft /> Back to Dashboard
+          </Link>
+        </div>
+
         <header className="mb-8 border-b-2 border-navy pb-5 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 md:px-0">
-          <div>
-            <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
-            <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-2 opacity-60">Official verified government openings across the national registry.</p>
+          <div className="flex items-start gap-3">
+            <Link href="/" className="md:hidden mt-0.5 text-navy/60 hover:text-navy transition-colors flex-shrink-0">
+              <IconArrowLeft />
+            </Link>
+            <div>
+              <h1 className="text-xl md:text-3xl font-serif font-bold tracking-tight text-navy leading-tight">All Jobs</h1>
+              <p className="text-[9px] md:text-[11px] md:text-gray-500 font-bold uppercase tracking-widest mt-1.5 opacity-60">All verified government openings</p>
+            </div>
           </div>
           <label className="flex bg-white border-2 border-gray-100 rounded-xl px-4 h-9 md:h-12 items-center gap-3 w-full md:w-[320px] shadow-sm group focus-within:border-navy transition-all cursor-text">
             <span className="text-gray-300 group-focus-within:text-navy transition-colors font-black scale-75"><IconSearch /></span>
