@@ -59,7 +59,7 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
                 
                 <div style="background-color: #f6f8fa; border-radius: 8px; padding: 20px; margin: 24px 0; border-left: 4px solid #0D244D;">
                   <h2 style="margin: 0 0 10px 0; font-size: 18px; color: #0D244D;">${newJob.title}</h2>
-                  <p style="margin: 0; font-size: 14px; color: #586069;">Organization: ${newJob.organization || newJob.org || 'National Registry'}</p>
+                  <p style="margin: 0; font-size: 14px; color: #586069;">Organization: ${newJob.organization || 'National Registry'}</p>
                 </div>
 
                 <div style="text-align: center; margin: 30px 0;">
