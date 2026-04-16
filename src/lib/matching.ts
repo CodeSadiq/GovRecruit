@@ -11,6 +11,7 @@ export interface CandidateProfile {
   fullName?: string;
   email?: string;
   dob?: string;
+  gender?: string;
   // Support for multiple qualifications across different levels
   qualifications: QualificationEntry[];
 }
@@ -38,6 +39,17 @@ export function getEligibleJobs(
   }
 
   for (const job of allJobs) {
+    // 1. GENDER FILTER
+    if (job.eligibleGender && job.eligibleGender.length > 0) {
+      const userGender = candidate.gender?.toLowerCase();
+      
+      // If candidate is 'other', show both types (bypass restrictions) as requested
+      if (userGender !== 'other') {
+        const isEligible = userGender && job.eligibleGender.some(g => g.toLowerCase() === userGender);
+        if (!isEligible) continue;
+      }
+    }
+
     const { matchedPosts, matchedOn } = getMatchedPostsForJob(candidate, job);
     if (matchedPosts.length === 0) continue;
 

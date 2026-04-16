@@ -53,7 +53,7 @@ export default function ForYouPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
-      <main className="flex-1 max-w-[1440px] mx-auto px-2 md:px-12 pt-6 md:pt-6 pb-1 md:pb-3 w-full animate-in fade-in duration-500">
+      <main className="flex-1 max-w-[1440px] mx-auto px-2 md:px-12 pt-6 md:pt-6 pb-24 md:pb-32 w-full animate-in fade-in duration-500">
         <div className="hidden md:block mb-6 pt-6">
           <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
             <IconArrowLeft /> Back to Dashboard

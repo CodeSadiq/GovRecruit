@@ -170,7 +170,41 @@ function EditorContent() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(!!jobId);
 
+  const [existingJobs, setExistingJobs] = useState<any[]>([]);
   const isInternalUpdate = React.useRef(false);
+
+  // Fetch all jobs for duplicate checking
+  useEffect(() => {
+    fetch('/api/jobs').then(res => res.json()).then(data => {
+      if (Array.isArray(data)) setExistingJobs(data);
+    });
+  }, []);
+
+  const potentialDuplicate = useMemo(() => {
+    if (!jobData) return null;
+
+    // Normalize current input values
+    const currentVacancy = (jobData.totalVacancy !== undefined && jobData.totalVacancy !== null) ? Number(jobData.totalVacancy) : null;
+    const currentLastDate = jobData.importantDates?.applicationLastDate?.toString().trim() || null;
+    const currentTitle = jobData.title?.toString().trim().toLowerCase() || '';
+
+    return existingJobs.find(ex => {
+      // If we are editing an existing job (jobId exists), skip comparing with itself
+      if (jobId && ex.id === jobId) return false;
+
+      const exVacancy = (ex.totalVacancy !== undefined && ex.totalVacancy !== null) ? Number(ex.totalVacancy) : null;
+      const exLastDate = ex.importantDates?.applicationLastDate?.toString().trim() || null;
+      const exTitle = ex.title?.toString().trim().toLowerCase() || '';
+
+      // Match 1: Identical Title (Strongest signal)
+      if (currentTitle && exTitle === currentTitle) return true;
+
+      // Match 2: Both Vacancy and Last Date match (if they are provided)
+      if (currentVacancy !== null && currentLastDate !== null && exVacancy === currentVacancy && exLastDate === currentLastDate) return true;
+
+      return false;
+    });
+  }, [jobData, existingJobs, jobId]);
 
   // Fetch job data if editing
   useEffect(() => {
@@ -345,6 +379,27 @@ function EditorContent() {
             {isEditing ? 'Live Edit ON' : 'Edit Mode'}
           </button>
           <button
+            onClick={async () => {
+              const targetId = jobId || potentialDuplicate?.id;
+              if (!targetId) return;
+              const isConfirmed = confirm(`This will send email alerts for ${jobData?.title || 'this job'}. Proceed?`);
+              if (!isConfirmed) return;
+              try {
+                const res = await fetch('/api/jobs/notify', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id: targetId })
+                });
+                if (res.ok) alert("✓ Notifications dispatched.");
+                else alert("Failed to send alerts.");
+              } catch (e) { alert("Error."); }
+            }}
+            disabled={!jobId && !potentialDuplicate}
+            className={`px-3 md:px-5 py-2 md:py-2.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest transition-all ${(!jobId && !potentialDuplicate) ? 'opacity-30 cursor-not-allowed bg-gray-100 text-gray-400' : 'bg-amber-500 text-white hover:bg-amber-600 shadow-lg active:scale-95'}`}
+          >
+            📢 Send Alerts
+          </button>
+          <button
             onClick={handlePublish}
             disabled={!jobData || isPublishing || success}
             className={`px-4 md:px-8 py-2 md:py-2.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest shadow-xl transition-all ${success ? 'bg-green text-white' : 'bg-navy text-white hover:bg-[#06142E] active:scale-95 disabled:opacity-30 disabled:grayscale'}`}
@@ -416,3 +471,4 @@ export default function EditorPage() {
     </Suspense>
   );
 }
+

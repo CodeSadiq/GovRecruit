@@ -69,6 +69,7 @@ const JobSchema = new mongoose.Schema({
   femaleOnly: { type: Boolean, default: false },
   exServicemanQuota: { type: Boolean, default: false },
   location: [String],
+  eligibleGender: [String],
   salary: {
     payLevel: Number,
     min: Number,

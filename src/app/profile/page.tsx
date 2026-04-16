@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const [selectedLevels, setSelectedLevels] = useState<Record<number, { qual: string, branch: string }>>({});
   const [completed, setCompleted] = useState(false);
-  const [userProfile, setUserProfile] = useState<any>({ fullName: '', email: '' });
+  const [userProfile, setUserProfile] = useState<any>({ fullName: '', email: '', gender: '' });
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -115,8 +115,16 @@ export default function ProfilePage() {
         });
 
       const profileData = {
+        gender: userProfile.gender,
         qualifications
       };
+
+      // ── MANDATORY CHECKS ──
+      if (!userProfile.gender) {
+        alert('Please select your Gender to proceed. This is mandatory for recruitment matching. ⚠️');
+        setIsSaving(false);
+        return;
+      }
 
       // ── GUEST HANDLING: Skip DB save ──
       if (userProfile.email === 'guest@rojgarmatch.local') {
@@ -216,7 +224,29 @@ export default function ProfilePage() {
 
           <div className="max-w-[1100px]">
             <section className="bg-white border border-gray-200 rounded-xl p-6 md:p-10 shadow-sm space-y-8">
-              <div className="space-y-2">
+              <div className="space-y-6">
+                <h2 className="text-xl font-bold text-navy">
+                  Select Gender <span className="text-red-500">*</span>
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="flex gap-2">
+                      {['Male', 'Female', 'Other'].map((g) => (
+                        <button
+                          key={g}
+                          onClick={() => setUserProfile((prev: any) => ({ ...prev, gender: g }))}
+                          className={`flex-1 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${userProfile.gender === g
+                              ? "bg-navy text-white border-navy shadow-lg"
+                              : "bg-white text-navy/40 border-gray-100 hover:border-navy/20"
+                            }`}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+              <div className="space-y-2 pt-4 border-t border-gray-50">
                 <h2 className="text-xl font-bold text-navy">Set Qualification</h2>
                 <p className="text-[13.5px] text-navy/60 font-medium leading-relaxed">
                   Update your qualifications level-wise to discover eligible job opportunities. If you haven't qualified in a category yet, please leave it set to "No Record".

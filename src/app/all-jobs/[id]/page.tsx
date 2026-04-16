@@ -703,7 +703,7 @@ function QualCell({ post, rowSpan }: { post: any; rowSpan?: number }) {
 
   // ── NEW SCHEMA: { courses: { name, branches }[], extraQualificationText } ──
   if (q && !Array.isArray(q) && (q.courses !== undefined || q.course !== undefined)) {
-    const courses: any[] = q.courses 
+    const courses: any[] = q.courses
       ? (Array.isArray(q.courses) ? q.courses : [q.courses])
       : (Array.isArray(q.course) ? q.course.map((c: any) => ({ name: c, branches: Array.isArray(q.branch) ? q.branch : [] })) : [{ name: q.course, branches: Array.isArray(q.branch) ? q.branch : [] }]);
 
@@ -715,7 +715,7 @@ function QualCell({ post, rowSpan }: { post: any; rowSpan?: number }) {
           {courses.map((course, i) => {
             const name = typeof course === 'string' ? course : course.name;
             const branches = Array.isArray(course.branches) ? course.branches : [];
-            
+
             return (
               <div key={i} className="qual-course-block">
                 <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: "14.5px" }}>{name}</div>
@@ -1049,8 +1049,19 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 </tr>
               )}
               {job.pwdEligible && <tr><td className="label">PwBD Eligible</td><td style={{ color: "var(--green)", fontWeight: 600 }}>Yes</td></tr>}
-              {job.femaleOnly && <tr><td className="label">Female Only</td><td style={{ color: "var(--crimson)", fontWeight: 600 }}>Yes</td></tr>}
               {job.exServicemanQuota && <tr><td className="label">Ex-Serviceman Quota</td><td style={{ fontWeight: 600 }}>Yes</td></tr>}
+              {((job.eligibleGender && job.eligibleGender.length > 0) || job.femaleOnly) && (
+                <tr>
+                  <td className="label">Eligible Gender</td>
+                  <td style={{ 
+                    textTransform: 'capitalize', 
+                    fontWeight: 600, 
+                    color: ((job.eligibleGender?.includes('female') && job.eligibleGender?.length === 1) || job.femaleOnly) ? 'var(--crimson)' : 'inherit' 
+                  }}>
+                    {job.eligibleGender && job.eligibleGender.length > 0 ? job.eligibleGender.join(", ") : "Female Only"}
+                  </td>
+                </tr>
+              )}
               {dates.officialWebsite && (
                 <tr>
                   <td className="label">Official Website</td>
@@ -1241,10 +1252,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <tbody>
               {(() => {
                 const standardKeys = [
-                  "notificationRelease", "applicationStartDate", "applicationLastDate", 
-                  "feePaymentLastDate", "correctionWindowLastDate", "admitCardDate", 
+                  "notificationRelease", "applicationStartDate", "applicationLastDate",
+                  "feePaymentLastDate", "correctionWindowLastDate", "admitCardDate",
                   "examDate", "resultDate", "interviewDate", "documentVerificationDate",
-                  "notificationType", "officialWebsite", "applyOnline", "applyLink", 
+                  "notificationType", "officialWebsite", "applyOnline", "applyLink",
                   "notificationPdfLink", "checkResult"
                 ];
 

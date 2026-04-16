@@ -218,18 +218,21 @@ export default function Navbar() {
               </div>
 
               {/* 🚪 Logout (Simplified) */}
-              {isLoggedIn && (
-                <div className="mt-auto pt-8 border-t border-white/5">
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-3 text-red-400/60 hover:text-red-400 transition-colors bg-transparent border-none p-2 font-serif font-bold text-base cursor-pointer"
-                  >
-                    <span className="text-lg">⎆</span> Logout
-                  </button>
-                </div>
-              )}
+              {/* Removed from here — moved to pinned footer below */}
 
             </div>
+
+            {/* Pinned bottom footer — always visible, never overflows */}
+            {isLoggedIn && (
+              <div className="flex-shrink-0 px-6 pb-8 pt-4 border-t border-white/5 bg-[#0D244D]">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 text-red-400/60 hover:text-red-400 transition-colors bg-transparent border-none p-2 font-serif font-bold text-base cursor-pointer"
+                >
+                  <span className="text-lg">⎆</span> Logout
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}

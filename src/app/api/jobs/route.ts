@@ -49,14 +49,6 @@ export async function POST(request: Request) {
     await invalidateCache('jobs:all');
     await invalidateCache(`job:${body.id}`);
 
-    // background: Notify eligible candidates
-    try {
-      // Use toObject() to ensure we're passing clean data to the service
-      notifyEligibleCandidates(job.toObject());
-    } catch (err) {
-      console.error("Delayed Notification Failed:", err);
-    }
-
     return NextResponse.json({ success: true, data: job }, { status: 201 });
   } catch (error: any) {
     console.error("ADMIN INJECTION FAILED:", error);

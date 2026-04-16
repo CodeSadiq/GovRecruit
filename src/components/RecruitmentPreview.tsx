@@ -271,7 +271,7 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
 
   // ── NEW SCHEMA: { courses: { name, branches }[], extraQualificationText } ──
   if (q && !Array.isArray(q) && (q.courses !== undefined || q.course !== undefined)) {
-    const courses: any[] = q.courses 
+    const courses: any[] = q.courses
       ? (Array.isArray(q.courses) ? q.courses : [q.courses])
       : (Array.isArray(q.course) ? q.course.map((c: any) => ({ name: c, branches: Array.isArray(q.branch) ? q.branch : [] })) : [{ name: q.course, branches: Array.isArray(q.branch) ? q.branch : [] }]);
 
@@ -283,7 +283,7 @@ function QualCell({ post, editable, onUpdate, postIndex, isGeneral }: any) {
           {courses.map((course, i) => {
             const name = typeof course === 'string' ? course : course.name;
             const branches = Array.isArray(course.branches) ? course.branches : [];
-            
+
             return (
               <div key={i} className="qual-course-block">
                 <div style={{ fontWeight: 700, color: "var(--navy)", fontSize: "12px" }}>{name}</div>
@@ -702,6 +702,23 @@ export default function RecruitmentPreview({ job, editable, onUpdate }: any) {
                 )}
               </td>
             </tr>
+            {(job.eligibleGender?.length > 0 || editable) && (
+              <tr>
+                <td className="label">Eligible Gender</td>
+                <td>
+                  <Editable
+                    editable={editable}
+                    path="eligibleGender"
+                    value={Array.isArray(job.eligibleGender) ? job.eligibleGender.join(", ") : (job.eligibleGender || "All")}
+                    onUpdate={(path: string, val: string) => {
+                      const arr = val.split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+                      onUpdate(path, arr);
+                    }}
+                    placeholder="e.g. Male, Female"
+                  />
+                </td>
+              </tr>
+            )}
 
             {/* Links in Overview */}
             {dates.officialWebsite && (

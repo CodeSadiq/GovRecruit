@@ -214,22 +214,21 @@ export default function Home() {
             </div>
 
             {/* CONTENT GRID */}
-            <div className="max-w-[1440px] mx-auto pt-4 md:pt-12 pb-20 px-0 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
+            <div className="max-w-[1440px] mx-auto pt-8 md:pt-12 pb-20 px-0 md:px-12 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
 
               <section className="space-y-12 h-full">
 
                 {/* RECRUITMENT SECTION CONTAINER */}
                 <div className="bg-transparent md:bg-white md:border-2 md:border-gray-200 p-0 md:p-6 md:shadow-sm relative overflow-hidden h-full flex flex-col rounded-xl">
-                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-4 md:mb-10 px-4 md:px-0 ${(!isLoggedIn && !userProfile) ? 'hidden' : 'flex'}`}>
+                  <header className={`items-center justify-between border-b md:border-b-2 border-gray-100 pb-4 md:pb-8 mb-2 md:mb-10 pl-7 pr-4 md:px-0 ${(!isLoggedIn && !userProfile) ? 'hidden' : 'flex'}`}>
                     <div className="flex items-center gap-4">
-                      <h2 className="text-[12px] md:text-2xl font-sans md:font-serif font-semibold text-navy/40 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
+                      <h2 className="text-[15px] md:text-2xl font-serif font-bold text-navy/70 uppercase tracking-widest md:normal-case md:text-navy md:tracking-tight">
                         Recruitment For You
                       </h2>
                     </div>
-                    <Link href="/for-you" className="text-[11px] md:text-[14px] font-sans md:font-serif font-bold text-navy/30 md:text-[#2563EB] hover:text-[#1d4ed8] transition-colors no-underline">View All ›</Link>
                   </header>
 
-                  <div className="space-y-6 flex-1 flex flex-col">
+                  <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
                     {isLoading ? (
                       <div className="space-y-6">
                         {[1, 2, 3].map(i => <CardSkeleton key={i} />)}
@@ -314,9 +313,24 @@ export default function Home() {
                         </p>
                       </div>
                     ) : (
-                      recommendedJobs.map((job: any, idx) => (
-                        <RecruitmentCard key={idx} job={job} isMatched={true} />
-                      ))
+                      <div className="flex flex-col md:gap-4">
+                        {recommendedJobs.slice(0, 5).map((job: any, idx) => (
+                          <RecruitmentCard key={idx} job={job} isMatched={true} />
+                        ))}
+
+                        {/* View All Button */}
+                        {recommendedJobs.length > 0 && (
+                          <div className="px-4 md:px-0 mt-6 mb-8">
+                            <Link
+                              href="/for-you"
+                              className="w-full flex items-center justify-center gap-2 py-4 bg-navy text-white text-[12px] font-bold uppercase tracking-widest rounded-xl hover:bg-[#06142E] transition-all shadow-xl shadow-navy/10 active:scale-[0.98] group no-underline"
+                            >
+                              <span>View All {recommendedJobs.length} Matched Jobs</span>
+                              <svg className="group-hover:translate-x-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

@@ -22,8 +22,10 @@ export async function POST(req: Request) {
     }
 
     // 2. Clear token and update password
-    // (Password will be hashed by UserSchema PRE-SAVE hook)
+    // Explicitly mark as modified so the pre-save bcrypt hook always fires,
+    // even for Google-created accounts where the field existed before.
     user.password = password;
+    user.markModified('password');
     user.resetToken = undefined;
     user.resetTokenExpiry = undefined;
     await user.save();

@@ -32,6 +32,7 @@ export const QUAL_TREE: QualNode[] = [
   // ─────────────────────────────────────────────
   {
     level: 3, name: "ITI", label: "ITI Certificate", branches: [
+      { value: "Nalkoop Mechanic", label: "Nalkoop Mechanic" },
       { value: "Refrigeration and AC", label: "Refrigeration and AC" },
       { value: "Heat Engine", label: "Heat Engine" },
       { value: "Mechanic Diesel", label: "Mechanic Diesel" },
@@ -227,6 +228,7 @@ export const QUAL_TREE: QualNode[] = [
   // Science
   {
     level: 4, name: "B.Sc", label: "B.Sc (Science)", branches: [
+      { value: "Home Science", label: "Home Science" },
       { value: "Physics", label: "Physics" },
       { value: "Chemistry", label: "Chemistry" },
       { value: "Mathematics", label: "Mathematics" },
@@ -441,6 +443,7 @@ export const QUAL_TREE: QualNode[] = [
   // Agriculture (standalone degree)
   {
     level: 4, name: "B.Sc Agriculture", label: "B.Sc Agriculture", branches: [
+      { value: "Agriculture", label: "Agriculture" },
       { value: "Agronomy", label: "Agronomy" },
       { value: "Horticulture", label: "Horticulture" },
       { value: "Plant Pathology", label: "Plant Pathology" },

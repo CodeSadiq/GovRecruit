@@ -127,6 +127,7 @@ export interface JobPost {
   location: string[];
   applicationFee: ApplicationFee;
   importantDates: ImportantDates;
+  eligibleGender?: string[];
   applicationProcess: string[];
   selectionProcess: string[];
   selectionProcessNote?: string;
