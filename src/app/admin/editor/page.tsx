@@ -34,6 +34,7 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
   }, [jobData]);
 
   const mismatches = useMemo(() => {
+    if (allRequirements.length === 0) return [];
     return allRequirements.filter(req => {
       const qualNode = localTree.find(q => q.name.toLowerCase() === req.qualification?.toLowerCase());
       if (!qualNode) return true;
@@ -90,12 +91,18 @@ function QualTreeMatcher({ jobData, onUpdate }: { jobData: any, onUpdate: (path:
     <div className="flex flex-col gap-1.5 py-1">
       <div className="flex items-center justify-between px-1 mb-1">
         <h3 className="text-[9px] font-black uppercase tracking-[0.1em] text-navy/50">
-          Validation: {mismatches.length > 0 ? `${mismatches.length} Mismatch Found` : 'All Stable'}
+          {allRequirements.length > 0 ? `Validation: ${mismatches.length > 0 ? `${mismatches.length} Mismatch Found` : 'All Stable'}` : 'Intelligence Console'}
         </h3>
       </div>
 
       <div className="flex flex-col gap-1">
-        {mismatches.length === 0 ? (
+        {allRequirements.length === 0 ? (
+          <div className="px-3 py-3 rounded-xl border border-dashed border-gray-200 bg-white/50 text-center">
+            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest px-4">
+              {jobData ? 'No matching logic found in JSON' : 'Paste JSON or use tools above'}
+            </p>
+          </div>
+        ) : mismatches.length === 0 ? (
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50 border border-green-100 text-[10px] font-bold text-green uppercase tracking-wide">
             <div className="w-1.5 h-1.5 rounded-full bg-green"></div>
             Logic Tree Fully Verified
@@ -231,7 +238,7 @@ function EditorContent() {
 
   const handleUpdate = (path: string, value: any) => {
     setJobData((prev: any) => {
-      if (!prev) return prev;
+      const current = prev || {};
       const parts = path.split('.');
       const updateDeep = (obj: any, keys: string[], val: any): any => {
         const [head, ...tail] = keys;
@@ -260,7 +267,7 @@ function EditorContent() {
         }
         return { ...obj, [head]: updateDeep(obj[head], tail, val) };
       };
-      const newData = updateDeep(prev, parts, value);
+      const newData = updateDeep(current, parts, value);
       isInternalUpdate.current = true;
       setJsonInput(JSON.stringify(newData, null, 2));
       return newData;

@@ -14,7 +14,13 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
       email: { $exists: true } 
     }).lean();
 
-    if (!users || users.length === 0) return;
+    if (!users || users.length === 0) {
+      console.log("No users with profiles found to notify.");
+      return;
+    }
+
+    console.log(`Scanning ${users.length} users for matches with job: ${newJob.title}`);
+    let matchCount = 0;
 
     // 2. Setup Transporter (Using your SMTP credentials)
     const transporter = nodemailer.createTransport({
@@ -23,7 +29,17 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASSWORD,
       },
+      pool: true, // Use pooling for multiple recipients
     });
+
+    // Verify SMTP connection
+    try {
+      await transporter.verify();
+      console.log("SMTP Connection verified.");
+    } catch (smtpErr: any) {
+      console.error("SMTP Configuration Error:", smtpErr.message);
+      return;
+    }
 
     // 3. Process matching and send emails
     for (const user of users) {
@@ -32,6 +48,7 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
       const candidate: CandidateProfile = {
         fullName: user.fullName,
         email: user.email,
+        gender: user.profile.gender,
         qualifications: user.profile.qualifications
       };
 
@@ -39,6 +56,7 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
       const matches = getEligibleJobs(candidate, [newJob]);
 
       if (matches.length > 0) {
+        matchCount++;
         const match = matches[0];
         const jobUrl = `${process.env.NEXTAUTH_URL}/all-jobs/${newJob.id}`;
 
@@ -81,6 +99,7 @@ export async function notifyEligibleCandidates(newJob: JobPost) {
         }
       }
     }
+    console.log(`Notification sweep complete. Total matches notified: ${matchCount}`);
   } catch (err) {
     console.error('Notification Service Error:', err);
   }

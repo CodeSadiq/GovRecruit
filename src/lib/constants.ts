@@ -32,6 +32,8 @@ export const QUAL_TREE: QualNode[] = [
   // ─────────────────────────────────────────────
   {
     level: 3, name: "ITI", label: "ITI Certificate", branches: [
+      { value: "ECE", label: "ECE" },
+      { value: "CSE", label: "CSE" },
       { value: "Nalkoop Mechanic", label: "Nalkoop Mechanic" },
       { value: "Refrigeration and AC", label: "Refrigeration and AC" },
       { value: "Heat Engine", label: "Heat Engine" },

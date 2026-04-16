@@ -12,11 +12,10 @@ export async function POST(request: Request) {
     const job = await Job.findOne({ id }).lean();
     if (!job) return NextResponse.json({ success: false, error: "Job not found" }, { status: 404 });
 
-    // background: Notify eligible candidates
+    // Ensure notification completes before response
     try {
-      // Logic from notification-service
-      notifyEligibleCandidates(job);
-      return NextResponse.json({ success: true, message: "Notifications dispatched in background" });
+      await notifyEligibleCandidates(job);
+      return NextResponse.json({ success: true, message: "Notifications dispatched successfully" });
     } catch (err) {
       console.error("Manual Notification Failed:", err);
       return NextResponse.json({ success: false, error: "Failed to dispatch emails" }, { status: 500 });
