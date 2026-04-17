@@ -1,54 +1,59 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-
-const IconArrowLeft = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
+import BackButton from '@/components/BackButton';
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen bg-white font-sans text-navy selection:bg-navy/5">
-      <main className="max-w-[800px] mx-auto px-6 py-20 pb-40">
+    <div className="min-h-screen bg-white font-sans text-navy selection:bg-navy/5 selection:text-navy">
+      <main className="max-w-[800px] mx-auto px-6 py-12 md:py-20 pb-40">
 
-        <Link href="/" className="inline-flex items-center gap-2 text-navy/40 hover:text-navy transition-all no-underline mb-12 group">
-          <IconArrowLeft />
-          <span className="text-[11px] font-black uppercase tracking-[0.2em]">Return Home</span>
-        </Link>
+        {/* 🔙 BACK NAVIGATION */}
+        <div className="mb-12 md:mb-20 animate-in fade-in duration-500">
+          <BackButton />
+        </div>
 
-        {/* ── HOW IT WORKS ── */}
+        {/* 🏛 THE PROTOCOL */}
         <section className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <h1 className="text-4xl md:text-6xl font-serif font-bold text-navy mb-10 leading-tight">How it Works</h1>
-          <div className="space-y-12">
-            <div>
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#2563EB] mb-4">Step 01</h3>
-              <h2 className="text-2xl font-serif font-bold mb-4">The Multi-Level Registry</h2>
-              <p className="text-navy/60 leading-relaxed max-w-[650px]">
-                Unlike traditional platforms that only ask for your latest degree, Rojgar Match builds a complete academic manifest.
-                You can record your 10th, 12th, Diploma, and Graduation details simultaneously. This ensures our matching engine knows
-                the full breadth of your eligibility.
+          <h1 className="text-4xl md:text-7xl font-serif font-bold text-navy mb-4 leading-tight tracking-tight">
+            How it Works
+          </h1>
+          <p className="text-[10px] md:text-[12px] font-black uppercase tracking-[0.4em] text-navy/30 mb-16 md:mb-24">
+            Simple. Automated. Accurate.
+          </p>
+
+          <div className="space-y-16 md:space-y-24">
+            
+            {/* STEP 01 */}
+            <div className="space-y-4">
+              <h3 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-navy/40">Step 01</h3>
+              <h2 className="text-2xl md:text-4xl font-serif font-bold text-navy/90">Smart Filtering</h2>
+              <p className="text-[16px] md:text-[20px] text-navy/60 leading-relaxed font-medium">
+                Rojgar Match finds government jobs for you based on three things: your <span className="text-navy font-bold">Course</span>, your <span className="text-navy font-bold">Branch</span>, and your <span className="text-navy font-bold">Gender</span>.
               </p>
             </div>
 
-            <div>
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#2563EB] mb-4">Step 02</h3>
-              <h2 className="text-2xl font-serif font-bold mb-4">Independent Eligibility Logic</h2>
-              <p className="text-navy/60 leading-relaxed max-w-[650px]">
-                Our engine evaluates every qualification in your profile independently. If a job requires a 10th-pass (like SSC MTS)
-                but you have a B.Tech, the system still identifies the match. You will never miss an opportunity because you are
-                "over-qualified."
+            {/* STEP 02 */}
+            <div className="space-y-4">
+              <h3 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-navy/40">Step 02</h3>
+              <h2 className="text-2xl md:text-4xl font-serif font-bold text-navy/90">Why it helps you</h2>
+              <p className="text-[16px] md:text-[20px] text-navy/60 leading-relaxed font-medium">
+                Every job has different rules for age or experience, but matching by your <span className="text-navy font-bold">Education</span> is the best way to find jobs that truly fit you. It saves you time and effort.
               </p>
             </div>
 
-            <div>
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#2563EB] mb-4">Step 03</h3>
-              <h2 className="text-2xl font-serif font-bold mb-4">Personalized Feed</h2>
-              <p className="text-navy/60 leading-relaxed max-w-[650px]">
-                Your "For You" feed is a live mirror of your academic registry. Every job card explicitly states why you matched
-                (e.g., <strong>"Matched on 10th, 12th"</strong>), providing total transparency into your daily recruitment opportunities.
+            {/* STEP 03 */}
+            <div className="space-y-4">
+              <h3 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-navy/40">Step 03</h3>
+              <h2 className="text-2xl md:text-4xl font-serif font-bold text-navy/90">Instant Email Alerts</h2>
+              <p className="text-[16px] md:text-[20px] text-navy/60 leading-relaxed font-medium">
+                You don't have to check the website every day. We will send you an <strong>Email</strong> the same moment a job matching your profile is published.
               </p>
             </div>
+
           </div>
         </section>
+
       </main>
     </div>
   );

@@ -43,6 +43,18 @@ export default function Navbar() {
       window.removeEventListener('rojgarmatch_auth_change', checkAuth);
     };
   }, [pathname]);
+  
+  // 🔒 Scroll Lock: Prevent background scrolling when mobile menu is active
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   const handleLogout = useCallback(async () => {
     try {

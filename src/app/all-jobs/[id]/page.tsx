@@ -585,17 +585,17 @@ const styles = `
     .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: flex-start; text-align: left; }
 
     /* 2x2 Grid for Hero on Mobile */
+    /* Stacking Hero cells vertically on Mobile */
     .jd-hero { 
-      grid-template-columns: 1fr 1fr; 
+      grid-template-columns: 1fr; 
       margin: 12px 0; 
       gap: 1px; 
       border-bottom: 3px solid var(--navy);
     }
-    .jd-hero-cell { padding: 12px 8px; }
-    .jd-hero-cell:last-child:nth-child(odd) { grid-column: span 2; }
-    .jd-hero-label { font-size: 8px; margin-bottom: 3px; }
-    .jd-hero-value { font-size: 20px !important; letter-spacing: -0.02em; }
-    .jd-hero-sub { font-size: 10px; opacity: 0.8; }
+    .jd-hero-cell { padding: 8px 14px; }
+    .jd-hero-label { font-size: 8px; margin-bottom: 2px; }
+    .jd-hero-value { font-size: 19px !important; letter-spacing: -0.02em; line-height: 1.1; }
+    .jd-hero-sub { font-size: 10px; opacity: 0.8; margin-top: 1px; }
 
     .jd-lede { font-size: 11px; margin: 12px 0; padding-left: 8px; line-height: 1.5; border-left-width: 3px; }
     
