@@ -8,6 +8,7 @@ import { fmtDate, fmtMoney } from "@/lib/helpers";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import { getCachedData, setCachedData } from "@/lib/cache";
+import ZoomControl from "@/components/ZoomControl";
 
 export const viewport = {
   width: 'device-width',
@@ -75,13 +76,16 @@ const styles = `
     --amber:      #78350f;
 
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: calc(14px * var(--app-zoom, 1));
     line-height: 1.5;
     color: var(--ink);
     background: var(--paper);
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
     padding-top: 20px;
+    
+    /* Dynamic Zoom support */
+    zoom: var(--app-zoom, 1);
   }
 
   @media (max-width: 768px) {
@@ -577,7 +581,6 @@ const styles = `
     .jd-masthead { padding: 12px 0 10px; border-bottom: 2px solid var(--border); }
     
     .jd-title { font-size: 20px; margin-bottom: 6px; font-weight: 800; line-height: 1.3; text-align: left; display: flex; align-items: flex-start; justify-content: flex-start; gap: 6px; }
-    .jd-header-back { display: flex; color: var(--navy); margin-top: 2px; flex-shrink: 0; }
     .jd-advert { font-size: 9px; margin-bottom: 8px; text-align: left; }
     .jd-eyebrow { margin-bottom: 4px; font-size: 8px; justify-content: flex-start; text-align: left; }
 
@@ -596,7 +599,7 @@ const styles = `
 
     .jd-lede { font-size: 11px; margin: 12px 0; padding-left: 8px; line-height: 1.5; border-left-width: 3px; }
     
-    .jd-section { margin: 24px 0 10px; padding-bottom: 4px; }
+    .jd-section { margin: 50px 0 14px; padding-bottom: 4px; }
     .jd-section-title { font-size: 13px; letter-spacing: 0.05em; }
     
     /* Micro-Table Layout */
@@ -605,7 +608,7 @@ const styles = `
     .jd-table td { padding: 5px 8px; font-size: 10.5px; line-height: 1.3; }
     .jd-table td.label { width: 90px; min-width: 90px; font-size: 9.5px; }
     
-    .jd-apply { font-size: 15px; padding: 14px; margin-top: 20px; border-radius: 12px; }
+    .jd-apply { font-size: 15px; padding: 14px; margin-top: 40px; border-radius: 12px; }
     .qual-course-pill { font-size: 9px; padding: 0px 4px; }
     .qual-branch-line, .qual-extra { font-size: 8px; margin-top: 1px; }
     .cat-vac-grid { min-width: 60px; gap: 2px; }
@@ -953,11 +956,18 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: styles }} />
+      <ZoomControl />
       <div className="jd">
         <div className="jd-wrap">
-          <div className="hidden md:block mt-6 mb-4 md:mb-8">
-            <BackButton className="gap-2 text-sm font-semibold text-navy/40 hover:text-navy transition-colors">
-              <IconBack /> Back
+          <div className="mt-4 md:mt-8 mb-6 md:mb-10">
+            <BackButton className="inline-flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-navy/40 hover:text-navy transition-all pt-0 -ml-2 md:-ml-4 no-underline bg-transparent border-none cursor-pointer group">
+              <div className="w-9 h-9 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-navy group-hover:text-white transition-all">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+              </div>
+              <span className="font-bold">Back</span>
             </BackButton>
           </div>
 
@@ -965,9 +975,6 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           <header className="jd-masthead">
             <div className="jd-eyebrow">Official Recruitment Notice</div>
             <h1 className="jd-title">
-              <BackButton className="jd-header-back">
-                <IconBack />
-              </BackButton>
               <span>{job.title}</span>
             </h1>
             {job.advertisementNumber && (
@@ -1053,10 +1060,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               {((job.eligibleGender && job.eligibleGender.length > 0) || job.femaleOnly) && (
                 <tr>
                   <td className="label">Eligible Gender</td>
-                  <td style={{ 
-                    textTransform: 'capitalize', 
-                    fontWeight: 600, 
-                    color: ((job.eligibleGender?.includes('female') && job.eligibleGender?.length === 1) || job.femaleOnly) ? 'var(--crimson)' : 'inherit' 
+                  <td style={{
+                    textTransform: 'capitalize',
+                    fontWeight: 600,
+                    color: ((job.eligibleGender?.includes('female') && job.eligibleGender?.length === 1) || job.femaleOnly) ? 'var(--crimson)' : 'inherit'
                   }}>
                     {job.eligibleGender && job.eligibleGender.length > 0 ? job.eligibleGender.join(", ") : "Female Only"}
                   </td>
@@ -1302,14 +1309,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     {tableRows.map((row) => (
                       <tr key={row.key} className={row.highlight ? "tr-highlight" : ""}>
                         <td className="label">{row.label}</td>
-                        <td className="mono bold">
+                        <td>
                           {(() => {
                             const val = typeof row.val === 'string' ? row.val.trim() : row.val;
                             if (typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('www.'))) {
                               const href = val.startsWith('www.') ? `https://${val}` : val;
                               return (
                                 <a href={href} target="_blank" rel="noreferrer"
-                                  style={{ color: "#2563eb", textDecoration: "underline", fontSize: "13px", wordBreak: "break-all", fontWeight: 600 }}>
+                                  style={{ color: "#2563eb", textDecoration: "underline", fontSize: "13.5px", wordBreak: "break-all", fontWeight: 500 }}>
                                   {val}
                                 </a>
                               );
@@ -1317,7 +1324,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                             // Date check: format if it looks like a date, otherwise show as is
                             const d = new Date(val);
                             if (val && !isNaN(d.getTime())) {
-                              return fmtDate(val);
+                              return <span style={{ fontWeight: 600 }}>{fmtDate(val)}</span>;
                             }
                             return val || "—";
                           })()}
@@ -1328,7 +1335,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     {((dates as any).customDates || []).map((cd: any, idx: number) => (
                       <tr key={`custom-${idx}`}>
                         <td className="label">{cd.label}</td>
-                        <td className="mono bold">{cd.date ? fmtDate(cd.date) : "—"}</td>
+                        <td style={{ fontWeight: 600 }}>{cd.date ? fmtDate(cd.date) : "—"}</td>
                       </tr>
                     ))}
                   </>
