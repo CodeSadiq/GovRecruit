@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         });
 
         // 3. Send Email
-        const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}`;
+        const resetUrl = `https://rojgar-match.vercel.app/reset-password?token=${token}`;
         
         const mailOptions = {
           from: `"RojgarMatch Identity" <${process.env.SMTP_USER}>`,
