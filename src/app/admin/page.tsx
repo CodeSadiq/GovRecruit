@@ -141,6 +141,16 @@ function AdminPageContent() {
              <h1 className="text-2xl font-black text-navy uppercase tracking-tighter">Command Registry</h1>
              <p className="text-[10px] text-navy/40 font-bold uppercase tracking-widest leading-none">Institutional Control Console</p>
            </div>
+
+           <div className="flex gap-3">
+             <Link 
+               href="/admin/registry"
+               className="px-6 py-2.5 bg-white border border-gray-200 text-navy text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-50 transition-all no-underline flex items-center gap-2 shadow-sm"
+             >
+               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+               Edit Candidate Form
+             </Link>
+           </div>
            
            <div className="flex bg-white border border-gray-200 p-1 rounded-xl shadow-sm">
               <button 
