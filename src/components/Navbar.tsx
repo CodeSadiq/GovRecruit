@@ -164,7 +164,7 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <>
           <div className="fixed inset-0 bg-black/60 z-[1000] lg:hidden animate-in fade-in duration-300" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="fixed top-0 right-0 h-full w-[240px] z-[1001] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-400 lg:hidden border-l border-white/10 opacity-100 flex flex-col"
+          <div className="fixed top-0 right-0 h-full w-[300px] z-[1001] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-400 lg:hidden border-l border-white/10 opacity-100 flex flex-col"
             style={{ backgroundColor: '#0D244D' }}
           >
             <div className="flex items-center justify-between p-6 border-b border-white/5 bg-[#0D244D] flex-shrink-0">
@@ -181,7 +181,7 @@ export default function Navbar() {
                     className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 no-underline hover:bg-white/10 transition-all font-serif font-bold text-white text-lg"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span>Candidate Login</span>
+                    <span className="whitespace-nowrap">Candidate Login</span>
                     <span className="ml-auto opacity-20 group-hover:opacity-100 transition-all font-sans">➜</span>
                   </Link>
                 ) : (

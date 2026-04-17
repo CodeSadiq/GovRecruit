@@ -26,23 +26,54 @@ export default function Home() {
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<CandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentCatIndex, setCurrentCatIndex] = useState(0);
+  const [currentCatIndex, setCurrentCatIndex] = useState(1); // 1 is the first real category (after the clone of last)
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isMoving, setIsMoving] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isInViewport, setIsInViewport] = useState(false);
+  const sidebarRef = React.useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    setWindowWidth(window.innerWidth);
+
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+
+    // Intersection Observer to detect when the sidebar is in view
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInViewport(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sidebarRef.current) {
+      observer.observe(sidebarRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Auto-rotate logic: Resets whenever currentCatIndex changes to ensure a full 12s per category
+  // Only rotates if isAutoPlaying is true AND it's in the viewport
+  // DISABLED ON MOBILE: As per user request, mobile view should not auto-change
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isMounted) return;
+    const isMobile = windowWidth < 768;
+    if (!isAutoPlaying || !isInViewport || isMobile) return;
+
     const timer = setTimeout(() => {
       setCurrentCatIndex((prev) => (prev + 1) % CATEGORIES.length);
     }, 12000);
     return () => clearTimeout(timer);
-  }, [currentCatIndex, isAutoPlaying]);
+  }, [currentCatIndex, isAutoPlaying, isInViewport, windowWidth, isMounted]);
 
   const [registry, setRegistry] = useState<any>(null);
 
@@ -67,6 +98,9 @@ export default function Home() {
 
     if (savedToken || savedAuth || (profileData && profileData.isGuest)) {
       setIsLoggedIn(true);
+    } else {
+      // Logic Fix: If no login is found, stop loading immediately to show the Hero
+      setIsLoading(false);
     }
 
     async function fetchJobs() {
@@ -82,29 +116,74 @@ export default function Home() {
 
 
 
-  const activeCategory = CATEGORIES[currentCatIndex];
-  const activeItems = useMemo(() => {
-    if (activeCategory === 'All Jobs') {
-      return dbJobs.slice(0, 30).map((job) => ({
-        id: job.id || job._id,
-        text: job.title,
-        time: getTimeAgo(job.createdAt || job.updatedAt),
-        isJob: true
-      }));
+  // ── STABILIZED CATEGORY ITEMS ──
+  // Pre-mapping all categories helps ensure that the DOM nodes are stable 
+  // and prevents "jumps" during re-renders like hovering.
+  const categorizedItems = useMemo(() => {
+    return CATEGORIES.map((cat) => {
+      const items = cat === 'All Jobs'
+        ? dbJobs.slice(0, 30).map((job) => ({
+          id: job.id || job._id,
+          text: job.title,
+          time: getTimeAgo(job.createdAt || job.updatedAt),
+          isJob: true
+        }))
+        : (cat === 'Important'
+          ? (registry ? (registry.notifications || []) : NOTIFICATIONS)
+          : (registry ? (registry.categories[cat] || []) : ((CATEGORY_DATA as any)[cat] || []))
+        ).map((b: any) => ({
+          ...b,
+          id: b.id || b._id || Math.random().toString(),
+          time: b.createdAt ? getTimeAgo(b.createdAt) : b.time,
+          isJob: false
+        }));
+      return { cat, items };
+    });
+  }, [dbJobs, registry]);
+
+  // ── INFINITE SLIDER LOGIC ──
+  // Slider layout: [Clone of Last, All, Important, Syllabus, Admission, Result, Admit Card, Clone of All]
+  const sliderItems = useMemo(() => {
+    if (categorizedItems.length === 0) return [];
+    return [
+      categorizedItems[categorizedItems.length - 1],
+      ...categorizedItems,
+      categorizedItems[0]
+    ];
+  }, [categorizedItems]);
+
+  const activeCategory = CATEGORIES[(currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length] || CATEGORIES[0];
+  const activeItems = categorizedItems.find(c => c.cat === activeCategory)?.items || [];
+
+  // Seamless jump effect
+  useEffect(() => {
+    if (!isMounted) return;
+
+    // Boundary checks for infinite looping
+    if (currentCatIndex === 0) {
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentCatIndex(CATEGORIES.length);
+        // Unlock after snap
+        setTimeout(() => setIsMoving(false), 50);
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+    if (currentCatIndex >= CATEGORIES.length + 1) {
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentCatIndex(1);
+        // Unlock after snap
+        setTimeout(() => setIsMoving(false), 50);
+      }, 250);
+      return () => clearTimeout(timer);
     }
 
-    let list = [];
-    if (activeCategory === 'Important') {
-      list = registry ? (registry.notifications || []) : NOTIFICATIONS;
-    } else {
-      list = registry ? (registry.categories[activeCategory] || []) : ((CATEGORY_DATA as any)[activeCategory] || []);
-    }
-
-    return list.map((b: any) => ({
-      ...b,
-      time: b.createdAt ? getTimeAgo(b.createdAt) : b.time
-    }));
-  }, [activeCategory, registry, dbJobs]);
+    // If not a boundary, unlock after the transition finishes (250ms)
+    setIsTransitioning(true);
+    const unlockTimer = setTimeout(() => setIsMoving(false), 250);
+    return () => clearTimeout(unlockTimer);
+  }, [currentCatIndex, isMounted]);
 
   const isFuzzyMatch = (target: any, query: string) => {
     const t = String(target || "").toLowerCase();
@@ -337,10 +416,11 @@ export default function Home() {
               </section>
 
               <aside className="space-y-8 min-w-0 md:min-w-[320px] h-full mt-32 md:mt-0 px-4 md:px-0">
-                <div className="bg-white border-2 border-gray-200 p-2.5 md:p-4 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+                <div ref={sidebarRef} className="bg-white border-2 border-gray-200 p-2.5 md:p-4 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
                   <div
-                    onClick={() => setIsAutoPlaying(false)}
+                    onClick={() => setIsAutoPlaying(prev => !prev)}
                     onMouseEnter={() => setIsAutoPlaying(false)}
+                    onMouseLeave={() => setIsAutoPlaying(true)}
                     className="relative overflow-hidden flex-1 flex flex-col cursor-pointer"
                   >
                     <div className="p-4 flex-1 flex flex-col">
@@ -362,7 +442,9 @@ export default function Home() {
                             <div
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setCurrentCatIndex((prev) => (prev - 1 + CATEGORIES.length) % CATEGORIES.length);
+                                if (isMoving) return;
+                                setIsMoving(true);
+                                setCurrentCatIndex((prev) => prev - 1);
                               }}
                               className="w-14 h-14 flex items-center justify-center cursor-pointer group/nav -m-3 z-50"
                               title="Previous"
@@ -374,7 +456,9 @@ export default function Home() {
                             <div
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setCurrentCatIndex((prev) => (prev + 1) % CATEGORIES.length);
+                                if (isMoving) return;
+                                setIsMoving(true);
+                                setCurrentCatIndex((prev) => prev + 1);
                               }}
                               className="w-14 h-14 flex items-center justify-center cursor-pointer group/nav -m-3 z-50"
                               title="Next"
@@ -387,7 +471,7 @@ export default function Home() {
 
                           {/* Mobile View All (Placed where slider buttons were) */}
                           <Link
-                            href={`/${activeCategory.toLowerCase().replace(' ', '-')}`}
+                            href={`/${(activeCategory || 'all-jobs').toLowerCase().replace(' ', '-')}`}
                             className="md:hidden text-[10px] font-black text-[#2563EB] uppercase tracking-widest"
                           >
                             View All ›
@@ -404,41 +488,48 @@ export default function Home() {
                           if (!startX) return;
                           const diff = startX - endX;
                           if (Math.abs(diff) > 50) {
-                            setCurrentCatIndex((prev) => (diff > 0 ? (prev + 1) % CATEGORIES.length : (prev - 1 + CATEGORIES.length) % CATEGORIES.length));
+                            if (!isMoving) {
+                              setIsMoving(true);
+                              setCurrentCatIndex((prev) => (diff > 0 ? prev + 1 : prev - 1));
+                            }
                           }
                           (window as any)._swipeX = null;
                         }}
                       >
                         {/* THE SLIDING CONTENT TRACK */}
                         <div
-                          className="flex transition-transform duration-500 ease-out h-full"
+                          className={`flex h-full ${isTransitioning ? 'transition-transform duration-[250ms] ease-out' : ''}`}
                           style={{ transform: `translateX(-${currentCatIndex * 100}%)` }}
                         >
-                          {CATEGORIES.map((cat, catIdx) => {
-                            const items = cat === 'All Jobs'
-                              ? dbJobs.slice(0, 30).map(j => ({ id: j.id || j._id, text: j.title, time: getTimeAgo(j.createdAt || j.updatedAt), isJob: true }))
-                              : (cat === 'Important'
-                                ? (registry?.notifications || NOTIFICATIONS)
-                                : (registry?.categories[cat] || (CATEGORY_DATA as any)[cat] || [])
-                              ).map((b: any) => ({ ...b, time: b.createdAt ? getTimeAgo(b.createdAt) : b.time }));
-
+                          {sliderItems.map((catGroup, catIdx) => {
+                            const { items } = catGroup;
+                            const realIdx = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
                             return (
-                              <div key={catIdx} className="w-full shrink-0 flex flex-col h-full overflow-y-auto hide-scrollbar px-1">
-                                {items.map((n: any, i: number) => (
-                                  <Link
-                                    href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
-                                    key={i}
-                                    className="group block py-4 border-b border-gray-100 last:border-0 transition-all hover:bg-navy/[0.02] px-1 no-underline"
-                                  >
-                                    <div className="text-[13px] md:text-[14px] font-bold text-navy/80 leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
-                                      {n.text}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <span className={`w-1 h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
-                                      <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
-                                    </div>
-                                  </Link>
-                                ))}
+                              <div key={catIdx} className="w-full shrink-0 flex flex-col h-full overflow-hidden px-1">
+                                <div
+                                  className={`flex flex-col ${(isInViewport && items.length > 4) ? 'marquee-track' : ''}`}
+                                  style={{
+                                    animationDuration: `${Math.max(items.length * 4, 15)}s`,
+                                    animationPlayState: (!isAutoPlaying || (isMounted && windowWidth < 768 && !isInViewport)) ? 'paused' : 'running'
+                                  }}
+                                >
+                                  {/* Duplicate items for seamless marquee */}
+                                  {[...items, ...((isInViewport && items.length > 4) ? items : [])].map((n: any, i: number) => (
+                                    <Link
+                                      href={n.isJob ? `/all-jobs/${n.id}` : `/bulletin/${n.id}`}
+                                      key={`${n.id}-${i}`}
+                                      className="group block py-4 border-b border-gray-100 last:border-0 transition-colors hover:bg-navy/[0.02] px-1 no-underline"
+                                    >
+                                      <div className="text-[13px] md:text-[14px] font-bold text-navy/80 leading-snug group-hover:text-navy transition-colors mb-2 line-clamp-2">
+                                        {n.text}
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className={`w-1 h-1 rounded-full group-hover:animate-pulse ${n.isJob ? 'bg-blue-500' : 'bg-green-500'}`}></span>
+                                        <div className="text-[8px] font-bold uppercase tracking-[0.1em] text-navy/30 group-hover:text-navy/50">{n.time}</div>
+                                      </div>
+                                    </Link>
+                                  ))}
+                                </div>
                                 {items.length === 0 && (
                                   <div className="py-20 text-center text-[10px] font-black uppercase tracking-widest text-gray-300"> No Records </div>
                                 )}
@@ -449,22 +540,33 @@ export default function Home() {
                       </div>
 
                       {/* SEGMENTED SLIDING INDICATOR */}
-                      <div className="mt-4 flex gap-1.5 h-1 w-full px-2">
-                        {CATEGORIES.map((_, idx) => (
-                          <div key={idx} className="flex-1 bg-navy/[0.05] rounded-full overflow-hidden relative">
-                            {idx === currentCatIndex && (
-                              <div
-                                key={currentCatIndex}
-                                className="absolute inset-0 bg-navy/30 rounded-full origin-left"
-                                style={{
-                                  animation: (isAutoPlaying && isMounted) ? 'slideProgress 12s linear forwards' : 'none',
-                                  transformOrigin: 'left'
-                                }}
-                              />
-                            )}
-                            {idx < currentCatIndex && <div className="absolute inset-0 bg-navy/10 rounded-full" />}
-                          </div>
-                        ))}
+                      <div className="mt-4 flex flex-col items-center">
+                        <div className="flex gap-1.5 h-1 w-full px-2 mb-2">
+                          {CATEGORIES.map((_, idx) => {
+                            const realIndex = (currentCatIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
+                            return (
+                              <div key={idx} className="flex-1 bg-navy/[0.05] rounded-full overflow-hidden relative">
+                                {idx === realIndex && (
+                                  <div
+                                    key={realIndex}
+                                    className="absolute inset-0 bg-navy/30 rounded-full origin-left"
+                                    style={{
+                                      animation: (isMounted && isAutoPlaying && windowWidth >= 768) ? 'slideProgress 12s linear forwards' : 'none',
+                                      transformOrigin: 'left'
+                                    }}
+                                  />
+                                )}
+                                {idx < realIndex && <div className="absolute inset-0 bg-navy/10 rounded-full" />}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Mobile Swipe Indicator */}
+                        <div className="md:hidden flex items-center justify-center gap-2 py-2 opacity-30 mt-1">
+                          <span className="text-[9px] font-bold text-navy uppercase tracking-[0.2em]">Swipe to explore</span>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-navy"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+                        </div>
                       </div>
 
                       {/* ENHANCED VIEW ALL BUTTON (Desktop Only) */}
@@ -490,26 +592,26 @@ export default function Home() {
                 .marquee-viewer {
                   height: 420px;
                   position: relative;
-                  scrollbar-width: none;
-                  -ms-overflow-style: none;
+                  overflow: hidden;
                 }
                 @media (max-width: 768px) {
                   .marquee-viewer {
-                    height: 350px;
+                    height: 380px;
                   }
                 }
-                .marquee-viewer::-webkit-scrollbar {
-                  display: none;
-                }
                 .marquee-track {
-                  animation: marquee-vertical ${activeItems.length * 5}s linear infinite;
-                }
-                .marquee-track:hover {
-                  animation-play-state: paused;
+                  animation: marquee-vertical linear infinite;
                 }
                 @keyframes marquee-vertical {
                   from { transform: translateY(0); }
                   to { transform: translateY(-50%); }
+                }
+                .hide-scrollbar::-webkit-scrollbar {
+                  display: none;
+                }
+                .hide-scrollbar {
+                  -ms-overflow-style: none;
+                  scrollbar-width: none;
                 }
               `}</style>
             </div>

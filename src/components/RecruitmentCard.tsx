@@ -38,7 +38,7 @@ const RecruitmentCard: React.FC<RecruitmentCardProps> = ({ job, isMatched, highl
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-1 bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full border border-gray-100">
+              <div className="flex items-center gap-1 bg-navy text-white px-2 py-0.5 rounded-full border border-white/10">
                 <span className="text-[8px] md:text-[10px] font-black uppercase tracking-wider">Public</span>
               </div>
             )}

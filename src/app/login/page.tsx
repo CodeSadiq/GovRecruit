@@ -185,7 +185,10 @@ export default function LoginPage() {
           
           {/* 🔙 BACK NAVIGATION (Repositioned) */}
           <div className="mb-2 md:mb-6">
-            <BackButton className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2">
+            <BackButton 
+              href="/"
+              className="text-navy/40 hover:text-navy text-[10px] font-bold uppercase tracking-[0.3em] font-sans flex items-center gap-2"
+            >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
               <span>Back</span>
             </BackButton>
