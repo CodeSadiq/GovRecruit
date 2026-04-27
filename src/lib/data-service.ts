@@ -46,14 +46,14 @@ export const saveBulletinToRegistry = async (bulletin: any, category: string) =>
   if (typeof window === 'undefined') return;
 
   const payload = { ...bulletin, category, updatedAt: new Date().toISOString() };
-  
+
   try {
     const res = await fetch('/api/bulletins', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    
+
     if (!res.ok) throw new Error('Failed to save bulletin');
     return await res.json();
   } catch (e) {
